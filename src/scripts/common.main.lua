@@ -1,4 +1,6 @@
+local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
+local TeleportService = game:GetService("TeleportService")
 
 local generic = import('env/util/generic')
 
@@ -62,5 +64,16 @@ return function(Window)
         end)
     end
 
+    local function buildJoiningSection()
+        tab:Section("Joining options")
+        tab:Button{
+            Name = "Rejoin",
+            Callback = function()
+                TeleportService:Teleport(game.PlaceId, Players.LocalPlayer)
+            end
+        }
+    end
+
+    buildJoiningSection()
     buildFlySection()
 end
