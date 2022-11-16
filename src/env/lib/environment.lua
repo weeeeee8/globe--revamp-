@@ -22,9 +22,10 @@ return function(import)
         KeySettings = {
             Title = 'Globe Guard',
             Subtitle = 'Key identification system',
+            Note = "Whitelisted key system",
             FileName = "key",
             GrabKeyFromSite = true,
-            Key = 'https://raw.githubusercontent.com/weeeeee8/globe--revamp-/main/src/key.lua',
+            Key = 'https://raw.githubusercontent.com/weeeeee8/globe--revamp-/main/src/key.txt',
         }
     }
 
