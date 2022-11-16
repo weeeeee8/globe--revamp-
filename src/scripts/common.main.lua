@@ -7,7 +7,7 @@ local generic = import('env/util/generic')
 return function(Window)
     local tab = Window:CreateTab("Common", 4483364243)
     local function buildFlySection()
-        tab:Section("Fly Options")
+        tab:CreateSection("Fly Options")
 
         local flightEnabled = false
         local flightSpeed = 250
@@ -65,7 +65,7 @@ return function(Window)
     end
 
     local function buildJoiningSection()
-        tab:Section("Joining options")
+        tab:CreateSection("Joining options")
         tab:Button{
             Name = "Rejoin",
             Callback = function()

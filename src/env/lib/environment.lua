@@ -13,7 +13,7 @@ return function(import)
     local Window = rayfield:CreateWindow{
         Name = "Globe [ Revamped ]",
         LoadingTitle = "Globe",
-        LoadingSubtitle = 'A random script hub brought to you by a bored roblox game developer',
+        LoadingSubtitle = 'by RVCDev',
         ConfigurationSaving = {
             Enabled = true,
             FileName = "SavedGlobeSettings"
