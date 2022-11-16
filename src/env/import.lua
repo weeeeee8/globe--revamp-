@@ -1,7 +1,6 @@
 local PATH_SEPERATOR = "/"
 local SOURCE = "https://raw.githubusercontent.com/weeeeee8/globe--revamp-/main/src/"
 
-local renv = assert(getrenv, '[GLOBE] Cannot fetch roblox environment, executor might not support "getrenv"')()
 
 local ImportDirectories = {}
 
@@ -9,7 +8,7 @@ local Import = setmetatable({
     ['global'] = {},
 
     CreateDirectory = function(self, path: string)
-        local directory = renv.table.split(path, PATH_SEPERATOR)
+        local directory = string.split(path, PATH_SEPERATOR)
         local indexInPath = 1
         local target = ImportDirectories
         repeat
@@ -33,7 +32,7 @@ local Import = setmetatable({
     end,
     __call = function(self, path: string)
         local function parsePath(path: string)
-            local directory = table.split(path, PATH_SEPERATOR)
+            local directory = string.split(path, PATH_SEPERATOR)
             local indexInPath = 1
 
             local target = ImportDirectories
@@ -45,7 +44,7 @@ local Import = setmetatable({
         end
 
         local function importToDirectory(path: string)
-            local directory = table.split(path, PATH_SEPERATOR)
+            local directory = string.split(path, PATH_SEPERATOR)
             local fileName = directory[#directory]
             directory[#directory] = nil
 
