@@ -7,6 +7,8 @@ return function(import)
     end
     environment.import = import
 
+    environment.SecureMode = true
+
     local rayfield = import('env/rayfield')
     local Window = rayfield:CreateWindow{
         Name = "Globe [ Revamped ]",
