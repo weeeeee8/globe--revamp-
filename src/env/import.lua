@@ -9,7 +9,7 @@ local Import = setmetatable({
     ['global'] = {},
 
     CreateDirectory = function(self, path: string)
-        local directory = table.split(path, PATH_SEPERATOR)
+        local directory = renv.table.split(path, PATH_SEPERATOR)
         local indexInPath = 1
         local target = ImportDirectories
         repeat
