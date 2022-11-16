@@ -66,7 +66,7 @@ return function(Window)
 
     local function buildJoiningSection()
         tab:CreateSection("Joining options")
-        tab:Button{
+        tab:CreateButton{
             Name = "Rejoin",
             Callback = function()
                 TeleportService:Teleport(game.PlaceId, Players.LocalPlayer)
