@@ -1,6 +1,8 @@
 local PATH_SEPERATOR = "/"
 local SOURCE = "https://raw.githubusercontent.com/weeeeee8/globe--revamp-/main/src/"
 
+local renv = assert(getrenv, '[GLOBE] Cannot fetch roblox environment, executor might not support "getrenv"')()
+
 local ImportDirectories = {}
 
 local Import = setmetatable({
