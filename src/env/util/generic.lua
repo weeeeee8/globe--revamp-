@@ -2,6 +2,10 @@ local Players = game:GetService("Players")
 
 local generic = {}
 
+function generic.GetPlayerBodyPart(bodyPartName)
+    return if Players.LocalPlayer.Character then Players.LocalPlayer.Character:FindFirstChild(bodyPartName, true) else nil
+end
+
 function generic.NewStack()
     local stackObj = {}
     return {
