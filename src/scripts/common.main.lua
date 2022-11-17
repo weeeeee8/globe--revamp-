@@ -57,10 +57,12 @@ return function(Window)
             else
                 if bodygyro then
                     bodygyro:Destroy()
+                    bodygyro = nil
                 end
 
                 if bodyvelocity then
                     bodyvelocity:Destroy()
+                    bodyvelocity = nil
                 end
             end
         end
@@ -100,7 +102,7 @@ return function(Window)
                 local direction: Vector3 = getDirectionFromActiveStates() * (flightSpeed + dt)
                 
                 if bodyvelocity then
-                    bodyvelocity.Velocity = direction
+                    bodyvelocity.Velocity = workspace.CurrentCamera.CFrame:PointToWorldSpace(direction)
                 end
 
                 if bodygyro then
@@ -125,6 +127,9 @@ return function(Window)
             RunService:UnbindFromRenderStep("fly.update")
             generic.SafeDestroy(bodyvelocity)
             generic.SafeDestroy(bodygyro)
+
+            bodyvelocity = nil
+            bodygyro = nil
         end)
 
         Globe.Maid:GiveTask(UserInputService.InputBegan:Connect(function(i, g)
