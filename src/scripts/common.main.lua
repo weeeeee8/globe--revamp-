@@ -173,7 +173,7 @@ return function(Window)
             PlaceholderText = "Player DisplayName / Name",
             Callback = function(text: string)
                 local success, result: Player | string = targetPlayerAutofill.TryAutoFillFromInput(text)
-                if success and (not type(result) == "string") then
+                if success then
                     targetPlayer = result
                     
                     if activePlayerRemovedConn then

@@ -8,7 +8,7 @@ local DEFAULT_NOTIFICATION_LIFETIME = 3--seconds
 local generic = {}
 
 function generic.NotifyUser(content: string, infoLevel: number)
-    local title = string.format('[%s] Globe Debug', if infoLevel == 1 then "INFO" elseif infoLevel == "2" then "WARNING" elseif infoLevel == 3 then "ERROR" else "FATAL ERROR")
+    local title = string.format('[%s] Globe Debug', if infoLevel == 1 then "INFO" elseif infoLevel == 2 then "WARNING" elseif infoLevel == 3 then "ERROR" else "FATAL ERROR")
     rayfield:Notify{
         Title = title,
         Content = content,
@@ -34,7 +34,7 @@ function generic.NewAutofill(name: string, template: {string} | (input: string) 
             if (type(template) == "function") then
                 local output = template(text)
                 if output then
-                    return output
+                    return true, output
                 end
             else
                 for i = #template, 1, -1 do
