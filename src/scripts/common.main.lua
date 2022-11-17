@@ -366,6 +366,10 @@ return function(Window)
                                 generic.NotifyUser('Found server!', 1)
                                 generic.NotifyUser('Attempting to teleport to server...', 1)
 
+                                if shouldAutoExecute then
+                                    queue_on_teleport('loadstring(game:HttpGet("https://raw.githubusercontent.com/weeeeee8/globe--revamp-/main/source.lua"), "Globe")()')
+                                end
+
                                 local failCounter = 0
                                 TeleportService:TeleportToPlaceInstance(game.PlaceId, place.Guid)
 
