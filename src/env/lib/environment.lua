@@ -31,17 +31,6 @@ return function(import)
         }
     }
 
-    do import('scripts/common.main')(Window)
-    local function tryGetScriptNameFromGameId(gameId: number)
-       local scripts = {
-        [224422602] = 'ebg'
-       }
-       return scripts[gameId]
-    end
-    import('scripts/' .. tryGetScriptNameFromGameId(game.GameId) .. 'main')(Window) end
-
-    Window:LoadConfiguration()
-    
     if environment.Globe then
         environment.Globe:Exit()
         environment.Globe = nil
@@ -59,4 +48,15 @@ return function(import)
             table.clear(self.Hooks)
         end
     }
+
+    do import('scripts/common.main')(Window)
+    local function tryGetScriptNameFromGameId(gameId: number)
+       local scripts = {
+        [224422602] = 'ebg'
+       }
+       return scripts[gameId]
+    end
+    import('scripts/' .. tryGetScriptNameFromGameId(game.GameId) .. 'main')(Window) end
+
+    Window:LoadConfiguration()
 end
