@@ -8,6 +8,16 @@ local generic = import('env/util/generic')
 return function(Window)
     local playerMouse = Players.LocalPlayer:GetMouse()
 
+    local function getPlayerFromInput(text)
+        local players = Players:GetPlayers()
+        for i = #players, 1, -1 do
+            if players[i].Name:sub(1, #input) == input or players[i].DisplayName:sub(1, #input) == input then
+                return players[i]
+            end
+        end
+        return nil
+    end
+
     local tab = Window:CreateTab("Common", 4483364243)
     local function buildFlySection()
         tab:CreateSection("Fly Options")
@@ -116,7 +126,7 @@ return function(Window)
         end)
 
         Globe.Maid:GiveTask(RunService.Stepped:Connect(function()
-            if flightNoClipEnabled then
+            if flightNoClipEnabled and flightEnabled then
                 for _, bodypart in ipairs(Players.LocalPlayer.Character:GetChildren()) do
                     if bodypart:IsA("BasePart") then
                         bodypart.CanCollide = false
@@ -159,15 +169,7 @@ return function(Window)
 
         local activePlayerRemovedConn
 
-        local targetPlayerAutofill = generic.NewAutofill("Player to Teleport to", function(input: string)
-            local players = Players:GetPlayers()
-            for i = #players, 1, -1 do
-                if players[i].Name:sub(1, #input) == input or players[i].DisplayName:sub(1, #input) == input then
-                    return players[i]
-                end
-            end
-            return nil
-        end)
+        local targetPlayerAutofill = generic.NewAutofill("Player to Teleport to", getPlayerFromInput)
 
         tab:CreateInput{
             Name = "Player to Teleport to",
@@ -175,8 +177,8 @@ return function(Window)
             Callback = function(text: string)
                 local success, result: Player | string = targetPlayerAutofill.TryAutoFillFromInput(text)
                 if success then
-                    print(result)
                     targetPlayer = result
+                    generic.NotifyUser(string.format('Connecting teleport bindings for player "%s"', result.Name), 1)
                     
                     if activePlayerRemovedConn then
                         activePlayerRemovedConn:Disconnected()
@@ -185,7 +187,9 @@ return function(Window)
 
                     activePlayerRemovedConn = result.Destroying:Once(function()
                         targetPlayer = nil
-                        generic.NotifyUser(string.format('Player "%s" has left the experience', result.Name), 1)
+                        generic.NotifyUser(string.format('Player "%s" has left the experience, disconnecting teleport bindings...', result.Name), 1)
+                        activePlayerRemovedConn:Disconnect()
+                        activePlayerRemovedConn = nil
                     end)
                 else
                     generic.NotifyUser(result, 2)
@@ -201,9 +205,9 @@ return function(Window)
                 if rootPart then
                     local hum = generic.GetPlayerBodyPart('Humanoid')
                     local mousePosition = playerMouse.Hit.Position + (Vector3.yAxis * 2)
-                    local moveDirection = rootPart.CFrame.LookVector
+                    local moveDirection = rootPart.CFrame.LookVector.Unit * 50
                     if hum then
-                        moveDirection = hum.MoveDirection
+                        moveDirection = hum.MoveDirection.Unit * 50
                     end
                     rootPart.CFrame = CFrame.new(mousePosition, mousePosition + moveDirection)
                 end
@@ -217,6 +221,14 @@ return function(Window)
                 if not requestPlayerTeleport then
                     requestPlayerTeleport = true
                 end
+            end
+        }
+
+        tab:CreateKeybind{
+            Name = "Stick to Player",
+            CurrentKeybind = "H",
+            Callback = function()
+                stickToEnabled = not stickToEnabled
             end
         }
 
@@ -247,8 +259,57 @@ return function(Window)
         end)
     end
 
+    local function buildCameraSpySection()
+        tab:CreateSection("Camera Spy Options")
+
+        local playerSpyAutofill = generic.NewAutofill("Camera Spy", getPlayerFromInput)
+        local activePlayerRemovedConn
+
+        local function setCameraSubjectTo(player: Player)
+            local hum = if player.Character then player.Character:FindFirstChild("Humanoid") else nil
+            if hum then
+                workspace.CurrentCamera.CameraSubject = hum
+            end
+        end
+
+        tab:CreateInput{
+            Name = "Player to Teleport to",
+            PlaceholderText = "Player DisplayName / Name",
+            Callback = function(text: string)
+                local success, result: Player | string = playerSpyAutofill.TryAutoFillFromInput(text)
+                
+                if activePlayerRemovedConn then
+                    activePlayerRemovedConn:Disconnected()
+                    activePlayerRemovedConn = nil
+                end
+
+                if success then
+                    setCameraSubjectTo(result)
+        
+                    activePlayerRemovedConn = result.Destroying:Once(function()
+                        setCameraSubjectTo(Players.LocalPlayer)
+                        generic.NotifyUser(string.format('Player "%s" has left the experience, disconnecting camera spy bindings...', result.Name), 1)
+                        activePlayerRemovedConn:Disconnect()
+                        activePlayerRemovedConn = nil
+                    end)
+                else
+                    setCameraSubjectTo(Players.LocalPlayer)
+                end
+            end
+        }
+
+        Globe.Maid:GiveTask(function()
+            if activePlayerRemovedConn then
+                activePlayerRemovedConn:Disconnect()
+                activePlayerRemovedConn = nil
+            end
+        end)
+
+        setCameraSubjectTo(Players.LocalPlayer)
+    end
+
     local function buildJoiningSection()
-        tab:CreateSection("Joining options")
+        tab:CreateSection("Joining Options")
 
         local shouldAutoExecute = false
 
@@ -273,4 +334,5 @@ return function(Window)
     buildJoiningSection()
     buildTeleportSection()
     buildFlySection()
+    buildCameraSpySection()
 end
