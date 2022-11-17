@@ -15,7 +15,9 @@ return function(Window)
         local flightNoClipEnabled = false
         local flightEnabled = false
         local flightSpeed = 250
-        local keycodeInputStates = generic.MakeSet(Enum.KeyCode.A, Enum.KeyCode.S, Enum.KeyCode.W, Enum.KeyCode.D):get()
+        local keycodeInputStates = generic.MakeSet(Enum.KeyCode.A, Enum.KeyCode.S, Enum.KeyCode.W, Enum.KeyCode.D):override(function()
+            return false
+        end):get()
         local bodyvelocity, bodygyro
 
         local function getDirectionFromActiveStates(velocity)
@@ -23,13 +25,13 @@ return function(Window)
             if keycodeInputStates[Enum.KeyCode.A] == true then
                 dir -= workspace.CurrentCamera.CFrame.RightVector * velocity
             end
-            if keycodeInputStates[Enum.KeyCode.S] == true then
+            if keycodeInputStates[Enum.KeyCode.D] == true then
                 dir += workspace.CurrentCamera.CFrame.RightVector * velocity
             end
             if keycodeInputStates[Enum.KeyCode.W] == true then
                 dir += workspace.CurrentCamera.CFrame.LookVector * velocity
             end
-            if keycodeInputStates[Enum.KeyCode.D] == true then
+            if keycodeInputStates[Enum.KeyCode.S] == true then
                 dir -= workspace.CurrentCamera.CFrame.LookVector * velocity
             end
             return dir

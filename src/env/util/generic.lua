@@ -77,7 +77,7 @@ function generic.MakeSet(...)
     return {
         override = function(self, callback)
             for k in pairs(t) do
-                t[k] = callback[k]
+                t[k] = callback(k)
             end
             return self
         end,
