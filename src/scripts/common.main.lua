@@ -154,6 +154,7 @@ return function(Window)
         tab:CreateSection("Teleporting Options")
 
         local targetPlayer = nil
+        local stickToEnabled = false
         local requestPlayerTeleport = false
 
         local activePlayerRemovedConn
@@ -215,15 +216,15 @@ return function(Window)
             Callback = function()
                 if not requestPlayerTeleport then
                     requestPlayerTeleport = true
-                    task.defer(function()
-                        requestPlayerTeleport = false
-                    end)
                 end
             end
         }
 
         Globe.Maid:GiveTask(RunService.RenderStepped:Connect(function()
-            if requestPlayerTeleport then
+            if requestPlayerTeleport or stickToEnabled then
+                if requestPlayerTeleport then
+                    requestPlayerTeleport = false
+                end
                 if targetPlayer then
                     local foundRootPart = if targetPlayer.Character then targetPlayer.Character:FindFirstChild("HumanoidRootPart") else nil
                     if foundRootPart then
