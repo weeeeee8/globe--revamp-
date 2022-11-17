@@ -18,19 +18,19 @@ return function(Window)
         local keycodeInputStates = generic.MakeSet(Enum.KeyCode.A, Enum.KeyCode.S, Enum.KeyCode.W, Enum.KeyCode.D):get()
         local bodyvelocity, bodygyro
 
-        local function getDirectionFromActiveStates()
+        local function getDirectionFromActiveStates(velocity)
             local dir = Vector3.zero
             if keycodeInputStates[Enum.KeyCode.A] == true then
-                dir -= Vector3.xAxis
+                dir -= workspace.CurrentCamera.CFrame.RightVector * velocity
             end
             if keycodeInputStates[Enum.KeyCode.S] == true then
-                dir += Vector3.zAxis
+                dir += workspace.CurrentCamera.CFrame.RightVector * velocity
             end
             if keycodeInputStates[Enum.KeyCode.W] == true then
-                dir -= Vector3.zAxis
+                dir += workspace.CurrentCamera.CFrame.LookVector * velocity
             end
             if keycodeInputStates[Enum.KeyCode.D] == true then
-                dir += Vector3.xAxis
+                dir -= workspace.CurrentCamera.CFrame.LookVector * velocity
             end
             return dir
         end
@@ -99,10 +99,10 @@ return function(Window)
             if not rootPart then return end
             if flightEnabled then
                 modifyBodyMovers(rootPart, false)
-                local direction: Vector3 = getDirectionFromActiveStates() * (flightSpeed + dt)
+                local direction: Vector3 = getDirectionFromActiveStates(flightSpeed + dt)
                 
                 if bodyvelocity then
-                    bodyvelocity.Velocity = workspace.CurrentCamera.CFrame:PointToWorldSpace(direction)
+                    bodyvelocity.Velocity = direction
                 end
 
                 if bodygyro then
