@@ -58,5 +58,5 @@ return function(import)
     end
     import('scripts/' .. tryGetScriptNameFromGameId(game.GameId) .. '.main')(Window) end
 
-    Window:LoadConfiguration()
+    rayfield:LoadConfiguration()
 end
