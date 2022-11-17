@@ -1,6 +1,20 @@
 local Players = game:GetService("Players")
 
+local rayfield = import('env/rayfield')
+
+local ERROR_CONSTANTS = {}
+local DEFAULT_NOTIFICATION_LIFETIME = 3--seconds
+
 local generic = {}
+
+function generic.NotifyUser(content: string, infoLevel: number)
+    local title = string.format('[%s] Globe Debug', if infoLevel == 1 then "INFO" elseif infoLevel == "2" then "WARNING" elseif infoLevel == 3 then "ERROR" else "FATAL ERROR")
+    rayfield:NotifyUser{
+        Title = title,
+        Content = content,
+        Duration = DEFAULT_NOTIFICATION_LIFETIME
+    }
+end
 
 function generic.SafeDestroy(instance: Instance?)
     if instance then
@@ -10,6 +24,31 @@ end
 
 function generic.GetPlayerBodyPart(bodyPartName)
     return if Players.LocalPlayer.Character then Players.LocalPlayer.Character:FindFirstChild(bodyPartName, true) else nil
+end
+
+function generic.NewAutofill(name: string, template: {string} | (input: string) -> any?)
+    local template = template
+    return {
+        TryAutoFillFromInput = function(text: string)
+            if #text <= 0 then return false, string.format('"%s" is an empty string!', name) end
+            if (type(template) == "function") then
+                local output = template(text)
+                if output then
+                    return output
+                end
+            else
+                for i = #template, 1, -1 do
+                    if template[i]:sub(1, #text) == text then
+                        return true, template[i]
+                    end
+                end
+            end
+            return false, string.format('Cannot find an autofill correction for "%s"', text)
+        end,
+        ChangeTemplate = function(newTemplate: {string})
+            template = newTemplate
+        end
+    }
 end
 
 function generic.NewStack()

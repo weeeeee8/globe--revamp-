@@ -7,8 +7,25 @@ return function(import)
         environment.import = nil
     end
     environment.import = import
-
     environment.SecureMode = true
+    
+    if environment.Globe then
+        environment.Globe:Exit()
+        environment.Globe = nil
+    end
+
+    environment.Globe = {
+        Maid = Maid.new(),
+        Hooks = {},
+        Exit = function(self)
+            Window:Destroy()
+            self.Maid:DoCleaning()
+            for _, hook in ipairs(self.Hooks) do
+                hook:Reset()
+            end
+            table.clear(self.Hooks)
+        end
+    }
 
     local rayfield = import('env/rayfield')
     local Window = rayfield:CreateWindow{
@@ -29,24 +46,6 @@ return function(import)
             SaveKey = true,
             Key = 'https://raw.githubusercontent.com/weeeeee8/globe--revamp-/main/src/key.txt',
         }
-    }
-
-    if environment.Globe then
-        environment.Globe:Exit()
-        environment.Globe = nil
-    end
-
-    environment.Globe = {
-        Maid = Maid.new(),
-        Hooks = {},
-        Exit = function(self)
-            Window:Destroy()
-            self.Maid:DoCleaning()
-            for _, hook in ipairs(self.Hooks) do
-                hook:Reset()
-            end
-            table.clear(self.Hooks)
-        end
     }
 
     do import('scripts/common.main')(Window)

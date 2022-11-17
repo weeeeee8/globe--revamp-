@@ -243,7 +243,7 @@ local function LoadConfiguration(Configuration)
 	local Data = HttpService:JSONDecode(Configuration)
 	table.foreach(Data, function(FlagName, FlagValue)
 		if RayfieldLibrary.Flags[FlagName] then
-			spawn(function() 
+			task.spawn(function() 
 				if RayfieldLibrary.Flags[FlagName].Type == "Colorpicker" then
 					RayfieldLibrary.Flags[FlagName]:Set(UnpackColor(FlagValue))
 				else
@@ -491,7 +491,7 @@ local neon = (function() -- Open sourced neon module
 end)()
 
 function RayfieldLibrary:Notify(NotificationSettings)
-	spawn(function()
+	task.spawn(function()
 		local ActionCompleted = true
 		local Notification = Notifications.Template:Clone()
 		Notification.Parent = Notifications
@@ -700,7 +700,7 @@ function Unhide()
 	TweenService:Create(Main.Topbar.CornerRepair, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {BackgroundTransparency = 0}):Play()
 	TweenService:Create(Main.Topbar.Title, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {TextTransparency = 0}):Play()
 	if Minimised then
-		spawn(Maximise)
+		task.spawn(Maximise)
 	end
 	for _, TopbarButton in ipairs(Topbar:GetChildren()) do
 		if TopbarButton.ClassName == "ImageButton" then

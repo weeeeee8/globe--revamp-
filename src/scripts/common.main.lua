@@ -150,6 +150,45 @@ return function(Window)
 
     local function buildTeleportSection()
         tab:CreateSection("Teleporting Options")
+
+        local targetPlayer = nil
+        local requestPlayerTeleport = false
+
+        local activePlayerRemovedConn
+
+        local targetPlayerAutofill = generic.NewAutofill("Player to Teleport to", function(input: string)
+            local players = Players:GetPlayers()
+            for i = #players, 1, -1 do
+                if players[i].Name:sub(1, #input) == input or players[i].DisplayName:sub(1, #input) == input then
+                    return players[i]
+                end
+            end
+            return nil
+        end)
+
+        tab:CreateInput{
+            Name = "Player to Teleport to",
+            PlaceholderText = "Player DisplayName / Name",
+            Callback = function(text: string)
+                local success, result: Player | string = targetPlayerAutofill.TryAutoFillFromInput(text)
+                if success and (not type(result) == "string") then
+                    targetPlayer = result
+                    
+                    if activePlayerRemovedConn then
+                        activePlayerRemovedConn:Disconnected()
+                        activePlayerRemovedConn = nil
+                    end
+
+                    activePlayerRemovedConn = result.Destroying:Once(function()
+                        targetPlayer = nil
+                        generic.NotifyUser(string.format('Player "%s" has left the experience', result.Name), 1)
+                    end)
+                else
+                    generic.NotifyUser(result, 2)
+                end
+            end
+        }
+
         tab:CreateKeybind{
             Name = "Teleport to Mouse",
             CurrentKeybind = "T",
@@ -166,11 +205,49 @@ return function(Window)
                 end
             end
         }
+
+        tab:CreateKeybind{
+            Name = "Teleport to Player",
+            CurrentKeybind = "G",
+            Callback = function()
+                if not requestPlayerTeleport then
+                    requestPlayerTeleport = true
+                    task.defer(function()
+                        requestPlayerTeleport = false
+                    end)
+                end
+            end
+        }
+
+        Globe.Maid:GiveTask(RunService.RenderStepped:Connect(function()
+            if requestPlayerTeleport then
+                if targetPlayer then
+                    local foundRootPart = if targetPlayer.Character then targetPlayer.Character:FindFirstChild("HumanoidRootPart") else nil
+                    if foundRootPart then
+                        local rootPart = generic.GetPlayerBodyPart("HumanoidRootPart")
+                        if rootPart then
+                            rootPart.CFrame = foundRootPart.CFrame
+                        end
+                    end
+                end
+            end
+        end))
+
+        Globe.Maid:GiveTask(function()
+            targetPlayer = nil
+
+            if activePlayerRemovedConn then
+                activePlayerRemovedConn:Disconnect()
+                activePlayerRemovedConn = nil
+            end
+        end)
     end
 
     local function buildJoiningSection()
         tab:CreateSection("Joining options")
+
         local shouldAutoExecute = false
+
         tab:CreateToggle{
             Name = "Autoexecute script hub",
             CurrentValue = false,
