@@ -207,8 +207,9 @@ return function(Window)
                     local mousePosition = playerMouse.Hit.Position + (Vector3.yAxis * 2)
                     local moveDirection = rootPart.CFrame.LookVector.Unit * 50
                     if hum then
-                        if hum.MoveDirection.Magnitude <= 0 then return end
-                        moveDirection = hum.MoveDirection.Unit * 50
+                        if hum.MoveDirection.Magnitude > 0 then
+                            moveDirection = hum.MoveDirection.Unit * 50
+                        end
                     end
                     rootPart.CFrame = CFrame.new(mousePosition, mousePosition + moveDirection)
                 end
