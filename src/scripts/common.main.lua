@@ -314,7 +314,7 @@ return function(Window)
 
         local MAX_JOIN_ATTEMPTS = 5
         local STALKING_TIMEOUT = 30--seconds
-        local stalkedWebsiteUserId = 1
+        local targetPlayerName
         local shouldAutoExecute = false
 
         tab:CreateToggle{
@@ -348,7 +348,7 @@ return function(Window)
                 end
 
                 generic.NotifyUser('Attempting to find player thumbnail...', 1)
-                local playerThumbnailUrl = game:HttpGet("https://www.roblox.com/headshot-thumbnail/json?userId=" .. tostring(stalkedWebsiteUserId) .. "&width=48&height=48").Url
+                local playerThumbnailUrl = game:HttpGet("https://www.roblox.com/headshot-thumbnail/json?userId=" .. tostring(id) .. "&width=48&height=48").Url
 
                 local terminatedProcess = false
                 local startIndex = 0
@@ -362,7 +362,7 @@ return function(Window)
                     local gameInstances = game:HttpGet("https://www.roblox.com/games/getgameinstancesjson?placeId=" .. game.PlaceId .. "&startindex=" .. tostring(startIndex))
                     for _, place in pairs(gameInstances.Collection) do
                         for _, playerFromWebsite in pairs(place.CurrentPlayers) do
-                            if playerFromWebsite.UserId == stalkedWebsiteUserId and playerFromWebsite.Thumbnail.Url == playerThumbnailUrl then
+                            if playerFromWebsite.UserId == id and playerFromWebsite.Thumbnail.Url == playerThumbnailUrl then
                                 generic.NotifyUser('Found server!', 1)
                                 generic.NotifyUser('Attempting to teleport to server...', 1)
 
@@ -404,6 +404,14 @@ return function(Window)
                     generic.NotifyUser('Teleportation cancelled! (Timeout or Player is on a Private Server)', 4)
                 end
             end
+        }
+
+        tab:CreateInput{
+            Name = "Player Name to Stalk",
+            Callback = function(name: string)
+                if #name <= 0 then return end
+                targetPlayerName = name
+            end,
         }
     end
 
