@@ -104,7 +104,7 @@ return function(Window)
                 end
 
                 if bodygyro then
-                    bodygyro.CFrame = workspace.CurrentCamera
+                    bodygyro.CFrame = workspace.CurrentCamera.CFrame
                 end
             else
                 modifyBodyMovers(rootPart, true)
@@ -165,9 +165,20 @@ return function(Window)
 
     local function buildJoiningSection()
         tab:CreateSection("Joining options")
+        local shouldAutoExecute = false
+        tab:CreateToggle{
+            Name = "Autoexecute script hub",
+            CurrentValue = false,
+            Callback = function(toggled)
+                shouldAutoExecute = toggled
+            end
+        }
         tab:CreateButton{
             Name = "Rejoin",
             Callback = function()
+                if shouldAutoExecute then
+                    queue_on_teleport('loadstring(game:HttpGet("https://raw.githubusercontent.com/weeeeee8/globe--revamp-/main/source.lua"), "Globe")()')
+                end
                 TeleportService:Teleport(game.PlaceId, Players.LocalPlayer)
             end
         }
