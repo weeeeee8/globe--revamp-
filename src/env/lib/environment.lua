@@ -18,7 +18,7 @@ return function(import)
         Maid = Maid.new(),
         Hooks = {},
         Exit = function(self)
-            Window:Destroy()
+            self.Window:Destroy()
             self.Maid:DoCleaning()
             for _, hook in ipairs(self.Hooks) do
                 hook:Reset()
@@ -47,6 +47,7 @@ return function(import)
             Key = 'https://raw.githubusercontent.com/weeeeee8/globe--revamp-/main/src/key.txt',
         }
     }
+    environment.Globe.Window = Window
 
     do import('scripts/common.main')(Window)
     local function tryGetScriptNameFromGameId(gameId: number)
