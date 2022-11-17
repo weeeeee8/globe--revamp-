@@ -9,7 +9,7 @@ local generic = {}
 
 function generic.NotifyUser(content: string, infoLevel: number)
     local title = string.format('[%s] Globe Debug', if infoLevel == 1 then "INFO" elseif infoLevel == "2" then "WARNING" elseif infoLevel == 3 then "ERROR" else "FATAL ERROR")
-    rayfield:NotifyUser{
+    rayfield:Notify{
         Title = title,
         Content = content,
         Duration = DEFAULT_NOTIFICATION_LIFETIME
