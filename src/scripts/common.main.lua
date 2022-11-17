@@ -340,7 +340,7 @@ return function(Window)
             Callback = function()
                 getgenv().DisableAllInteractions = true
                 generic.NotifyUser('Attempting to find player...', 1)
-                local success, id = pcall(Players.GetUserIdFromNameAsync, Players, stalkedWebsiteUserId)
+                local success, id = pcall(Players.GetUserIdFromNameAsync, Players, targetPlayerName)
                 if not success then
                     generic.NotifyUser('Cannot find player!', 3)
                     getgenv().DisableAllInteractions = false
@@ -412,6 +412,7 @@ return function(Window)
 
         tab:CreateInput{
             Name = "Player Name to Stalk",
+            PlaceholderText = "Player Name (CASE SENSITIVE)",
             Callback = function(name: string)
                 if #name <= 0 then return end
                 targetPlayerName = name
