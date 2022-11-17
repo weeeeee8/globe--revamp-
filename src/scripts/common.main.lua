@@ -16,16 +16,16 @@ return function(Window)
 
         local function getDirectionFromActiveStates()
             local dir = Vector3.zero
-            if keycodeInputStates[Enum.KeyCode.A] then
+            if keycodeInputStates[Enum.KeyCode.A] == true then
                 dir -= Vector3.xAxis
             end
-            if keycodeInputStates[Enum.KeyCode.S] then
+            if keycodeInputStates[Enum.KeyCode.S] == true then
                 dir += Vector3.zAxis
             end
-            if keycodeInputStates[Enum.KeyCode.W] then
+            if keycodeInputStates[Enum.KeyCode.W] == true then
                 dir -= Vector3.zAxis
             end
-            if keycodeInputStates[Enum.KeyCode.D] then
+            if keycodeInputStates[Enum.KeyCode.D] == true then
                 dir += Vector3.xAxis
             end
             return dir
