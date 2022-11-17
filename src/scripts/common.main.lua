@@ -1,6 +1,7 @@
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local TeleportService = game:GetService("TeleportService")
+local UserInputService = game:GetService("UserInputService")
 
 local generic = import('env/util/generic')
 
@@ -10,7 +11,7 @@ return function(Window)
         tab:CreateSection("Fly Options")
 
         local flightEnabled = false
-        local flightSpeed = 250
+        local flightSpeed = 1
         local keycodeInputStates = generic.MakeSet(Enum.KeyCode.A, Enum.KeyCode.S, Enum.KeyCode.W, Enum.KeyCode.D):get()
 
         local function getDirectionFromActiveStates()
@@ -44,7 +45,7 @@ return function(Window)
             Name = "Start/Stop flight",
             CurrentKeybind = "F",
             Callback = function()
-               flightEnabled = not flightEnabled 
+               flightEnabled = not flightEnabled
             end
         }
 
@@ -53,15 +54,37 @@ return function(Window)
             if not head then return end
             head.Anchored = flightEnabled
             if flightEnabled then
-                local direction: Vector3 = getDirectionFromActiveStates()
-                local cframe = CFrame.new(head.Position + workspace.CurrentCamera.CFrame:PointToWorldSpace(direction * flightSpeed))
-                head.CFrame = cframe
+                local direction: Vector3 = getDirectionFromActiveStates() * flightSpeed * dt
+                local headCFrame = head.CFrame
+                local cameraCFrame = workspace.CurrentCamera.CFrame
+                local cameraOffset = head.CFrame:ToObjectSpace(cameraCFrame)
+                cameraCFrame = cameraCFrame * CFrame.new(-cameraOffset.X, -cameraOffset.Y, -cameraOffset.Z + 1)
+                local cameraPosition = cameraCFrame.Position
+                local headPosition = headCFrame.Position
+        
+                local objectSpaceVelocity = CFrame.new(cameraPosition, Vector3.new(headPosition.X, cameraPosition.Y, headPosition.Z)):VectorToObjectSpace(direction)
+                head.CFrame = CFrame.new(headPosition) * (cameraCFrame - cameraPosition) * CFrame.new(objectSpaceVelocity)
             end
         end)
 
         Globe.Maid:GiveTask(function()
             RunService:UnbindFromRenderStep("fly.update")
         end)
+
+        Globe.Maid:GiveTask(UserInputService.InputBegan:Connect(function(i, g)
+            if g then return end
+            local isDirectionalKey = keycodeInputStates[i.KeyCode]
+            if isDirectionalKey ~= nil then
+                keycodeInputStates[i.KeyCode] = true
+            end
+        end))
+        
+        Globe.Maid:GiveTask(UserInputService.InputEnded:Connect(function(i, g)
+            local isDirectionalKey = keycodeInputStates[i.KeyCode]
+            if isDirectionalKey ~= nil then
+                keycodeInputStates[i.KeyCode] = false
+            end
+        end))
     end
 
     local function buildJoiningSection()
