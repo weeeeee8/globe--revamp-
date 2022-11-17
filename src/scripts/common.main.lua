@@ -207,6 +207,7 @@ return function(Window)
                     local mousePosition = playerMouse.Hit.Position + (Vector3.yAxis * 2)
                     local moveDirection = rootPart.CFrame.LookVector.Unit * 50
                     if hum then
+                        if hum.MoveDirection.Magnitude <= 0 then return end
                         moveDirection = hum.MoveDirection.Unit * 50
                     end
                     rootPart.CFrame = CFrame.new(mousePosition, mousePosition + moveDirection)
@@ -264,7 +265,6 @@ return function(Window)
 
         local playerSpyAutofill = generic.NewAutofill("Camera Spy", getPlayerFromInput)
         local activePlayerRemovedConn
-        local stalkedWebsiteUserId = 0
 
         local function setCameraSubjectTo(player: Player)
             local hum = if player.Character then player.Character:FindFirstChild("Humanoid") else nil
