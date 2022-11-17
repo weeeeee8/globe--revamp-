@@ -1275,6 +1275,7 @@ function RayfieldLibrary:CreateWindow(Settings)
 
 
 			Button.Interact.MouseButton1Click:Connect(function()
+				if getgenv().DisableAllInteractions then return end
 				local Success, Response = pcall(ButtonSettings.Callback)
 				if not Success then
 					TweenService:Create(Button, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
@@ -1430,8 +1431,7 @@ function RayfieldLibrary:CreateWindow(Settings)
 			Input.InputFrame.Size = UDim2.new(0, Input.InputFrame.InputBox.TextBounds.X + 24, 0, 30)
 
 			Input.InputFrame.InputBox.FocusLost:Connect(function()
-				
-				
+				if getgenv().DisableAllInteractions then return end
 				local Success, Response = pcall(function()
 					InputSettings.Callback(Input.InputFrame.InputBox.Text)
 				end)
@@ -1805,6 +1805,7 @@ function RayfieldLibrary:CreateWindow(Settings)
 			end)
 
 			Toggle.Interact.MouseButton1Click:Connect(function()
+				if getgenv().DisableAllInteractions then return end
 				if ToggleSettings.CurrentValue then
 					ToggleSettings.CurrentValue = false
 					TweenService:Create(Toggle, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackgroundHover}):Play()
@@ -1950,6 +1951,7 @@ function RayfieldLibrary:CreateWindow(Settings)
 			end)
 			
 			Slider.Main.Interact.InputBegan:Connect(function(Input)
+				if getgenv().DisableAllInteractions then return end
 				if Input.UserInputType == Enum.UserInputType.MouseButton1 then 
 					Dragging = true 
 				end 

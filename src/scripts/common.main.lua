@@ -264,6 +264,7 @@ return function(Window)
 
         local playerSpyAutofill = generic.NewAutofill("Camera Spy", getPlayerFromInput)
         local activePlayerRemovedConn
+        local stalkedWebsiteUserId = 0
 
         local function setCameraSubjectTo(player: Player)
             local hum = if player.Character then player.Character:FindFirstChild("Humanoid") else nil
@@ -311,6 +312,9 @@ return function(Window)
     local function buildJoiningSection()
         tab:CreateSection("Joining Options")
 
+        local MAX_JOIN_ATTEMPTS = 5
+        local STALKING_TIMEOUT = 30--seconds
+        local stalkedWebsiteUserId = 1
         local shouldAutoExecute = false
 
         tab:CreateToggle{
@@ -320,6 +324,7 @@ return function(Window)
                 shouldAutoExecute = toggled
             end
         }
+        
         tab:CreateButton{
             Name = "Rejoin",
             Callback = function()
@@ -327,6 +332,77 @@ return function(Window)
                     queue_on_teleport('loadstring(game:HttpGet("https://raw.githubusercontent.com/weeeeee8/globe--revamp-/main/source.lua"), "Globe")()')
                 end
                 TeleportService:Teleport(game.PlaceId, Players.LocalPlayer)
+            end
+        }
+
+        tab:CreateButton{
+            Name = "Stalk",
+            Callback = function()
+                getgenv().DisableAllInteractions = true
+                generic.NotifyUser('Attempting to find player...', 1)
+                local success, id = pcall(Players.GetUserIdFromNameAsync, Players, stalkedWebsiteUserId)
+                if not success then
+                    generic.NotifyUser('Cannot find player!', 3)
+                    getgenv().DisableAllInteractions = false
+                    return
+                end
+
+                generic.NotifyUser('Attempting to find player thumbnail...', 1)
+                local playerThumbnailUrl = game:HttpGet("https://www.roblox.com/headshot-thumbnail/json?userId=" .. tostring(stalkedWebsiteUserId) .. "&width=48&height=48").Url
+
+                local terminatedProcess = false
+                local startIndex = 0
+                local start = tick()
+
+                generic.NotifyUser('Scanning servers...', 1)
+                while true do
+                    local now = tick()
+                    if now - start > STALKING_TIMEOUT then terminatedProcess = true break end
+
+                    local gameInstances = game:HttpGet("https://www.roblox.com/games/getgameinstancesjson?placeId=" .. game.PlaceId .. "&startindex=" .. tostring(startIndex))
+                    for _, place in pairs(gameInstances.Collection) do
+                        for _, playerFromWebsite in pairs(place.CurrentPlayers) do
+                            if playerFromWebsite.UserId == stalkedWebsiteUserId and playerFromWebsite.Thumbnail.Url == playerThumbnailUrl then
+                                generic.NotifyUser('Found server!', 1)
+                                generic.NotifyUser('Attempting to teleport to server...', 1)
+
+                                local failCounter = 0
+                                TeleportService:TeleportToPlaceInstance(game.PlaceId, place.Guid)
+
+                                local teleportAttemptConn
+                                teleportAttemptConn = Players.LocalPlayer.OnTeleport:Connect(function(state)
+                                    if state == Enum.TeleportState.Failed then
+                                        if failCounter > MAX_JOIN_ATTEMPTS then
+                                            teleportAttemptConn:Disconnect()
+                                            teleportAttemptConn  = nil
+                                            getgenv().DisableAllInteractions = false
+                                            generic.NotifyUser('Max joining attempts reached, please try again later!', 3)
+                                            return
+                                        end
+                                        failCounter += 1
+                                        generic.NotifyUser('Failed to teleport! (retries: ' .. tostring(failCounter) .. ')', 2)
+                                        TeleportService:TeleportToPlaceInstance(game.PlaceId, place.Guid)
+                                    end
+                                end)
+
+                                break
+                            end
+                        end
+                    end
+
+                    if startIndex > gameInstances.TotalCollectionSize then
+                        terminatedProcess = true
+                        break
+                    end
+
+                    generic.NotifyUser(tostring(startIndex) .. ' / ' .. tostring(gameInstances.TotalCollectionSize) .. ' servers scanned!', 1)
+                    startIndex += 10
+                end
+
+                if terminatedProcess then
+                    getgenv().DisableAllInteractions = false
+                    generic.NotifyUser('Teleportation cancelled! (Timeout or Player is on a Private Server)', 4)
+                end
             end
         }
     end
