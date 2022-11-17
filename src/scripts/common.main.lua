@@ -151,7 +151,13 @@ return function(Window)
             Callback = function()
                 local rootPart = generic.GetPlayerBodyPart('HumanoidRootPart')
                 if rootPart then
-                    rootPart.Position = playerMouse.Hit.Position + (Vector3.yAxis * 2)
+                    local hum = generic.GetPlayerBodyPart('Humanoid')
+                    local mousePosition = playerMouse.Hit.Position + (Vector3.yAxis * 2)
+                    local moveDirection = rootPart.CFrame.LookVector
+                    if hum then
+                        moveDirection = hum.MoveDirection
+                    end
+                    rootPart.CFrame = CFrame.new(mousePosition, mousePosition + moveDirection)
                 end
             end
         }
