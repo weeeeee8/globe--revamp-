@@ -56,7 +56,7 @@ return function(import)
        }
        return scripts[gameId]
     end
-    import('scripts/' .. tryGetScriptNameFromGameId(game.GameId) .. 'main')(Window) end
+    import('scripts/' .. tryGetScriptNameFromGameId(game.GameId) .. '.main')(Window) end
 
     Window:LoadConfiguration()
 end
