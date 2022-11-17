@@ -87,6 +87,11 @@ return function(Window)
         end))
     end
 
+    local function buildTeleportSection()
+        tab:CreateSection("Teleporting Options")
+        
+    end
+
     local function buildJoiningSection()
         tab:CreateSection("Joining options")
         tab:CreateButton{
@@ -98,5 +103,6 @@ return function(Window)
     end
 
     buildJoiningSection()
+    buildTeleportSection()
     buildFlySection()
 end

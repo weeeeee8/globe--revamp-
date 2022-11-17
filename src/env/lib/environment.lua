@@ -26,6 +26,7 @@ return function(import)
             Note = "Whitelisted key system",
             FileName = "key",
             GrabKeyFromSite = true,
+            SaveKey = true,
             Key = 'https://raw.githubusercontent.com/weeeeee8/globe--revamp-/main/src/key.txt',
         }
     }
