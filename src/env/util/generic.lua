@@ -2,6 +2,12 @@ local Players = game:GetService("Players")
 
 local generic = {}
 
+function generic.SafeDestroy(instance: Instance?)
+    if instance then
+        instance:Destroy()
+    end
+end
+
 function generic.GetPlayerBodyPart(bodyPartName)
     return if Players.LocalPlayer.Character then Players.LocalPlayer.Character:FindFirstChild(bodyPartName, true) else nil
 end

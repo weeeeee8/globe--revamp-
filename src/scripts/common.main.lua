@@ -6,13 +6,17 @@ local UserInputService = game:GetService("UserInputService")
 local generic = import('env/util/generic')
 
 return function(Window)
+    local playerMouse = Players.LocalPlayer:GetMouse()
+
     local tab = Window:CreateTab("Common", 4483364243)
     local function buildFlySection()
         tab:CreateSection("Fly Options")
 
+        local flightNoClipEnabled = false
         local flightEnabled = false
-        local flightSpeed = 1
+        local flightSpeed = 250
         local keycodeInputStates = generic.MakeSet(Enum.KeyCode.A, Enum.KeyCode.S, Enum.KeyCode.W, Enum.KeyCode.D):get()
+        local bodyvelocity, bodygyro
 
         local function getDirectionFromActiveStates()
             local dir = Vector3.zero
@@ -31,6 +35,36 @@ return function(Window)
             return dir
         end
 
+        local function modifyBodyMovers(rootPart, shouldDestroy)
+            if not shouldDestroy then
+                if not bodyvelocity then
+                    bodyvelocity = Instance.new("BodyVelocity")
+                    bodyvelocity.MaxForce = Vector3.one * math.huge
+                    bodyvelocity.P = 40000
+                    bodyvelocity.Name = "flyvel"
+                    bodyvelocity.Parent = rootPart
+                end
+
+                if not bodygyro then
+                    bodygyro = Instance.new("BodyGyro")
+                    bodygyro.MaxTorque = Vector3.one * math.huge
+                    bodygyro.P = 40000
+                    bodygyro.D = 200
+                    bodygyro.CFrame = workspace.CurrentCamera.CFrame
+                    bodygyro.Name = "flylook"
+                    bodygyro.Parent = rootPart
+                end
+            else
+                if bodygyro then
+                    bodygyro:Destroy()
+                end
+
+                if bodyvelocity then
+                    bodyvelocity:Destroy()
+                end
+            end
+        end
+
         tab:CreateInput{
             Name = "Flight Speed",
             PlaceholderText = "number",
@@ -38,6 +72,15 @@ return function(Window)
                 local num = tonumber(text) or 0
                 num = math.max(num, 0)
                 flightSpeed = num
+            end
+        }
+
+        tab:CreateToggle{
+            Name = "Enable Noclip while flight",
+            CurrentValue = true,
+            Flag = "FlightNoclip",
+            Callback = function(toggled)
+                flightNoClipEnabled = toggled
             end
         }
 
@@ -50,25 +93,38 @@ return function(Window)
         }
 
         RunService:BindToRenderStep("fly.update", Enum.RenderPriority.Character.Value, function(dt)
-            local head = generic.GetPlayerBodyPart("Head")
-            if not head then return end
-            head.Anchored = flightEnabled
+            local rootPart = generic.GetPlayerBodyPart('HumanoidRootPart')
+            if not rootPart then return end
             if flightEnabled then
-                local direction: Vector3 = getDirectionFromActiveStates() * flightSpeed * dt
-                local headCFrame = head.CFrame
-                local cameraCFrame = workspace.CurrentCamera.CFrame
-                local cameraOffset = head.CFrame:ToObjectSpace(cameraCFrame)
-                cameraCFrame = cameraCFrame * CFrame.new(-cameraOffset.X, -cameraOffset.Y, -cameraOffset.Z + 1)
-                local cameraPosition = cameraCFrame.Position
-                local headPosition = headCFrame.Position
-        
-                local objectSpaceVelocity = CFrame.new(cameraPosition, Vector3.new(headPosition.X, cameraPosition.Y, headPosition.Z)):VectorToObjectSpace(direction)
-                head.CFrame = CFrame.new(headPosition) * (cameraCFrame - cameraPosition) * CFrame.new(objectSpaceVelocity)
+                modifyBodyMovers(rootPart, false)
+                local direction: Vector3 = getDirectionFromActiveStates() * (flightSpeed + dt)
+                
+                if bodyvelocity then
+                    bodyvelocity.Velocity = direction
+                end
+
+                if bodygyro then
+                    bodygyro.CFrame = workspace.CurrentCamera
+                end
+            else
+                modifyBodyMovers(rootPart, true)
             end
         end)
 
+        Globe.Maid:GiveTask(RunService.Stepped:Connect(function()
+            if flightNoClipEnabled then
+                for _, bodypart in ipairs(Players.LocalPlayer.Character:GetChildren()) do
+                    if bodypart:IsA("BasePart") then
+                        bodypart.CanCollide = false
+                    end
+                end
+            end
+        end))
+
         Globe.Maid:GiveTask(function()
             RunService:UnbindFromRenderStep("fly.update")
+            generic.SafeDestroy(bodyvelocity)
+            generic.SafeDestroy(bodygyro)
         end)
 
         Globe.Maid:GiveTask(UserInputService.InputBegan:Connect(function(i, g)
@@ -89,7 +145,16 @@ return function(Window)
 
     local function buildTeleportSection()
         tab:CreateSection("Teleporting Options")
-        
+        tab:CreateKeybind{
+            Name = "Teleport to Mouse",
+            CurrentKeybind = "T",
+            Callback = function()
+                local rootPart = generic.GetPlayerBodyPart('HumanoidRootPart')
+                if rootPart then
+                    rootPart.Position = playerMouse.Hit.Position + (Vector3.yAxis * 2)
+                end
+            end
+        }
     end
 
     local function buildJoiningSection()
