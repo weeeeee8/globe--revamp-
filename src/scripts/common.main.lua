@@ -174,6 +174,7 @@ return function(Window)
             Callback = function(text: string)
                 local success, result: Player | string = targetPlayerAutofill.TryAutoFillFromInput(text)
                 if success then
+                    print(result)
                     targetPlayer = result
                     
                     if activePlayerRemovedConn then
