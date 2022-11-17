@@ -8,7 +8,7 @@ local generic = import('env/util/generic')
 return function(Window)
     local playerMouse = Players.LocalPlayer:GetMouse()
 
-    local function getPlayerFromInput(text)
+    local function getPlayerFromInput(input)
         local players = Players:GetPlayers()
         for i = #players, 1, -1 do
             if players[i].Name:sub(1, #input) == input or players[i].DisplayName:sub(1, #input) == input then
@@ -274,7 +274,7 @@ return function(Window)
         end
 
         tab:CreateInput{
-            Name = "Player to Teleport to",
+            Name = "Player to Spy",
             PlaceholderText = "Player DisplayName / Name",
             Callback = function(text: string)
                 local success, result: Player | string = playerSpyAutofill.TryAutoFillFromInput(text)
