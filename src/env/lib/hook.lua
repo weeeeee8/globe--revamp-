@@ -75,8 +75,8 @@ Hook.__index = Hook
 
 local hookfunction = assert(getfenv(0).hookfunction, "Hook is not supported on this exploit")
 
-local hooks = shared.__hooks or {}
-shared.__hooks = hooks
+local hooks = getgenv().__hooks or {}
+getgenv().__hooks = hooks
 
 
 function Hook.new(closure, callback)
@@ -97,7 +97,7 @@ function Hook.new(closure, callback)
     end
 
     local function call(...)
-        local hook = shared.__hooks[debug["getinfo"](1).func]
+        local hook = getgenv().__hooks[debug["getinfo"](1).func]
         hook._invoked:Fire(...)
         return hook._callback(...)
     end

@@ -17,7 +17,7 @@ return function(Window)
             'Orbital Strike'
         ):get()
 
-        local remoteHook; remoteHook = Hook.new(getrawmetatable(game).__namecall, function(self, ...)
+        local remoteHook; remoteHook = Hook.new(getrawmetatable(game).__namecall, newcclosure(function(self, ...)
             if not checkcaller() then
                 if validNameCalls[getnamecallmethod()] then
                     if (self == domagic) then
@@ -27,9 +27,9 @@ return function(Window)
             end
 
             return remoteHook:Call(self, ...)
-        end)
+        end))
 
-        local mouseHook; mouseHook = Hook.new(getrawmetatable(playerMouse).__index, function(self, key: string)
+        local mouseHook; mouseHook = Hook.new(getrawmetatable(playerMouse).__index, newcclosure(function(self, key: string)
             if not checkcaller() then
                 if isMouseHitOverriden then
                     if key:lower() == "hit" then
@@ -38,7 +38,7 @@ return function(Window)
                 end
             end
             return mouseHook:Call(self, key)
-        end)
+        end))
 
         local function buildSpellSection()
             tab:CreateSection('Spell Exploit Options')
