@@ -1260,6 +1260,134 @@ function RayfieldLibrary:CreateWindow(Settings)
 
 		local Tab = {}
 
+		function Tab:CreateColorPicker(colorpickerSettings)
+			colorpickerSettings.Type = "Colorpicker"
+			local ColorpickerSettings = {}
+			local colorChanged = Instance.new("BindableEvent")
+
+			local bg = Instance.new("ImageLabel")
+			bg.Name = "colorwheel"
+			bg.Image = 'rbxassetid://8018522123'
+			bg.BackgroundTransparency = 1
+			bg.Size = UDim2.fromOffset(250, 250)
+			bg.Parent = TabPage
+
+			local fg = Instance.new("ImageButton")
+			fg.ImageTransparency = 1
+			fg.Size = UDim2.fromScale(1, 1)
+			fg.BackgroundTransparency = 1
+			fg.Parent = wheelContainer
+
+			local hp = Instance.new("Frame")
+			hp.Name = "H"
+			hp.AnchorPoint = Vector2.new(0.5, 0.5)
+			hp.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			hp.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			hp.Position = UDim2.fromScale(0.5, 0.05)
+			hp.Size = UDim2.new(0, 2, 0.1, 0)
+			hp.ZIndex = 2
+
+			local svp = Instance.new("Frame")
+			svp.Name = "SV"
+			svp.AnchorPoint = Vector2.new(0.5, 0.5)
+			svp.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			svp.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			svp.BorderSizePixel = 2
+			svp.Position = UDim2.fromScale(0.25, 0.25)
+			svp.Size = UDim2.fromOffset(4, 4)
+			svp.ZIndex = 2
+			
+			local color = Color3.new(1, 0, 0)
+			local h, s, v = color:ToHSV()
+			local active, pressed, huewheel = false, false, false
+
+			local function corner2center(p: Vector2)
+				return p * 2 - Vector2.new(1, 1)
+			end
+			
+			local function center2corner(p: Vector2)
+				return p / 2 + Vector2.new(0.5, 0.5)
+			end
+
+			local function redraw()
+				color = Color3.fromHSV(h, s, v)
+				fg.ImageColor3 = Color3.fromHSV(h, 1, 1)
+				local ang = (h * math.pi) * 2 - math.pi / 2
+				local hpos = center2corner(Vector2.new(math.cos(ang), math.sin(ang)) * 0.9)
+				hp.Position = UDim2.new(hpos.X, 0, hpos.Y, 0)
+				hp.Rotation = h * 360
+				local svpos = center2corner(Vector2.new(s - 0.5, -v + 0.5))
+				svp.Position = UDim2.new(svpos.X, 0, svpos.Y, 0)
+				colorChanged:Fire(color)
+			end
+			
+			local function update(p: Vector2, lock: boolean?)
+				local base = fg.AbsolutePosition
+				local size = fg.AbsoluteSize
+				local rp = corner2center((p - base) / size)
+				local m = rp.Magnitude
+				if if lock then m < 0.8 else not huewheel then
+					-- mouse in inner circle
+					huewheel = false
+					s = math.clamp(rp.X + 0.5, 0, 1)
+					v = math.clamp(-rp.Y + 0.5, 0, 1)
+				elseif if lock then m < 1 else huewheel then
+					-- mouse in hue wheel
+					huewheel = true
+					h = (math.atan2(rp.Y, rp.X) + math.pi / 2) / (math.pi * 2) % 1
+				end
+				redraw()
+			end
+
+			local function init(newColor)
+				h, s, v = newColor:ToHSV()
+				redraw()
+			end
+			
+			Globe.Maid:GiveTask(function()
+				colorChanged:Destroy()
+			end)
+
+			Globe.Maid:GiveTask(UserInputService.InputBegan:Connect(function(io)
+				if io.UserInputType == Enum.UserInputType.MouseButton1 and active then
+					pressed = true
+					update(Vector2.new(io.Position.X, io.Position.Y), true)
+				end
+			end))
+
+			Globe.Maid:GiveTask(UserInputService.InputEnded:Connect(function(io)
+				if io.UserInputType == Enum.UserInputType.MouseButton1 then
+					pressed = false
+				end
+			end))
+
+			Globe.Maid:GiveTask(UserInputService.InputChanged:Connect(function(io)
+				if io.UserInputType == Enum.UserInputType.MouseMovement and pressed then
+					update(Vector2.new(io.Position.X, io.Position.Y))
+				end
+			end))
+
+			function ColorpickerSettings:Set(newColor)
+				init(newColor)
+			end
+
+			function ColorpickerSettings:OnChanged(fn)
+				return colorChanged.Event:Connect(fn)
+			end
+
+			if colorpickerSettings.CurrentColor then
+				init(colorpickerSettings.CurrentColor)
+			end
+
+			if Settings.ConfigurationSaving then
+				if Settings.ConfigurationSaving.Enabled and colorpickerSettings.Flag then
+					RayfieldLibrary.Flags[colorpickerSettings.Flag] = ColorpickerSettings
+				end
+			end
+
+			return ColorpickerSettings
+		end
+
 		-- Button
 		function Tab:CreateButton(ButtonSettings)
 			local ButtonValue = {}

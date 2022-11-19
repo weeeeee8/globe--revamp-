@@ -60,6 +60,23 @@ return function(Window)
     end
 
     local utilityTab = Window:CreateTab("Utility - Elemental Battlegrounds") do
+        local function buildCustomEspSection()
+            utilityTab:CreateSection('ESP')
+            
+            local trackedPlayers = {}
+            local showTrackBeam = false
+
+            local textFont = Drawing.Fonts.Monospace
+            local textSize = 14
+            local textColor = Color3.fromRGB(239, 137, 42)
+
+            local function instantiateLabel()
+                local label = Drawing.new('Text')
+            end
+
+            local colorPicker = utilityTab:CreateColorPicker{CurrentColor = Color3.fromRBG(220, 10, 0), Flag = "ESPLabelColor"}
+        end
+
         local function buildTechDiscSection()
             local connectionsHolder = generic.NewConnectionsHolder()
             local PlayerScripts = Players.LocalPlayer:WaitForChild("PlayerScripts")

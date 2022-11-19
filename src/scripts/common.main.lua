@@ -328,7 +328,7 @@ return function(Window)
 
         tab:CreateToggle{
             Name = "Autoexecute script hub",
-            CurrentValue = false,
+            CurrentValue = true,
             Callback = function(toggled)
                 shouldAutoExecute = toggled
             end
