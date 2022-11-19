@@ -1,7 +1,7 @@
 local Players = game:GetService("Players")
 
 return function(Window)
-    local generic = import('env/lib/generic')
+    local generic = import('env/util/generic')
     local Hook = import('env/lib/hook')
 
     local domagic, docmagic, clientdata, combat = generic.FindInstancesInReplicatedStorage('DoMagic', 'DoClientMagic', 'ClientData', 'Combat')
