@@ -891,7 +891,7 @@ function RayfieldLibrary:CreateWindow(Settings)
 	LoadingFrame.Visible = true
 	
 	
-	pcall(function()
+	xpcall(function()
 		if not Settings.ConfigurationSaving.FileName then
 			Settings.ConfigurationSaving.FileName = tostring(game.PlaceId)
 		end
@@ -913,7 +913,7 @@ function RayfieldLibrary:CreateWindow(Settings)
 				makefolder(ConfigurationFolder)
 			end	
 		end
-	end)
+	end, warn)
 
 	AddDraggingFunctionality(Topbar,Main)
 

@@ -16,6 +16,14 @@ function generic.NotifyUser(content: string, infoLevel: number)
     }
 end
 
+function generic.LenDictionary(dictionary)
+    local l = 0
+    table.foreach(dictionary, function()
+        l += 1
+    end)
+    return l
+end
+
 function generic.SafeDestroy(instance: Instance?)
     if instance then
         instance:Destroy()

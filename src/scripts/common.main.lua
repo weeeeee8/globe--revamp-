@@ -347,6 +347,9 @@ return function(Window)
                 local startHour = os.date("!*t").hour
                 local jobIds = {}
                 local foundLastCacheTime = pcall(readfile, SERVER_TIME_CACHE_FILENAME)
+                if not foundLastCacheTime then
+                    writefile(SERVER_TIME_CACHE_FILENAME, startHour)
+                end
                 local foundFileCache = pcall(readfile, SERVERS_CACHE_FILENAME)
                 if not foundFileCache then
                     writefile(SERVERS_CACHE_FILENAME, HttpService:JSONEncode(jobIds))
@@ -394,10 +397,12 @@ return function(Window)
                     if serverlist.nextPageCursor and serverlist.nextPageCursor ~= "null" and serverlist.nextPageCursor ~= nil then
                         lastServerCursor = serverlist.nextPageCursor
                     end
+                    local totalServers = generic.LenDictionary(serverlist.data)
                     for _, serverdata in pairs(serverlist.data) do
                         local id = serverdata.id
                         if tonumber(serverdata.maxPlayers) > tonumber(serverdata.playing) then
                             if not isCurrentIdExisting(id) then
+                                table.insert(jobIds, id)
                                 local event = Instance.new("BindableEvent")
                                 
                                 writefile(SERVERS_CACHE_FILENAME, HttpService:JSONEncode(jobIds))
@@ -410,6 +415,7 @@ return function(Window)
                                             generic.NotifyUser('Unable to teleport!', 3)
                                             pcall(delfile, SERVERS_CACHE_FILENAME)
                                             event:Fire()
+                                            writefile(SERVERS_CACHE_FILENAME, HttpService:JSONEncode({}))
                                             return
                                         end
 
@@ -422,7 +428,7 @@ return function(Window)
                                 event.Event:Wait()
                             end
                         end
-                        generic.NotifyUser('Unable to teleport!', 3)
+                        generic.NotifyUser('Scanned ' .. scanned .. "/" .. totalServers, 3)
                     end
                 end
 
