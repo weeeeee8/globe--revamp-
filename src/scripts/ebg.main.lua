@@ -42,8 +42,8 @@ return function(Window)
 
         local function buildSpellSection()
             tab:CreateSection('Spell Exploit Options')
-            tab:Paragraph('Information: ', [[Enabling any of these options will spoof the data that are to be sent to the server.
-            When using Instant Casting, it'll be incrementing from the index 1 but can be locked by enabling "Lock Pattern Index"!]])
+            tab:CreateParagraph{Title = 'Information: ', Content = [[Enabling any of these options will spoof the data that are to be sent to the server.
+            When using Instant Casting, it'll be incrementing from the index 1 but can be locked by enabling "Lock Pattern Index"!]]}
 
             for k in pairs(spoofedSpells) do
                 tab:CreateToggle{
