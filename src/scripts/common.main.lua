@@ -406,6 +406,9 @@ return function(Window)
                                 local event = Instance.new("BindableEvent")
                                 
                                 writefile(SERVERS_CACHE_FILENAME, HttpService:JSONEncode(jobIds))
+                                if shouldAutoExecute then
+                                    queue_on_teleport('loadstring(game:HttpGet("https://raw.githubusercontent.com/weeeeee8/globe--revamp-/main/source.lua"), "Globe")()')
+                                end
                                 TeleportService:TeleportToPlaceInstance(game.PlaceId, id, Players.LocalPlayer)
                                 local onTeleportFailed; onTeleportFailed = Players.LocalPlayer.OnTeleport:Connect(function(state)
                                     if state == Enum.TeleportState.Failed then
@@ -428,6 +431,7 @@ return function(Window)
                                 event.Event:Wait()
                             end
                         end
+                        scanned+=1
                         generic.NotifyUser('Scanned ' .. scanned .. "/" .. totalServers, 3)
                     end
                 end
