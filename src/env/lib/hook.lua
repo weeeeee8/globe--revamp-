@@ -130,12 +130,15 @@ end
 
 
 function Hook:__index(index)
+    local foundIndex = rawget(self, index)
     if (Hook[index]) then
-        return Hook[index]
+        return Hooks[index]
+    elseif (foundIndex) then
+        return foundIndex
     elseif (index == "Closure") then
-        return self._closure
+        return rawget(self, '_closure')
     elseif (index == "Callback") then
-        return self._callback
+        return rawget(self, '_callback')
     else
         error("Attempt to index a nil value (Hook." .. tostring(index) .. ")")
     end
@@ -145,7 +148,7 @@ end
 function Hook:__newindex(index, value)
     if (index == "Callback") then
         assert(type(value) == "function" or value == nil, "Field 'Callback' must be a function or nil")
-        self._callback = (value or self._closure)
+        rawset(self, '_callback', value or self._closure)
     elseif (index == "Closure") then
         error("Attempt to set read-only value (Hook.Closure)")
     else
