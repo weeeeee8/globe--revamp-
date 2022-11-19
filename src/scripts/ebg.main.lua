@@ -44,12 +44,53 @@ return function(Window)
             tab:CreateSection('Spell Exploit Options')
             tab:Paragraph('Information: ', [[Enabling any of these options will spoof the data that are to be sent to the server.
             When using Instant Casting, it'll be incrementing from the index 1 but can be locked by enabling "Lock Pattern Index"!]])
+
+            for k in pairs(spoofedSpells) do
+                tab:CreateToggle{
+                    Name = "Spoof " .. k,
+                    CurrentValue = false,
+                    Callback = function(toggled)
+                        spoofedSpells[k] = toggled
+                    end,
+                }
+            end
         end
 
-        buildSpellSpoofSection()
+        buildSpellSection()
     end
 
-    local utility = Window:CreateTab("Utility - Elemental Battlegrounds") do
-        
+    local utilityTab = Window:CreateTab("Utility - Elemental Battlegrounds") do
+        local function buildTechDiscSection()
+            local connectionsHolder = generic.NewConnectionsHolder()
+            local PlayerScripts = Players.LocalPlayer:WaitForChild("PlayerScripts")
+            local ClientEffectsFolder = workspace:WaitForChild('.Ignore'):WaitForChild('.LocalEffects')
+
+            utilityTab:CreateSection('Disable Techlag (Technology Light Disk Bug) State')
+            utilityTab:CreateToggle{
+                Name = "Enabled",
+                CurrentValue = true,
+                Callback = function(toggled)
+                    if toggled then
+                        connectionsHolder:Insert(PlayerScripts.ChildAdded:Connect(function(c)
+                            if c.Name:lower() == "DiscScript" then
+                                task.delay(0.07, c.Destroy, c)
+                            end
+                        end))
+                        connectionsHolder:Insert(ClientEffectsFolder.ChildAdded:Connect(function(c)
+                            if c.Name:lower() == "LightDisc" or c.Name:lower() == "DeadlyDisc" then
+                                task.delay(0.07, c.Destroy, c)
+                            end
+                        end))
+                    else
+                        connectionsHolder:DisconnectAll()
+                    end
+                end
+            }
+            Globe.Maid:GiveTask(function()
+                connectionsHolder:Destroy()
+            end)
+        end
+
+        buildTechDiscSection()
     end
 end
