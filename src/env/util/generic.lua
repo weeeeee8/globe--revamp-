@@ -31,7 +31,7 @@ function generic.SafeDestroy(instance: Instance?)
     end
 end
 
-function generic.FindInstanceInReplicatedStorage(...)
+function generic.FindInstancesInReplicatedStorage(...)
     local outputs = {}
     for _, k in ipairs({...}) do
         table.insert(outputs, ReplicatedStorage:FindFirstChild(k, true))
@@ -41,6 +41,29 @@ end
 
 function generic.GetPlayerBodyPart(bodyPartName)
     return if Players.LocalPlayer.Character then Players.LocalPlayer.Character:FindFirstChild(bodyPartName, true) else nil
+end
+
+function generic.NewConnectionsHolder()
+    local connections = {}
+    return {
+        Insert = function(self, connection)
+            connections[#connections+1] = connection
+        end,
+        Remove = function(self, index)
+            connections[index]:Disconnect()
+            connections[index] = nil
+        end,
+        DisconnectAll = function()
+            for _, conn in ipairs(connections) do
+                conn:Disconnect()
+            end
+            table.clear(connections)
+        end,
+        Destroy = function(self)
+            self:DisconnectAll()
+            connections = nil
+        end
+    }
 end
 
 function generic.NewAutofill(name: string, template: {string} | (input: string) -> any?)
