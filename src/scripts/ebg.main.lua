@@ -109,5 +109,6 @@ return function(Window)
         end
 
         buildTechDiscSection()
+        buildCustomEspSection()
     end
 end
