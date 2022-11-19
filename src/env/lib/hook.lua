@@ -99,7 +99,7 @@ function Hook.new(name, closure, callback)
     end
 
     local function call(...)
-        local hook = hooks[debug.getinfo(1).func]
+        local hook = hooks[name]
         hook._invoked:Fire(...)
         return hook._callback(...)
     end
