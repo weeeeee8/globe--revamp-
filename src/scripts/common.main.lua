@@ -348,7 +348,7 @@ return function(Window)
                 local jobIds = {}
                 local foundLastCacheTime = pcall(readfile, SERVER_TIME_CACHE_FILENAME)
                 if not foundLastCacheTime then
-                    writefile(SERVER_TIME_CACHE_FILENAME, startHour)
+                    writefile(SERVER_TIME_CACHE_FILENAME, tostring(startHour))
                 end
                 local foundFileCache = pcall(readfile, SERVERS_CACHE_FILENAME)
                 if not foundFileCache then
