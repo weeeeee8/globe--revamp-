@@ -71,7 +71,9 @@
 
 
 local Hook = {}
-Hook.__index = Hook
+Hook.__index = function(self, key)
+    return if Hook[key] then Hook[key] else rawget(self, key)
+end
 
 local hookfunction = assert(getfenv(0).hookfunction, "Hook is not supported on this exploit")
 
