@@ -17,7 +17,7 @@ return function(Window)
             'Orbital Strike'
         ):get()
 
-        local remoteHook; remoteHook = Hook.new(getrawmetatable(game).__namecall, newcclosure(function(self, ...)
+        local remoteHook; remoteHook = Hook.new('ebg.remotenamecall', getrawmetatable(game).__namecall, newcclosure(function(self, ...)
             if not checkcaller() then
                 if validNameCalls[getnamecallmethod()] then
                     if (self == domagic) then
@@ -29,7 +29,7 @@ return function(Window)
             return remoteHook:Call(self, ...)
         end))
 
-        local mouseHook; mouseHook = Hook.new(getrawmetatable(playerMouse).__index, newcclosure(function(self, key: string)
+        local mouseHook; mouseHook = Hook.new('ebg.mousehook', getrawmetatable(playerMouse).__index, newcclosure(function(self, key: string)
             if not checkcaller() then
                 if isMouseHitOverriden then
                     if key:lower() == "hit" then

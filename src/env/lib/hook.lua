@@ -81,7 +81,7 @@ local hooks = getgenv().__hooks or {}
 getgenv().__hooks = hooks
 
 
-function Hook.new(closure, callback)
+function Hook.new(name, closure, callback)
 
     do
         -- Verify arguments:
@@ -89,11 +89,11 @@ function Hook.new(closure, callback)
         assert(type(callback) == "function" or callback == nil, "Second argument 'callback' must be a function or nil")
     
         -- Check for pre-existing hook:
-        if (hooks[closure]) then
+        if (hooks[name]) then
             if (callback) then
-                hooks[closure]._callback = callback
+                hooks[name]._callback = callback
             end
-            return hooks[closure]
+            return hooks[name]
         end
 
     end
@@ -115,7 +115,7 @@ function Hook.new(closure, callback)
     self.Callback = callback
     self.Closure = self._closure
 
-    hooks[closure] = self
+    hooks[name] = self
     --hooks[call] = self
 
     return self
