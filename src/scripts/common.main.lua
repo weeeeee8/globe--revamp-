@@ -275,14 +275,14 @@ return function(Window)
             end
         end
 
-        tab:CreateInput{
+        local input; input = tab:CreateInput{
             Name = "Player to Spy",
             PlaceholderText = "Player DisplayName / Name",
             Callback = function(text: string)
                 local success, result: Player | string = playerSpyAutofill.TryAutoFillFromInput(text)
                 
                 if activePlayerRemovedConn then
-                    activePlayerRemovedConn:Disconnected()
+                    activePlayerRemovedConn:Disconnect()
                     activePlayerRemovedConn = nil
                 end
 
@@ -290,14 +290,18 @@ return function(Window)
                     setCameraSubjectTo(result)
         
                     activePlayerRemovedConn = result.Destroying:Once(function()
-                        setCameraSubjectTo(Players.LocalPlayer)
-                        generic.NotifyUser(string.format('Player "%s" has left the experience, disconnecting camera spy bindings...', result.Name), 1)
-                        activePlayerRemovedConn:Disconnect()
-                        activePlayerRemovedConn = nil
+                        input:Set('', true)
                     end)
                 else
                     setCameraSubjectTo(Players.LocalPlayer)
                 end
+            end
+        }
+
+        tab:CreateButton{
+            Name = "Clear field",
+            Callback = function()
+                input:Set('', true)
             end
         }
 

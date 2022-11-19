@@ -1415,6 +1415,8 @@ function RayfieldLibrary:CreateWindow(Settings)
 
 		-- Input
 		function Tab:CreateInput(InputSettings)
+			local InputValue = {}
+
 			local Input = Elements.Template.Input:Clone()
 			Input.Name = InputSettings.Name
 			Input.Title.Text = InputSettings.Name
@@ -1468,6 +1470,30 @@ function RayfieldLibrary:CreateWindow(Settings)
 			Input.InputFrame.InputBox:GetPropertyChangedSignal("Text"):Connect(function()
 				TweenService:Create(Input.InputFrame, TweenInfo.new(0.55, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, Input.InputFrame.InputBox.TextBounds.X + 24, 0, 30)}):Play()
 			end)
+
+			function InputValue:Set(text, runCallback)
+				Input.InputFrame.InputBox.Text = text
+
+				if runCallback then
+					if getgenv().DisableAllInteractions then return end
+					local Success, Response = pcall(function()
+						InputSettings.Callback(text)
+					end)
+
+					if not Success then
+						TweenService:Create(Input, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
+						TweenService:Create(Input.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 1}):Play()
+						Input.Title.Text = "Callback Error"
+						print("Rayfield | "..InputSettings.Name.." Callback Error " ..tostring(Response))
+						task.wait(0.5)
+						Input.Title.Text = InputSettings.Name
+						TweenService:Create(Input, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {BackgroundColor3 = SelectedTheme.ElementBackground}):Play()
+						TweenService:Create(Input.UIStroke, TweenInfo.new(0.6, Enum.EasingStyle.Quint), {Transparency = 0}):Play()
+					end
+				end
+			end
+
+			return InputValue
 		end
 
 		-- Dropdown
