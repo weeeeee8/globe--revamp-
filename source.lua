@@ -3,4 +3,4 @@ local import = loadstring(game:HttpGet('https://raw.githubusercontent.com/weeeee
 import:CreateDirectory('env/lib')
 import:CreateDirectory('env/util')
 import:CreateDirectory('scripts')
-import('env/lib/environment')(import) -- start up our base environment
+import('env/lib/main')(import) -- start up our base

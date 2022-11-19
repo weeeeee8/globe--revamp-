@@ -1,4 +1,5 @@
 local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local rayfield = import('env/rayfield')
 
@@ -28,6 +29,14 @@ function generic.SafeDestroy(instance: Instance?)
     if instance then
         instance:Destroy()
     end
+end
+
+function generic.FindInstanceInReplicatedStorage(...)
+    local outputs = {}
+    for _, k in ipairs({...}) do
+        table.insert(outputs, ReplicatedStorage:FindFirstChild(k, true))
+    end
+    return unpack(outputs)
 end
 
 function generic.GetPlayerBodyPart(bodyPartName)
