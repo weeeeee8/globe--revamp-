@@ -100,23 +100,15 @@ function Hook.new(name, closure, callback)
 
     local function call(...)
         local hook = hooks[name]
-        hook._invoked:Fire(...)
         return hook._callback(...)
     end
 
-    local invoked = Instance.new("BindableEvent")
-
     local self = setmetatable({
-        Invoked = invoked.Event;
-        _invoked = invoked;
         _callback = callback;
         _closure = hookfunction(closure, call);
     }, Hook)
-    self.Callback = callback
-    self.Closure = self._closure
 
     hooks[name] = self
-    --hooks[call] = self
 
     return self
 
