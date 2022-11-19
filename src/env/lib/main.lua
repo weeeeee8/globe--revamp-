@@ -3,7 +3,6 @@ return function(import)
 
     local environment = assert(getgenv, "Cannot find global 'getgenv'. Your executor might not be supported!")()
     if environment.import then
-        environment.import:Clean()
         environment.import = nil
     end
     environment.import = import
