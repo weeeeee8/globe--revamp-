@@ -432,7 +432,7 @@ return function(Window)
                             end
                         end
                         scanned+=1
-                        generic.NotifyUser('Scanned ' .. scanned .. "/" .. totalServers, 3)
+                        generic.NotifyUser('Scanned ' .. scanned .. "/" .. totalServers, 1)
                     end
                 end
 
