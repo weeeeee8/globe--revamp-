@@ -895,8 +895,11 @@ function RayfieldLibrary:CreateWindow(Settings)
 		if not Settings.ConfigurationSaving.FileName then
 			Settings.ConfigurationSaving.FileName = tostring(game.PlaceId)
 		end
+		if not isfolder(RayfieldFolder) then
+			makefolder(RayfieldFolder)
+		end
 		if not isfolder(RayfieldFolder.."/".."Configuration Folders") then
-			
+			makefolder(RayfieldFolder.."/".."Configuration Folders")
 		end
 		if Settings.ConfigurationSaving.Enabled == nil then
 			Settings.ConfigurationSaving.Enabled = false
