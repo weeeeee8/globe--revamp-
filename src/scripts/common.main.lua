@@ -401,7 +401,7 @@ return function(Window)
                     if serverlist.nextPageCursor and serverlist.nextPageCursor ~= "null" and serverlist.nextPageCursor ~= nil then
                         lastServerCursor = serverlist.nextPageCursor
                     end
-                    
+
                     local totalServers = generic.LenDictionary(serverlist.data)
                     generic.NotifyUser('Scanning a total of ' .. totalServers .. ' servers...', 1)
                     for _, serverdata in pairs(serverlist.data) do
@@ -439,6 +439,8 @@ return function(Window)
                         end
                         scanned+=1
                         generic.NotifyUser('Scanned ' .. scanned .. "/" .. totalServers, 1)
+                        
+                        task.wait(1)
                     end
                 end
 
