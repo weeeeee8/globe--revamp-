@@ -401,7 +401,9 @@ return function(Window)
                     if serverlist.nextPageCursor and serverlist.nextPageCursor ~= "null" and serverlist.nextPageCursor ~= nil then
                         lastServerCursor = serverlist.nextPageCursor
                     end
+                    
                     local totalServers = generic.LenDictionary(serverlist.data)
+                    generic.NotifyUser('Scanning a total of ' .. totalServers .. ' servers...', 1)
                     for _, serverdata in pairs(serverlist.data) do
                         local id = serverdata.id
                         if tonumber(serverdata.maxPlayers) > tonumber(serverdata.playing) then
