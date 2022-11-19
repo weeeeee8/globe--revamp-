@@ -346,12 +346,12 @@ return function(Window)
             Callback = function()
                 local startHour = os.date("!*t").hour
                 local jobIds = {}
-                local foundLastCacheTime = pcall(readfile, SERVER_TIME_CACHE_FILENAME)
-                if not foundLastCacheTime then
+                local success1, foundLastCacheTime = pcall(readfile, SERVER_TIME_CACHE_FILENAME)
+                if not success1 then
                     writefile(SERVER_TIME_CACHE_FILENAME, tostring(startHour))
                 end
-                local foundFileCache = pcall(readfile, SERVERS_CACHE_FILENAME)
-                if not foundFileCache then
+                local success2, foundFileCache = pcall(readfile, SERVERS_CACHE_FILENAME)
+                if not success2 then
                     writefile(SERVERS_CACHE_FILENAME, HttpService:JSONEncode(jobIds))
                 else
                     jobIds = HttpService:JSONDecode(foundFileCache)
