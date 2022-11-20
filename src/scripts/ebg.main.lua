@@ -32,8 +32,15 @@ return function(Window)
         local isMouseHitOverriden = false
         local overridenMouseCFrame = playerMouse.Hit
         local spoofedSpells = generic.MakeSet(
+            'Lightning Flash',
             'Lightning Barrage',
-            'Orbital Strike'
+            'Orbs of Enlightenment',
+            'Orbital Strike',
+            'Refraction',
+            'Water Beam',
+            'Splitting Slime',
+            'Illusive Atake',
+            'Blaze Column'
         ):get()
 
         local remoteHook; remoteHook = Hook.new('ebg.remotenamecall', getrawmetatable(game).__namecall, newcclosure(function(self, ...)
