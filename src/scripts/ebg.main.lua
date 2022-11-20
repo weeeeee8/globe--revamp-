@@ -191,7 +191,7 @@ return function(Window)
         end
 
         local function buildAdvancedTargetingSection()
-            tab:CreateSection('Advanced Targeting Options')
+            utilityTab:CreateSection('Advanced Targeting Options')
         end
 
         local function buildPunchAuraSection()
