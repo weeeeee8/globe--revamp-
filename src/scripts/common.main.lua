@@ -380,7 +380,7 @@ return function(Window)
                     local foundHumanoidRootPart = if player.Character then player.Character:FindFirstChild("HumanoidRootPart") else nil
                     if foundHumanoidRootPart then
                         local rootPart = generic.GetPlayerBodyPart('HumanoidRootPart')
-                        local vector, isInScreen = workspace.CurrentCamera:WorldToViewportPoint()
+                        local vector, isInScreen = workspace.CurrentCamera:WorldToViewportPoint(foundHumanoidRootPart.Position)
                         if rootPart and isInScreen then
                             if not label.Visible then
                                 label.Visible = true

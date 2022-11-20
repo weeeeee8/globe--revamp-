@@ -1273,7 +1273,6 @@ function RayfieldLibrary:CreateWindow(Settings)
 			bg.Parent = TabPage
 
 			local fg = Instance.new("ImageButton")
-			fg.ImageTransparency = 1
 			fg.Size = UDim2.fromScale(1, 1)
 			fg.BackgroundTransparency = 1
 			fg.ZIndex = 2
@@ -1325,7 +1324,7 @@ function RayfieldLibrary:CreateWindow(Settings)
 				local svpos = center2corner(Vector2.new(s - 0.5, -v + 0.5))
 				svp.Position = UDim2.new(svpos.X, 0, svpos.Y, 0)
 				colorChanged:Fire(color)
-				label:Set(string.format('Current Color:<%i, %i, %i>', color.R, color.G, color.B))
+				label:Set(string.format('Current Color:<%i, %i, %i>', color.R * 255, color.G * 255, color.B * 255))
 			end
 			
 			local function updateColor(p: Vector2, lock: boolean?)

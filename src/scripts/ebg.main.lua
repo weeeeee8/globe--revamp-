@@ -43,7 +43,7 @@ return function(Window)
             'Blaze Column'
         ):get()
 
-        local remoteHook; remoteHook = Hook.new('ebg.remotenamecall', getrawmetatable(game).__namecall, newcclosure(function(self, ...)
+        local remoteHookOld; remoteHookOld = hookmetamethod(game, '__namecall', function(self, ...)
             if not checkcaller() then
                 if validNameCalls[getnamecallmethod()] then
                     if (self == domagic) then
@@ -83,7 +83,7 @@ return function(Window)
                                 fakeArgs[3] = newArgs
                             end
                             
-                            return remoteHook:Call(self, unpack(fakeArgs))
+                            return remoteHookOld(self, unpack(fakeArgs))
                         else
                             local fakeArgs = {unpack(realArgs)}
                             if SpellName == "Lightning Flash" then
@@ -105,7 +105,7 @@ return function(Window)
                                 end
                             end
                             
-                            return remoteHook:Call(self, unpack(fakeArgs))
+                            return remoteHookOld(self, unpack(fakeArgs))
                         end
                     elseif (self == docmagic) then
                     elseif (self == clientdata) then
@@ -113,13 +113,17 @@ return function(Window)
                         local tbl = HttpService.JSONDecode(HttpService, realArgs[1])
                         tbl.Cooldowns = {}
                         tbl = HttpService.JSONEncode(HttpService, tbl)
-                        return remoteHook:Call(self, tbl)
+                        return remoteHookOld(self, tbl)
                     end
                 end
             end
 
-            return remoteHook:Call(self, ...)
-        end))
+            return remoteHookOld(self, ...)
+        end)
+
+        Globe.Maid:GiveTask(function()
+            hookmetamethod(game, '__namecall', remoteHookOld)
+        end)
 
         local mouseHook; mouseHook = Hook.new('ebg.mousehook', getrawmetatable(playerMouse).__index, newcclosure(function(self, key: string)
             if not checkcaller() then
