@@ -23,7 +23,7 @@ return function(Window)
     
     local playerNameFill = generic.NewAutofill("Name Fill", getPlayerFromInput)
 
-    local tab = Window:CreateTab("Common", 4483364243)
+    local tab = Window:CreateTab("Common")
     local function buildFlySection()
         tab:CreateSection("Fly Options")
 

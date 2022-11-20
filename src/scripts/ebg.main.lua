@@ -93,7 +93,7 @@ return function(Window)
                                     lastPos = if isMouseHitOverriden or playerMouse.Target then playerMouse.Hit.Position + Vector3.new(0, 2, 0) else realArgs[3].lastPos
                                 }
                             elseif SpellName == "Murky Missiles" then
-                                fakeArgs[3] {
+                                fakeArgs[3] = {
                                     lastMousePosition = if isMouseHitOverriden or playerMouse.Target then CFrame.new(playerMouse.Hit.Position + Vector3.new(0, 2, 0)) else realArgs[3].lastMousePosition
                                 }
                             elseif SpellName == "Sewer Burst" then
@@ -101,8 +101,8 @@ return function(Window)
                                 fakeArgs[3] = {
                                     Mouse = mousePosition,
                                     Camera = mousePosition - Vector3.new(0, 4, 0),
-                                    Spawn = mousePosition,
-                                    Origin = mousePosition
+                                    Spawn = CFrame.new(mousePosition),
+                                    Origin = CFrame.new(mousePosition)
                                 }
                             end
                             
