@@ -44,7 +44,7 @@ return function(Window)
 
         local remoteHookOld; remoteHookOld = hookmetamethod(game, '__namecall', function(self, ...)
             if not checkcaller() then
-                if getnamecallmethod() == "FireServer" or getnamecallmethod() == "InvokeServer" then
+                if getnamecallmethod() == "InvokeServer" then
                     if (self == domagic) then
                         local realArgs = {...}
                         local SpellName = tostring(realArgs[2])
@@ -82,7 +82,7 @@ return function(Window)
                             end
                             
                             return remoteHookOld(self, unpack(fakeArgs))
-                        --[[else
+                        [[else
                             local fakeArgs = {unpack(realArgs)}
                             if SpellName == "Lightning Flash" then
                                 if isMouseHitOverriden then
@@ -105,6 +105,8 @@ return function(Window)
                             
                             return remoteHookOld(self, unpack(fakeArgs))]]
                         end
+                    end
+                if getnamecallmethod() == "FireServer" then
                     elseif (self == docmagic) then
                     elseif (self == clientdata) then
                         local realArgs = {...}
