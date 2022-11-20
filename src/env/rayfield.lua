@@ -18,6 +18,7 @@ local ConfigurationExtension = ".txt"
 
 local HideGuiKey = Enum.KeyCode.F3
 
+local conns = {}
 
 
 local RayfieldLibrary = {
@@ -1353,7 +1354,15 @@ function RayfieldLibrary:CreateWindow(Settings)
 			end
 			
 			Globe.Maid:GiveTask(function()
-				colorChanged:Destroy()
+				colorChanged:Destroy()2
+			end)
+
+			fg.MouseEnter:Connect(function()
+				active = true
+			end)
+
+			fg.MouseLeave:Connect(function()
+				active = false
 			end)
 
 			Globe.Maid:GiveTask(UserInputService.InputBegan:Connect(function(io)
@@ -2259,6 +2268,10 @@ end
 
 function RayfieldLibrary:Destroy()
 	Rayfield:Destroy()
+	for _, c in ipairs(conns) do
+		c:Disconnect()
+	end
+	table.clear(c)
 end
 
 Topbar.ChangeSize.MouseButton1Click:Connect(function()
