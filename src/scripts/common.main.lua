@@ -653,4 +653,5 @@ return function(Window)
     buildFlySection()
     buildCameraSpySection()
     buildCustomEspSection()
+    buildAnimatorModifierSection()
 end
