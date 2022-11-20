@@ -9,7 +9,9 @@ return function(import)
     environment.SecureMode = true
     
     if environment.Globe then
-        environment.Globe:Exit()
+        pcall(function()
+            environment.Globe:Exit()
+        end)
         environment.Globe = nil
     end
 
@@ -58,6 +60,6 @@ return function(import)
         end
         import('scripts/' .. tryGetScriptNameFromGameId(game.GameId) .. '.main')(Window) end
     end, warn)
-    
+
     rayfield:LoadConfiguration()
 end
