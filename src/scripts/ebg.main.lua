@@ -436,11 +436,19 @@ return function(Window)
                 end
             end
 
-            utilityTab:CreateToggle{
+            local toggle = utilityTab:CreateToggle{
                 Name = "Enable Punch Aura",
                 Callback = function(toggled)
                     auraEnabled = toggled
                 end,
+            }
+
+            utilityTab:CreateKeybind{
+                Name = "Toggle bind",
+                CurrentKeybind = "Z",
+                Callback = function()
+                    toggle:Set(not toggle)
+                end
             }
 
             utilityTab:CreateInput{
