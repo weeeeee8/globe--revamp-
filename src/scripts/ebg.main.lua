@@ -290,6 +290,8 @@ return function(Window)
                             generic.NotifyUser(string.format("[Targeting] %s has left the server, no active target!", foundPlayer.Name), 2)
                             targetPlayer = nil
                         end)
+
+                        generic.NotifyUser(string.format("[Targeting] %s is currently being targeted! (Locked targeting option)", foundPlayer.Name), 2)
                         targetPlayer = foundPlayer
                     else
                         if listenOnRemovingTargetPlayer then
@@ -400,20 +402,16 @@ return function(Window)
                         end
                     end
 
-                    local mousePosition
+                    local mousePosition = Vector3.zero
                     if foundRootPart then
+                        print(1)
                         local mouseLoc = UserInputService:GetMouseLocation()
                         local cameraRay = workspace.CurrentCamera:ViewportPointToRay(mouseLoc.X, mouseLoc.Y)
                         mousePosition = calculateTrajectory.SolveTrajectory(cameraRay.Origin, foundRootPart.AssemblyLinearVelocity.Magnitude, foundRootPart.Position, foundRootPart.AssemblyLinearVelocity, true, 1)
                     end
 
-                    if mousePosition then
-                        isMouseHitOverriden = true
-                        overridenMouseCFrame = CFrame.new(mousePosition)
-                        print(1)
-                    else
-                        isMouseHitOverriden = false
-                    end
+                    isMouseHitOverriden = true
+                    overridenMouseCFrame = CFrame.new(mousePosition)
                 else
                     isMouseHitOverriden = false
                 end
