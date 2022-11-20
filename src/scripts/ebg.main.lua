@@ -43,7 +43,9 @@ return function(Window)
             'Water Beam',
             'Splitting Slime',
             'Illusive Atake',
-            'Blaze Column'
+            'Blaze Column',
+            'Amaurotic Lambent',
+            'Gravital Globe'
         ):override(function() return false end):get()
 
         local remoteHookOld; remoteHookOld = hookmetamethod(game, '__namecall', function(self, ...)
@@ -83,6 +85,10 @@ return function(Window)
                                     Coordinates = c
                                 }
                                 fakeArgs[3] = newArgs
+                            elseif SpellName == "Amaurotic Lambent" or SpellName == "Gravital Globe" then
+                                fakeArgs[3] = {
+                                    lastPos = if isMouseHitOverriden or playerMouse.Target then playerMouse.Hit.Position + Vector3.new(0, 2, 0) else realArgs[3].Origin
+                                }
                             end
                             
                             return remoteHookOld(self, unpack(fakeArgs))
@@ -350,6 +356,7 @@ return function(Window)
                 CurrentOption = 'Locked',
                 Flag = 'SavedTargetingType',
                 Callback = function(option)
+                    print(option)
                     targetType = option
                 end
             }
@@ -357,16 +364,16 @@ return function(Window)
             Globe.Maid:GiveTask(RunService.Stepped:Connect(function(_, dt)
                 if targetingEnabled then
                     local foundRootPart
-                    if targetType == 1 then
+                    if targetType == 'Locked' then
                         if targetPlayer then
                             foundRootPart = if targetPlayer.Character then targetPlayer.Character:FindFirstChild("HumanoidRootPart") else nil
                         end
-                    elseif targetType == 2 then
+                    elseif targetType == 'Mouse' then
                         local foundPlayer = findNearestPlayerFromPosition(generic.GetMousePositionFromHook())
                         if foundPlayer then
                             foundRootPart = if foundPlayer.Character then foundPlayer.Character:FindFirstChild("HumanoidRootPart") else nil
                         end
-                    elseif targetType == 3 then
+                    elseif targetType == 'Character' then
                         local rootPart = generic.GetPlayerBodyPart("HumanoidRootPart")
                         if rootPart then
                             local foundPlayer = findNearestPlayerFromPosition(rootPart.Position)
