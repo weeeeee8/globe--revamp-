@@ -135,7 +135,7 @@ return function(Window)
             hookmetamethod(game, '__namecall', remoteHookOld)
         end)
 
-        local mouseHook; mouseHook = Hook.new('ebg.mousehook', getrawmetatable(playerMouse).__index, newcclosure(function(self, key: string)
+        local mouseHook; mouseHook = Hook.new('ebg.mousehook', getrawmetatable(playerMouse).__index, function(self, key: string)
             if not checkcaller() then
                 if isMouseHitOverriden then
                     print(key)
@@ -145,7 +145,7 @@ return function(Window)
                 end
             end
             return mouseHook:Call(self, key)
-        end))
+        end)
 
         local function buildSpellSection()
             mainTab:CreateSection('Spell Exploit Options')
