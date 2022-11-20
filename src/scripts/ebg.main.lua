@@ -358,19 +358,19 @@ return function(Window)
                 local foundRootPart
                 if targetType == "locked" then
                     if targetPlayer then
-                        foundRootPart = if targetPlayer.Charater then targetPlayer.Charater:FindFirstChild("HumanoidRootPart") else nil
+                        foundRootPart = if targetPlayer.Charater then targetPlayer.Character:FindFirstChild("HumanoidRootPart") else nil
                     end
                 elseif targetType == 'mouse' then
                     local foundPlayer = findNearestPlayerFromPosition(generic.GetMousePositionFromHook())
                     if foundPlayer then
-                        foundRootPart = if foundPlayer.Charater then foundPlayer.Charater:FindFirstChild("HumanoidRootPart") else nil
+                        foundRootPart = if foundPlayer.Charater then foundPlayer.Character:FindFirstChild("HumanoidRootPart") else nil
                     end
                 elseif targetType == 'character' then
                     local rootPart = generic.GetPlayerBodyPart("HumanoidRootPart")
                     if rootPart then
                         local foundPlayer = findNearestPlayerFromPosition(rootPart.Position)
                         if foundPlayer then
-                            foundRootPart = if foundPlayer.Charater then foundPlayer.Charater:FindFirstChild("HumanoidRootPart") else nil
+                            foundRootPart = if foundPlayer.Charater then foundPlayer.Character:FindFirstChild("HumanoidRootPart") else nil
                         end
                     end
                 end
