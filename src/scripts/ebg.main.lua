@@ -66,7 +66,6 @@ return function(Window)
             
             local espEnabled = false
             local trackedPlayers = {}
-            local showTrackBeam = false
 
             local textFont = Drawing.Fonts.Monospace
             local textSize = 14
