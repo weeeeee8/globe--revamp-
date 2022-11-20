@@ -1275,6 +1275,7 @@ function RayfieldLibrary:CreateWindow(Settings)
 			fg.ImageTransparency = 1
 			fg.Size = UDim2.fromScale(1, 1)
 			fg.BackgroundTransparency = 1
+			fg.ZIndex = 2
 			fg.Parent = bg
 
 			local hp = Instance.new("Frame")
