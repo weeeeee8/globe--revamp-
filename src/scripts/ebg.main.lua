@@ -383,35 +383,35 @@ return function(Window)
             Globe.Maid:GiveTask(RunService.Stepped:Connect(function(_, dt)
                 if targetingEnabled then
                     local foundRootPart
-                    if targetType == 'Locked' then
-                        print(targetPlayer, targetPlayer.Character)
-                        if targetPlayer then
-                            foundRootPart = if targetPlayer.Character then targetPlayer.Character:FindFirstChild("HumanoidRootPart") else nil
-                        end
-                    elseif targetType == 'Mouse' then
-                        local foundPlayer = findNearestPlayerFromPosition(generic.GetMousePositionFromHook())
-                        if foundPlayer then
-                            foundRootPart = if foundPlayer.Character then foundPlayer.Character:FindFirstChild("HumanoidRootPart") else nil
-                        end
-                    elseif targetType == 'Character' then
-                        local rootPart = generic.GetPlayerBodyPart("HumanoidRootPart")
-                        if rootPart then
+                    local rootPart = generic.GetPlayerBodyPart("HumanoidRootPart")
+                    if rootPart then
+                        if targetType == 'Locked' then
+                            print(targetPlayer, targetPlayer.Character)
+                            if targetPlayer then
+                                foundRootPart = if targetPlayer.Character then targetPlayer.Character:FindFirstChild("HumanoidRootPart") else nil
+                            end
+                        elseif targetType == 'Mouse' then
+                            local foundPlayer = findNearestPlayerFromPosition(generic.GetMousePositionFromHook())
+                            if foundPlayer then
+                                foundRootPart = if foundPlayer.Character then foundPlayer.Character:FindFirstChild("HumanoidRootPart") else nil
+                            end
+                        elseif targetType == 'Character' then
                             local foundPlayer = findNearestPlayerFromPosition(rootPart.Position)
                             if foundPlayer then
                                 foundRootPart = if foundPlayer.Character then foundPlayer.Character:FindFirstChild("HumanoidRootPart") else nil
                             end
                         end
-                    end
 
-                    local mousePosition = Vector3.zero
-                    if foundRootPart then
-                        local mouseLoc = UserInputService:GetMouseLocation()
-                        local cameraRay = workspace.CurrentCamera:ViewportPointToRay(mouseLoc.X, mouseLoc.Y)
-                        mousePosition = calculateTrajectory.SolveTrajectory(cameraRay.Origin, 21, foundRootPart.Position, foundRootPart.AssemblyLinearVelocity, false, 1)
-                    end
+                        local mousePosition = Vector3.zero
+                        if foundRootPart then
+                            mousePosition = calculateTrajectory.SolveTrajectory(rootPart.Position, 21, foundRootPart.Position, foundRootPart.AssemblyLinearVelocity, false, 1)
+                        end
 
-                    isMouseHitOverriden = true
-                    overridenMouseCFrame = CFrame.new(mousePosition)
+                        isMouseHitOverriden = true
+                        overridenMouseCFrame = CFrame.new(mousePosition)
+                    else
+                        isMouseHitOverriden = false
+                    end
                 else
                     isMouseHitOverriden = false
                 end
