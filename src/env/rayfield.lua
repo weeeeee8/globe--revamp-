@@ -313,7 +313,7 @@ local neon = (function() -- Open sourced neon module
 		local acos, max, pi, sqrt = math.acos, math.max, math.pi, math.sqrt
 		local sz = 0.2
 
-		function DrawTriangle(v1, v2, v3, p0, p1)
+		local function DrawTriangle(v1, v2, v3, p0, p1)
 			local s1 = (v1 - v2).magnitude
 			local s2 = (v2 - v3).magnitude
 			local s3 = (v3 - v1).magnitude
