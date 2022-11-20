@@ -350,23 +350,23 @@ return function(Window)
                 CurrentOption = 'Locked',
                 Flag = 'SavedTargetingType',
                 Callback = function(option)
-                    targetType = option:lower()
+                    targetType = option
                 end
             }
 
             Globe.Maid:GiveTask(RunService.Stepped:Connect(function(_, dt)
                 if targetingEnabled then
                     local foundRootPart
-                    if targetType == "locked" then
+                    if targetType == 1 then
                         if targetPlayer then
                             foundRootPart = if targetPlayer.Character then targetPlayer.Character:FindFirstChild("HumanoidRootPart") else nil
                         end
-                    elseif targetType == 'mouse' then
+                    elseif targetType == 2 then
                         local foundPlayer = findNearestPlayerFromPosition(generic.GetMousePositionFromHook())
                         if foundPlayer then
                             foundRootPart = if foundPlayer.Character then foundPlayer.Character:FindFirstChild("HumanoidRootPart") else nil
                         end
-                    elseif targetType == 'character' then
+                    elseif targetType == 3 then
                         local rootPart = generic.GetPlayerBodyPart("HumanoidRootPart")
                         if rootPart then
                             local foundPlayer = findNearestPlayerFromPosition(rootPart.Position)
