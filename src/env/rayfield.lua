@@ -1259,7 +1259,6 @@ function RayfieldLibrary:CreateWindow(Settings)
 		local Tab = {}
 
 		function Tab:CreateColorpicker(ColorpickerSettings)
-			ColorpickerSettings.Type = "Colorpicker"
 			local colorChanged = Instance.new("BindableEvent")
 
 			local bg = Instance.new("ImageLabel")
@@ -1306,7 +1305,7 @@ function RayfieldLibrary:CreateWindow(Settings)
 				return p / 2 + Vector2.new(0.5, 0.5)
 			end
 
-			local function redraw()
+			local function redrawColor()
 				color = Color3.fromHSV(h, s, v)
 				fg.ImageColor3 = Color3.fromHSV(h, 1, 1)
 				local ang = (h * math.pi) * 2 - math.pi / 2
@@ -1318,7 +1317,7 @@ function RayfieldLibrary:CreateWindow(Settings)
 				colorChanged:Fire(color)
 			end
 			
-			local function update(p: Vector2, lock: boolean?)
+			local function updateColor(p: Vector2, lock: boolean?)
 				local base = fg.AbsolutePosition
 				local size = fg.AbsoluteSize
 				local rp = corner2center((p - base) / size)
@@ -1333,12 +1332,12 @@ function RayfieldLibrary:CreateWindow(Settings)
 					huewheel = true
 					h = (math.atan2(rp.Y, rp.X) + math.pi / 2) / (math.pi * 2) % 1
 				end
-				redraw()
+				redrawColor()
 			end
 
-			local function init(newColor)
+			local function initColor(newColor)
 				h, s, v = newColor:ToHSV()
-				redraw()
+				redrawColor()
 			end
 			
 			Globe.Maid:GiveTask(function()
@@ -1348,7 +1347,7 @@ function RayfieldLibrary:CreateWindow(Settings)
 			Globe.Maid:GiveTask(UserInputService.InputBegan:Connect(function(io)
 				if io.UserInputType == Enum.UserInputType.MouseButton1 and active then
 					pressed = true
-					update(Vector2.new(io.Position.X, io.Position.Y), true)
+					updateColor(Vector2.new(io.Position.X, io.Position.Y), true)
 				end
 			end))
 
@@ -1360,12 +1359,12 @@ function RayfieldLibrary:CreateWindow(Settings)
 
 			Globe.Maid:GiveTask(UserInputService.InputChanged:Connect(function(io)
 				if io.UserInputType == Enum.UserInputType.MouseMovement and pressed then
-					update(Vector2.new(io.Position.X, io.Position.Y))
+					updateColor(Vector2.new(io.Position.X, io.Position.Y))
 				end
 			end))
 
 			function ColorpickerSettings:Set(newColor)
-				init(newColor)
+				initColor(newColor)
 			end
 
 			function ColorpickerSettings:OnChanged(fn)
@@ -1373,7 +1372,7 @@ function RayfieldLibrary:CreateWindow(Settings)
 			end
 
 			if ColorpickerSettings.CurrentColor then
-				init(ColorpickerSettings.CurrentColor)
+				initColor(ColorpickerSettings.CurrentColor)
 			end
 
 			if Settings.ConfigurationSaving then

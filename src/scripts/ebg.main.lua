@@ -74,7 +74,7 @@ return function(Window)
                 local label = Drawing.new('Text')
             end
 
-            local colorPicker = utilityTab:CreateColorPicker{CurrentColor = Color3.fromRBG(220, 10, 0), Flag = "ESPLabelColor"}
+            local colorPicker = utilityTab:CreateColorpicker{CurrentColor = Color3.fromRBG(220, 10, 0), Flag = "ESPLabelColor"}
         end
 
         local function buildTechDiscSection()
