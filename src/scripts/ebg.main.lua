@@ -101,7 +101,7 @@ return function(Window)
                                 fakeArgs[3] = {
                                     Mouse = mousePosition,
                                     Camera = mousePosition - Vector3.new(0, 4, 0),
-                                    Spawn = CFrame.new(mousePosition),
+                                    Spawn = mousePosition,
                                     Origin = CFrame.new(mousePosition)
                                 }
                             end
@@ -376,7 +376,6 @@ return function(Window)
                 CurrentOption = 'Locked',
                 Flag = 'SavedTargetingType',
                 Callback = function(option)
-                    print(option)
                     targetType = option
                 end
             }
@@ -385,6 +384,7 @@ return function(Window)
                 if targetingEnabled then
                     local foundRootPart
                     if targetType == 'Locked' then
+                        print(targetPlayer, targetPlayer.Character)
                         if targetPlayer then
                             foundRootPart = if targetPlayer.Character then targetPlayer.Character:FindFirstChild("HumanoidRootPart") else nil
                         end
@@ -405,7 +405,6 @@ return function(Window)
 
                     local mousePosition = Vector3.zero
                     if foundRootPart then
-                        print(1)
                         local mouseLoc = UserInputService:GetMouseLocation()
                         local cameraRay = workspace.CurrentCamera:ViewportPointToRay(mouseLoc.X, mouseLoc.Y)
                         mousePosition = calculateTrajectory.SolveTrajectory(cameraRay.Origin, foundRootPart.AssemblyLinearVelocity.Magnitude, foundRootPart.Position, foundRootPart.AssemblyLinearVelocity, true, 1)
