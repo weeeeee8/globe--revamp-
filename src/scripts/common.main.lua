@@ -13,7 +13,9 @@ return function(Window)
         local players = Players:GetPlayers()
         for i = #players, 1, -1 do
             if players[i].Name:sub(1, #input) == input or players[i].DisplayName:sub(1, #input) == input then
-                return players[i]
+                local player = players[i]
+                if player == Players.LocalPlayer then return nil end
+                return player
             end
         end
         return nil
@@ -266,6 +268,7 @@ return function(Window)
         tab:CreateSection("Camera Spy Options")
 
         local playerSpyAutofill = generic.NewAutofill("Camera Spy", getPlayerFromInput)
+        local activeCharAdded
         local activePlayerRemovedConn
 
         local function setCameraSubjectTo(player: Player)
@@ -286,9 +289,18 @@ return function(Window)
                     activePlayerRemovedConn = nil
                 end
 
+                if activeCharAdded then
+                    activeCharAdded:Disconnect()
+                    activeCharAdded = nil
+                end
+
                 if success then
                     setCameraSubjectTo(result)
         
+                    activeCharAdded = result.CharacterAdded:Connect(function()
+                        setCameraSubjectTo(result)
+                    end)
+
                     activePlayerRemovedConn = result.Destroying:Once(function()
                         input:Set('', true)
                     end)
@@ -309,6 +321,11 @@ return function(Window)
             if activePlayerRemovedConn then
                 activePlayerRemovedConn:Disconnect()
                 activePlayerRemovedConn = nil
+            end
+
+            if activeOnDiedConn then
+                activeOnDiedConn:Disconnect()
+                activeOnDiedConn = nil
             end
         end)
 

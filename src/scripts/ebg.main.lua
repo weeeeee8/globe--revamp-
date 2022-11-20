@@ -144,6 +144,7 @@ return function(Window)
             for k in pairs(spoofedSpells) do
                 mainTab:CreateToggle{
                     Name = "Spoof " .. k,
+                    Flag = k .. "SavedValue",
                     CurrentValue = false,
                     Callback = function(toggled)
                         spoofedSpells[k] = toggled
