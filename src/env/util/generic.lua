@@ -1,5 +1,6 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UserInputService = game:GetService("UserInputService")
 
 local rayfield = import('env/rayfield')
 
@@ -8,7 +9,8 @@ local DEFAULT_NOTIFICATION_LIFETIME = 3--seconds
 
 local generic = {}
 
-function generic.NotifyUser(content: string, infoLevel: number)
+function generic.NotifyUser(content: string, infoLevel: number?)
+    infoLevel = infoLevel or 1
     local title = string.format('[%s] Globe Debug', if infoLevel == 1 then "INFO" elseif infoLevel == 2 then "WARNING" elseif infoLevel == 3 then "ERROR" else "FATAL ERROR")
     rayfield:Notify{
         Title = title,
@@ -64,6 +66,13 @@ function generic.NewConnectionsHolder()
             connections = nil
         end
     }
+end
+
+function generic.GetMousePositionFromHook()
+    local pos = UserInputService.GetMouseLocation(UserInputService)
+    local ray = workspace.CurrentCamera.ViewportPointToRay(workspace.CurrentCamera, pos.X, pos.Y)
+    local result = workspace.Raycast(workspace, ray.Origin, ray.Direction * 2000)
+    return if result then result.Position else ray.Origin + (ray.Direction * 2000)
 end
 
 function generic.NewAutofill(name: string, template: {string} | (input: string) -> any?)
