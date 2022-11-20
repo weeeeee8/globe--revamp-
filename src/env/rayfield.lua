@@ -1285,7 +1285,6 @@ function RayfieldLibrary:CreateWindow(Settings)
 			hp.BorderColor3 = Color3.fromRGB(0, 0, 0)
 			hp.Position = UDim2.fromScale(0.5, 0.05)
 			hp.Size = UDim2.new(0, 2, 0.1, 0)
-			hp.ZIndex = 2
 			hp.Parent = bg
 
 			local svp = Instance.new("Frame")
@@ -1296,7 +1295,6 @@ function RayfieldLibrary:CreateWindow(Settings)
 			svp.BorderSizePixel = 2
 			svp.Position = UDim2.fromScale(0.25, 0.25)
 			svp.Size = UDim2.fromOffset(4, 4)
-			svp.ZIndex = 2
 			svp.Parent = bg
 
 			local label = self:CreateLabel("Current Color: <0, 0, 0>")
