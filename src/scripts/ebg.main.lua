@@ -181,7 +181,12 @@ return function(Window)
             end
         end
 
+        local function buildDisorderIgnitionSection()
+            mainTab:CreateSection("Disorder Ignition Options")
+        end
+
         buildSpellSection()
+        buildDisorderIgnitionSection()
     end
 
     local utilityTab = Window:CreateTab("Utility - Elemental Battlegrounds") do
@@ -404,6 +409,7 @@ return function(Window)
 
                         local mousePosition = Vector3.zero
                         if foundRootPart then
+                            print(1)
                             mousePosition = calculateTrajectory.SolveTrajectory(rootPart.Position, 21, foundRootPart.Position, foundRootPart.AssemblyLinearVelocity, false, 1)
                         end
 

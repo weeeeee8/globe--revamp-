@@ -239,14 +239,18 @@ return function(Window)
                 local rootPart = generic.GetPlayerBodyPart('HumanoidRootPart')
                 if rootPart then
                     local hum = generic.GetPlayerBodyPart('Humanoid')
-                    local mousePosition = playerMouse.Hit.Position + (Vector3.yAxis * 2)
-                    local moveDirection = rootPart.CFrame.LookVector.Unit * 50
-                    if hum then
-                        if hum.MoveDirection.Magnitude > 0 then
-                            moveDirection = hum.MoveDirection.Unit * 50
+                    if playerMouse.Target then
+                        local mousePosition = playerMouse.Hit.Position + (Vector3.yAxis * 2)
+                        local moveDirection = rootPart.CFrame.LookVector.Unit * 50
+                        if hum then
+                            if hum.MoveDirection.Magnitude > 0 then
+                                moveDirection = hum.MoveDirection.Unit * 50
+                            end
                         end
+                        rootPart.CFrame = CFrame.lookAt(mousePosition, mousePosition + moveDirection)
+                    else
+                        generic.NotifyUser('No part found to property teleport at, might cause the player to fling to void!', 4)
                     end
-                    rootPart.CFrame = CFrame.new(mousePosition, mousePosition + moveDirection)
                 end
             end
         }
