@@ -28,7 +28,6 @@ return function(Window)
     local mainTab = Window:CreateTab("Elemental Battlegrounds") do
         local playerMouse = Players.LocalPlayer:GetMouse()
 
-        local validNameCalls = {'FireServer', 'InvokeServer'}
         local isMouseHitOverriden = false
         local overridenMouseCFrame = playerMouse.Hit
         local spoofedSpells = generic.MakeSet(
