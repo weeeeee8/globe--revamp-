@@ -74,8 +74,9 @@ return function(Window)
                 local label = Drawing.new('Text')
             end
 
-            print(unpack(utilityTab))
-            local colorPicker = utilityTab:CreateColorpicker{}
+            local colorPicker = utilityTab:CreateColorpicker{
+                CurrentColor = Color3.new(1, 0, 0)
+            }
         end
 
         local function buildTechDiscSection()

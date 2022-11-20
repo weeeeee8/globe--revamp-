@@ -13,6 +13,7 @@
         "getrawmetatable",
         "hookfunction",
         "queue_on_teleport",
+        "setclipboard",
         "hookmetamethod",
         "newcclosure",
         "checkcaller",

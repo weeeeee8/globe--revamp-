@@ -1260,6 +1260,9 @@ function RayfieldLibrary:CreateWindow(Settings)
 
 		function Tab:CreateColorpicker(ColorpickerSettings)
 			local colorChanged = Instance.new("BindableEvent")
+			local color = Color3.new(1, 0, 0)
+			local h, s, v = color:ToHSV()
+			local active, pressed, huewheel = false, false, false
 
 			local bg = Instance.new("ImageLabel")
 			bg.Name = "colorwheel"
@@ -1272,7 +1275,7 @@ function RayfieldLibrary:CreateWindow(Settings)
 			fg.ImageTransparency = 1
 			fg.Size = UDim2.fromScale(1, 1)
 			fg.BackgroundTransparency = 1
-			fg.Parent = wheelContainer
+			fg.Parent = bg
 
 			local hp = Instance.new("Frame")
 			hp.Name = "H"
@@ -1282,6 +1285,7 @@ function RayfieldLibrary:CreateWindow(Settings)
 			hp.Position = UDim2.fromScale(0.5, 0.05)
 			hp.Size = UDim2.new(0, 2, 0.1, 0)
 			hp.ZIndex = 2
+			hp.Parent = bg
 
 			local svp = Instance.new("Frame")
 			svp.Name = "SV"
@@ -1292,10 +1296,16 @@ function RayfieldLibrary:CreateWindow(Settings)
 			svp.Position = UDim2.fromScale(0.25, 0.25)
 			svp.Size = UDim2.fromOffset(4, 4)
 			svp.ZIndex = 2
-			
-			local color = Color3.new(1, 0, 0)
-			local h, s, v = color:ToHSV()
-			local active, pressed, huewheel = false, false, false
+			svp.Parent = bg
+
+			local label = self:CreateLabel("Current Color: <0, 0, 0>")
+			self:CreateButton{
+				Name = "Copy color value to clipboard",
+				Callback = function()
+					local colorToStr = string.format("%i, %i, %i", color.R, color.G, color.B)
+					setclipboard(colorToStr)
+				end
+			}
 
 			local function corner2center(p: Vector2)
 				return p * 2 - Vector2.new(1, 1)
@@ -1315,6 +1325,7 @@ function RayfieldLibrary:CreateWindow(Settings)
 				local svpos = center2corner(Vector2.new(s - 0.5, -v + 0.5))
 				svp.Position = UDim2.new(svpos.X, 0, svpos.Y, 0)
 				colorChanged:Fire(color)
+				label:Set(string.format('Current Color:<%i, %i, %i>', color.R, color.G, color.B))
 			end
 			
 			local function updateColor(p: Vector2, lock: boolean?)
@@ -1336,8 +1347,10 @@ function RayfieldLibrary:CreateWindow(Settings)
 			end
 
 			local function initColor(newColor)
-				h, s, v = newColor:ToHSV()
-				redrawColor()
+				if newColor then
+					h, s, v = newColor:ToHSV()
+					redrawColor()
+				end
 			end
 			
 			Globe.Maid:GiveTask(function()
