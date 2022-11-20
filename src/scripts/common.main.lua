@@ -418,23 +418,25 @@ return function(Window)
             Callback = function(text)
                 local success, result = playerNameFill.TryAutoFillFromInput(text)
                 if success then
-                    generic.NotifyUser(string.format('Watching %s! You will be notified once they have entered/exited a safezone', result.Name))
                     connectionsHolder:DisconnectAll()
+                    generic.NotifyUser(string.format('Watching %s! You will be notified once they have entered/exited a safezone', result.Name))
 
                     local function onCharacterAdded(char)
-                        connectionsHolder.Insert(char.ChildAdded:Connect(function(c)
+                        connectionsHolder:Insert(char.ChildAdded:Connect(function(c)
                             if c:IsA("ForceField") then
                                 generic.NotifyUser(string.format('%s has entered spawn!', result.Name))
                             end
                         end))
-                        connectionsHolder.Insert(char.ChildRemoved:Connect(function(c)
+                        connectionsHolder:Insert(char.ChildRemoved:Connect(function(c)
                             if c:IsA("ForceField") then
                                 generic.NotifyUser(string.format('%s has exited spawn!', result.Name))
                             end
                         end))
                     end
 
-                    connectionsHolder.Insert(result.CharacterAdded:Connect(onCharacterAdded))
+                    connectionsHolder:Insert(result.CharacterAdded:Connect(onCharacterAdded))
+                else
+                    connectionsHolder:DisconnectAll()
                 end
             end
         }
@@ -446,7 +448,7 @@ return function(Window)
         }
 
         Globe.Maid:GiveTask(function()
-            connectionsHolder.Destroy()
+            connectionsHolder:Destroy()
         end)
 
         for _, player in ipairs(Players:GetPlayers()) do
