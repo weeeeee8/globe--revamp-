@@ -1258,9 +1258,8 @@ function RayfieldLibrary:CreateWindow(Settings)
 
 		local Tab = {}
 
-		function Tab:CreateColorPicker(colorpickerSettings)
-			colorpickerSettings.Type = "Colorpicker"
-			local ColorpickerSettings = {}
+		function Tab:CreateColorpicker(ColorpickerSettings)
+			ColorpickerSettings.Type = "Colorpicker"
 			local colorChanged = Instance.new("BindableEvent")
 
 			local bg = Instance.new("ImageLabel")
@@ -1373,13 +1372,13 @@ function RayfieldLibrary:CreateWindow(Settings)
 				return colorChanged.Event:Connect(fn)
 			end
 
-			if colorpickerSettings.CurrentColor then
-				init(colorpickerSettings.CurrentColor)
+			if ColorpickerSettings.CurrentColor then
+				init(ColorpickerSettings.CurrentColor)
 			end
 
 			if Settings.ConfigurationSaving then
-				if Settings.ConfigurationSaving.Enabled and colorpickerSettings.Flag then
-					RayfieldLibrary.Flags[colorpickerSettings.Flag] = ColorpickerSettings
+				if Settings.ConfigurationSaving.Enabled and ColorpickerSettings.Flag then
+					RayfieldLibrary.Flags[ColorpickerSettings.Flag] = ColorpickerSettings
 				end
 			end
 
