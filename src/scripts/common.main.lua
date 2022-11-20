@@ -559,31 +559,37 @@ return function(Window)
                         local id = serverdata.id
                         if tonumber(serverdata.maxPlayers) > tonumber(serverdata.playing) and tonumber(serverdata.playing) > desiredServerSize then
                             if not isCurrentIdExisting(id) then
+                                generic.NotifyUser('Found a server with an id of "' .. id .. '"!', 1)
+
                                 table.insert(jobIds, id)
                                 local event = Instance.new("BindableEvent")
                                 
                                 writefile(SERVERS_CACHE_FILENAME, HttpService:JSONEncode(jobIds))
-                                if shouldAutoExecute then
-                                    queue_on_teleport('loadstring(game:HttpGet("https://raw.githubusercontent.com/weeeeee8/globe--revamp-/main/source.lua"), "Globe")()')
-                                end
-                                TeleportService:TeleportToPlaceInstance(game.PlaceId, id, Players.LocalPlayer)
-                                local onTeleportFailed; onTeleportFailed = Players.LocalPlayer.OnTeleport:Connect(function(state)
-                                    if state == Enum.TeleportState.Failed then
-                                        if attempts > MAX_JOIN_ATTEMPTS then
+
+                                local function tryTeleport()
+                                    if attempts > MAX_JOIN_ATTEMPTS then
+                                        generic.NotifyUser('Unable to teleport!', 3)
+                                        pcall(delfile, SERVERS_CACHE_FILENAME)
+                                        event:Fire()
+                                        writefile(SERVERS_CACHE_FILENAME, HttpService:JSONEncode({}))
+                                        return
+                                    end
+
+                                    if shouldAutoExecute then
+                                        queue_on_teleport('loadstring(game:HttpGet("https://raw.githubusercontent.com/weeeeee8/globe--revamp-/main/source.lua"), "Globe")()')
+                                    end
+                                    TeleportService:TeleportToPlaceInstance(game.PlaceId, id, Players.LocalPlayer)
+                                    local onTeleportFailed; onTeleportFailed = Players.LocalPlayer.OnTeleport:Connect(function(state)
+                                        if state == Enum.TeleportState.Failed then
                                             onTeleportFailed:Disconnect()
                                             onTeleportFailed = nil
-                                            generic.NotifyUser('Unable to teleport!', 3)
-                                            pcall(delfile, SERVERS_CACHE_FILENAME)
-                                            event:Fire()
-                                            writefile(SERVERS_CACHE_FILENAME, HttpService:JSONEncode({}))
-                                            return
+                                            generic.NotifyUser('Failed to teleport, retrying...', 2)
+                                            attempts += 1
+                                            tryTeleport()
                                         end
-
-                                        generic.NotifyUser('Failed to teleport, retrying...', 2)
-                                        TeleportService:TeleportToPlaceInstance(game.PlaceId, id, Players.LocalPlayer)
-                                        attempts += 1
-                                    end
-                                end)
+                                    end)
+                                end
+                                tryTeleport()
 
                                 event.Event:Wait()
                             end
