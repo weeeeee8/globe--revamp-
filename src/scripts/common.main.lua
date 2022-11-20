@@ -26,10 +26,12 @@ return function(Window)
     local tab = Window:CreateTab("Common")
     local function buildAnimatorModifierSection()
         local animator, hum
-        Globe.Maid:GiveTask(Players.LocalPlayer.CharacterAdded:Connect(function(character)
+        local function onCharacterAdded(character)
             hum = character:WaitForChild("Humanoid")
             animator = hum:WaitForChild("Animator")
-        end))
+        end
+        if Players.LocalPlayer.Character then onCharacterAdded(Players.LocalPlayer.Character) end
+        Globe.Maid:GiveTask(Players.LocalPlayer.CharacterAdded:Connect(onCharacterAdded))
 
         tab:CreateButton{
             Name = "Remove Animator",
