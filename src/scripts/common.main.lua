@@ -339,6 +339,7 @@ return function(Window)
         end
 
         local colorPicker = tab:CreateColorpicker{
+            Flag = "SavedESPColor",
             CurrentColor = Color3.new(1, 0, 0)
         }
         Globe.Maid:GiveTask(colorPicker:OnChanged(function(newColor)
@@ -348,6 +349,7 @@ return function(Window)
         tab:CreateToggle{
             Name = "Enable ESP",
             CurrentValue = false,
+            Flag = "SavedESPToggle",
             Callback = function(toggled)
                 espEnabled = toggled
             end,
