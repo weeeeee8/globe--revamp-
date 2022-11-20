@@ -149,6 +149,7 @@ return function(Window)
         local mouseHook; mouseHook = hookmetamethod(playerMouse, '__index', function(self, key)
             if not checkcaller() then
                 if isMouseHitOverriden then
+                    print(key)
                     if key == "Hit" then
                         return overridenMouseCFrame
                     end
@@ -409,6 +410,7 @@ return function(Window)
                     if mousePosition then
                         isMouseHitOverriden = true
                         overridenMouseCFrame = CFrame.new(mousePosition)
+                        print(1)
                     else
                         isMouseHitOverriden = false
                     end
