@@ -1,9 +1,11 @@
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
 
 return function(Window)
     local generic = import('env/util/generic')
+    local calculateTrajectory = import('')
     local Hook = import('env/lib/hook')
 
     local function getPlayerFromInput(input)
@@ -24,13 +26,14 @@ return function(Window)
     end
     
     local playerNameFill = generic.NewAutofill("Name Fill", getPlayerFromInput)
-    local domagic, docmagic, clientdata, combat = generic.FindInstancesInReplicatedStorage('DoMagic', 'DoClientMagic', 'ClientData', 'Combat')
+    local domagic, docmagic, clientdata, combat, sendloadout = generic.FindInstancesInReplicatedStorage('DoMagic', 'DoClientMagic', 'ClientData', 'Combat')
+
+    local playerMouse = Players.LocalPlayer:GetMouse()
+
+    local isMouseHitOverriden = false
+    local overridenMouseCFrame = playerMouse.Hit
 
     local mainTab = Window:CreateTab("Elemental Battlegrounds") do
-        local playerMouse = Players.LocalPlayer:GetMouse()
-
-        local isMouseHitOverriden = false
-        local overridenMouseCFrame = playerMouse.Hit
         local spoofedSpells = generic.MakeSet(
             'Lightning Flash',
             'Lightning Barrage',
@@ -192,6 +195,204 @@ return function(Window)
 
         local function buildAdvancedTargetingSection()
             utilityTab:CreateSection('Advanced Targeting Options')
+
+            local MIN_DIST = 200
+
+            local projectileVelocity = 500
+            local targetingEnabled = false
+            local targetType = 'locked'
+            local targetPlayer = nil
+            local blacklistedPlayers = {}
+            
+            local function findNearestPlayerFromPosition(position)
+                local t = {}
+                for _, player in ipairs(Players:GetPlayers()) do
+                    if 
+                        player == Players.LocalPlayer or
+                        blacklistedPlayers[player.UserId]
+                    then continue end
+                    
+                    local foundRootPart = if player.Character then player.Character:FindFirstChild("HumanoidRootPart") else nil
+                    if foundRootPart then
+                        local dist = (foundRootPart.Position - position).Magnitude
+                        if dist <= MIN_DIST then
+                            table.insert(t, {
+                                dist = dist,
+                                player = player
+                            })
+                        end
+                    end
+                end
+                table.sort(t, function(a, b) return a.dist < b.dist end)
+                return if t[1] then t[1].player else nil
+            end
+
+            local function clearPlayerBlacklistData(data)
+                if data.listenOnRemoving then
+                    data.listenOnRemoving:Disconnect()
+                    data.listenOnRemoving = nil
+                end
+            end
+
+            local toggle = utilityTab:CreateToggle{
+                Name = "Enable Advanced Targeting",
+                Callback = function(toggled)
+                    targetingEnabled = toggled
+                end
+            }
+
+            utilityTab:CreateKeybind{
+                Name = "Toggle bind",
+                CurrentKeybind = "C",
+                Callback = function()
+                    toggle:Set(not targetingEnabled)
+                end
+            }
+
+            local listenOnRemovingTargetPlayer
+            local input = utilityTab:CreateInput{
+                Name = "Set Target Player",
+                PlaceholderText = "Player DisplayName / Name",
+                Callback = function(text)
+                    local success, foundPlayer = playerNameFill.TryAutoFillFromInput(text)
+                    if success then
+                        if (type(foundPlayer) == "number") then
+                            generic.NotifyUser("Gave full name of a player but they're not in the server!", 4)
+                            return
+                        end 
+                        listenOnRemovingTargetPlayer = foundPlayer.Destroying:Once(function()
+                            listenOnRemovingTargetPlayer:Disconnect()
+                            listenOnRemovingTargetPlayer = nil
+
+                            generic.NotifyUser(string.format("[Targeting] %s has left the server, no active target!", foundPlayer.Name), 2)
+                            targetPlayer = nil
+                        end)
+                        targetPlayer = foundPlayer
+                    else
+                        if listenOnRemovingTargetPlayer then
+                            listenOnRemovingTargetPlayer:Disconnect()
+                            listenOnRemovingTargetPlayer = nil
+                        end
+
+                        targetPlayer = nil
+                    end
+                end
+            }
+
+            utilityTab:CreateButton{
+                Name = "Clear field",
+                Callback = function()
+                    input:Set('', true)
+                end
+            }
+
+            utilityTab:CreateInput{
+                Name = "Blacklist Player",
+                PlaceholderText = "Player DisplayName / Name",
+                Callback = function(text)
+                    local success, foundPlayer = playerNameFill.TryAutoFillFromInput(text)
+                    if success then
+                        if (type(foundPlayer) == "number") then
+                            generic.NotifyUser("Gave full name of a player but they're not in the server!", 4)
+                            return
+                        end
+                        local listenOnRemoving; listenOnRemoving = foundPlayer.Destroying:Once(function()
+                            listenOnRemoving:Disconnect()
+                            listenOnRemoving = nil
+
+                            generic.NotifyUser(string.format("[Targeting] %s has left the server. When they rejoin they'll still be blacklisted until then! (You can only unblacklist them when they returned from the server!)", foundPlayer.Name), 2)
+                        end)
+                        blacklistedPlayers[foundPlayer.UserId] = {
+                            listenOnRemoving = listenOnRemoving
+                        }
+                    end
+                end
+            }
+
+            utilityTab:CreateInput{
+                Name = "Unblacklist Player",
+                PlaceholderText = "Player DisplayName / Name",
+                Callback = function(text)
+                    local success, foundPlayerOrUserId = playerNameFill.TryAutoFillFromInput(text)
+                    if success then
+                        local id
+                        if (type(foundPlayerOrUserId) == "number") then
+                            id = foundPlayerOrUserId
+                        else
+                            id = foundPlayerOrUserId.UserId
+                        end
+                        local indexOf = blacklistedPlayers[id]
+                        if indexOf then
+                            clearPlayerBlacklistData(blacklistedPlayers[id])
+                            blacklistedPlayers[id] = nil
+                        end
+                    end
+                end
+            }
+
+            utilityTab:CreateButton{
+                Name = "Clear All Blacklist",
+                Callback = function()
+                    for _, player in ipairs(Players:GetPlayers()) do
+                        if player == Players.LocalPlayer then continue end
+                        local indexOf = blacklistedPlayers[player.UserId]
+                        if indexOf then
+                            clearPlayerBlacklistData(blacklistedPlayers[player.UserId])
+                            blacklistedPlayers[player.UserId] = nil
+                        end
+                    end
+                end
+            }
+
+            utilityTab:CreateDropdown{
+                Name = "Targeting Type",
+                Options = {'Locked', 'Mouse', 'Character'},
+                CurrentOption = 'Locked',
+                Flag = 'SavedTargetingType',
+                Callback = function(option)
+                    targetType = option:lower()
+                end
+            }
+
+            Globe.Maid:GiveTask(RunService.Stepped:Connect(function(_, dt)
+                local foundRootPart
+                if targetType == "locked" then
+                    if targetPlayer then
+                        foundRootPart = if targetPlayer.Charater then targetPlayer.Charater:FindFirstChild("HumanoidRootPart") else nil
+                    end
+                elseif targetType == 'mouse' then
+                    local foundPlayer = findNearestPlayerFromPosition(generic.GetMousePositionFromHook())
+                    if foundPlayer then
+                        foundRootPart = if foundPlayer.Charater then foundPlayer.Charater:FindFirstChild("HumanoidRootPart") else nil
+                    end
+                elseif targetType == 'character' then
+                    local rootPart = generic.GetPlayerBodyPart("HumanoidRootPart")
+                    if rootPart then
+                        local foundPlayer = findNearestPlayerFromPosition(rootPart.Position)
+                        if foundPlayer then
+                            foundRootPart = if foundPlayer.Charater then foundPlayer.Charater:FindFirstChild("HumanoidRootPart") else nil
+                        end
+                    end
+                end
+
+                local mousePosition
+                if foundRootPart then
+                    local mouseLoc = UserInputService:GetMouseLocation()
+                    local cameraRay = workspace.CurrentCamera:ViewportPointToRay(mouseLoc.X, mouseLoc.Y)
+                    mousePosition = calculateTrajectory.SolveTrajectory(cameraRay.Origin, projectileVelocity, foundRootPart.Position, foundRootPart.AssemblyLinearVelocity, true, 1)
+                end
+
+                if targetingEnabled then
+                    if mousePosition then
+                        isMouseHitOverriden = true
+                        overridenMouseCFrame = CFrame.new(mousePosition)
+                    else
+                        isMouseHitOverriden = false
+                    end
+                else
+                    isMouseHitOverriden = false
+                end
+            end))
         end
 
         local function buildPunchAuraSection()
@@ -256,7 +457,7 @@ return function(Window)
                             listenOnRemoving:Disconnect()
                             listenOnRemoving = nil
 
-                            generic.NotifyUser(string.format("%s has left the server. When they rejoin they'll still be blacklisted until then! (You can only unblacklist them when they returned from the server!)", foundPlayer.Name), 2)
+                            generic.NotifyUser(string.format("[Punch Aura] %s has left the server. When they rejoin they'll still be blacklisted until then! (You can only unblacklist them when they returned from the server!)", foundPlayer.Name), 2)
                         end)
                         blacklistedPlayers[foundPlayer.UserId] = {
                             listenOnRemoving = listenOnRemoving
