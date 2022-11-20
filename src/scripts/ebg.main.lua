@@ -308,7 +308,8 @@ return function(Window)
             end))
         end
 
-        buildPunchAuraSection()
         buildTechDiscSection()
+        buildPunchAuraSection()
+        buildAdvancedTargetingSection()
     end
 end
