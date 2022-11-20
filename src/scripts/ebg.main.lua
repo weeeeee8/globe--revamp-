@@ -45,7 +45,7 @@ return function(Window)
 
         local remoteHookOld; remoteHookOld = hookmetamethod(game, '__namecall', function(self, ...)
             if not checkcaller() then
-                if validNameCalls[getnamecallmethod()] then
+                if getnamecallmethod() == "FireServer" or getnamecallmethod() == "InvokeServer" then
                     if (self == domagic) then
                         local realArgs = {...}
                         local SpellName = tostring(realArgs[2])
