@@ -74,6 +74,7 @@ return function(Window)
                 local label = Drawing.new('Text')
             end
 
+            print(utilityTab.CreateColorPicker)
             local colorPicker = utilityTab:CreateColorPicker{CurrentColor = Color3.fromRBG(220, 10, 0), Flag = "ESPLabelColor"}
         end
 

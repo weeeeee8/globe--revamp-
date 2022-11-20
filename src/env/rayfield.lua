@@ -1917,8 +1917,6 @@ function RayfieldLibrary:CreateWindow(Settings)
 
 		-- Toggle
 		function Tab:CreateToggle(ToggleSettings)
-			local ToggleValue = {}
-
 			local Toggle = Elements.Template.Toggle:Clone()
 			Toggle.Name = ToggleSettings.Name
 			Toggle.Title.Text = ToggleSettings.Name
