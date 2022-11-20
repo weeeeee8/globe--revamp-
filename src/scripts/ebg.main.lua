@@ -61,99 +61,6 @@ return function(Window)
     end
 
     local utilityTab = Window:CreateTab("Utility - Elemental Battlegrounds") do
-        local function buildCustomEspSection()
-            utilityTab:CreateSection('ESP')
-            
-            local espEnabled = false
-            local trackedPlayers = {}
-
-            local textFont = Drawing.Fonts.Monospace
-            local textSize = 14
-            local textColor = Color3.fromRGB(239, 137, 42)
-
-            local function instantiateLabel(player)
-                local label = Drawing.new('Text')
-                label.Font = textFont
-                label.Size = textSize
-                label.Color = textColor
-                label.Outline = true
-                label.OutlineColor = Color3.new(0, 0, 0)
-                label.TextTransparency = 0.7
-                label.Center = true
-
-                trackedPlayers[player] = label
-            end
-
-            local colorPicker = utilityTab:CreateColorpicker{
-                CurrentColor = Color3.new(1, 0, 0)
-            }
-            Globe.Maid:GiveTask(colorPicker:OnChanged(function(newColor)
-                textColor = newColor
-            end))
-            
-            utilityTab:CreateToggle{
-                Name = "Enable ESP",
-                CurrentValue = false,
-                Callback = function(toggled)
-                    espEnabled = toggled
-                end,
-            }
-
-            for _, player in ipairs(Players:GetPlayers()) do
-                if player == Players.LocalPlayer then continue end
-                instantiateLabel(player)
-            end
-            Globe.Maid:GiveTask(Players.PlayerAdded:Connect(instantiateLabel))
-            Globe.Maid:GiveTask(Players.PlayerRemoving:Connect(function(player)
-                local indexOf = trackedPlayers[player]
-                if indexOf then
-                    trackedPlayers[player]:Destroy()
-                    trackedPlayers[player] = nil
-                end
-            end))
-
-            Globe.Maid:GiveTask(RunService.RenderStepped:Connect(function(dt)
-                for player, label in pairs(trackedPlayers) do
-                    if not espEnabled then
-                        if label.Visible then
-                            label.Visible = false
-                        end
-                    else
-                        if label.Color ~= textColor then
-                            label.Color = textColor
-                        end
-
-                        local foundHumanoidRootPart = if player.Character then player.Character:FindFirstChild("HumanoidRootPart") else nil
-                        if foundHumanoidRootPart then
-                            local rootPart = generic.GetPlayerBodyPart('HumanoidRootPart')
-                            local vector, isInScreen = workspace.CurrentCamera:WorldToViewportPoint()
-                            if rootPart and isInScreen then
-                                if not label.Visible then
-                                    label.Visible = true
-                                end
-
-                                local dist = (foundHumanoidRootPart.Position - rootPart.Position).Magnitude
-                                label.Position = Vector2.new(vector.X, vector.Y - 50)
-
-                                local newText = string.format('[%i] %s (%i studs)', foundHumanoidRootPart.Parent.Humanoid.Health, player.Name, math.floor(dist))
-                                if label.Text ~= newText then
-                                    label.Text = newText
-                                end
-                            else
-                                if label.Visible then
-                                    label.Visible = false
-                                end
-                            end
-                        else
-                            if label.Visible then
-                                label.Visible = false
-                            end
-                        end
-                    end
-                end
-            end))
-        end
-
         local function buildTechDiscSection()
             local connectionsHolder = generic.NewConnectionsHolder()
             local PlayerScripts = Players.LocalPlayer:WaitForChild("PlayerScripts")
@@ -186,6 +93,5 @@ return function(Window)
         end
 
         buildTechDiscSection()
-        buildCustomEspSection()
     end
 end
