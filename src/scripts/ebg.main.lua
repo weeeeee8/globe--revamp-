@@ -41,7 +41,7 @@ return function(Window)
             'Splitting Slime',
             'Illusive Atake',
             'Blaze Column'
-        ):get()
+        ):override(function() return false end):get()
 
         local remoteHookOld; remoteHookOld = hookmetamethod(game, '__namecall', function(self, ...)
             if not checkcaller() then
@@ -195,6 +195,8 @@ return function(Window)
         end
 
         local function buildPunchAuraSection()
+            utilityTab:CreateSection("Punch Aura Options")
+
             local MIN_DIST = 10--studs
 
             local auraEnabled = false
