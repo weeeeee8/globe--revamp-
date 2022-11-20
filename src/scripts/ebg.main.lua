@@ -50,6 +50,7 @@ return function(Window)
                         local realArgs = {...}
                         local SpellName = tostring(realArgs[2])
                         local isSpoofed = spoofedSpells[SpellName]
+                        print(isSpoofed, SpellName)
                         if isSpoofed == true then
                             local fakeArgs = {unpack(realArgs)}
                             if SpellName == "Lightning Flash" then
@@ -233,7 +234,7 @@ return function(Window)
 
             utilityTab:CreateInput{
                 Name = "Blacklist Player",
-                Placeholder = "Player DisplayName / Name",
+                PlaceholderText = "Player DisplayName / Name",
                 Callback = function(text)
                     local success, foundPlayer = playerNameFill.TryAutoFillFromInput(text)
                     if success then
@@ -256,7 +257,7 @@ return function(Window)
 
             utilityTab:CreateInput{
                 Name = "Unblacklist Player",
-                Placeholder = "Player DisplayName / Name",
+                PlaceholderText = "Player DisplayName / Name",
                 Callback = function(text)
                     local success, foundPlayerOrUserId = playerNameFill.TryAutoFillFromInput(text)
                     if success then
