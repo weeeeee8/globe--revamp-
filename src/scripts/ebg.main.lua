@@ -5,7 +5,7 @@ local UserInputService = game:GetService("UserInputService")
 
 return function(Window)
     local generic = import('env/util/generic')
-    local calculateTrajectory = import('')
+    local calculateTrajectory = import('env/util/calculateTrajectory')
     local Hook = import('env/lib/hook')
 
     local function getPlayerFromInput(input)
