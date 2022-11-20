@@ -138,6 +138,7 @@ return function(Window)
         local mouseHook; mouseHook = Hook.new('ebg.mousehook', getrawmetatable(playerMouse).__index, newcclosure(function(self, key: string)
             if not checkcaller() then
                 if isMouseHitOverriden then
+                    print(key)
                     if type(key) == "string" and key == "Hit" then
                         return overridenMouseCFrame
                     end
