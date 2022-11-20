@@ -82,7 +82,7 @@ return function(Window)
                             end
                             
                             return remoteHookOld(self, unpack(fakeArgs))
-                        [[else
+                        else
                             local fakeArgs = {unpack(realArgs)}
                             if SpellName == "Lightning Flash" then
                                 if isMouseHitOverriden then
@@ -103,7 +103,7 @@ return function(Window)
                                 end
                             end
                             
-                            return remoteHookOld(self, unpack(fakeArgs))]]
+                            return remoteHookOld(self, unpack(fakeArgs))
                         end
                     end
                 if getnamecallmethod() == "FireServer" then
