@@ -270,8 +270,8 @@ return function(Window)
         local activeCharAdded
         local activePlayerRemovedConn
 
-        local function setCameraSubjectTo(player: Player)
-            local hum = if player.Character then player.Character:FindFirstChild("Humanoid") else nil
+        local function setCameraSubjectTo(player: Player, shouldYield)
+            local hum = if player.Character then player.Character[if shouldYield then "WaitForChild" else "FindFirstChild"](player.Character, "Humanoid") else nil
             if hum then
                 workspace.CurrentCamera.CameraSubject = hum
             end
@@ -297,7 +297,7 @@ return function(Window)
                     setCameraSubjectTo(result)
         
                     activeCharAdded = result.CharacterAdded:Connect(function()
-                        setCameraSubjectTo(result)
+                        setCameraSubjectTo(result, true)
                     end)
 
                     activePlayerRemovedConn = result.Destroying:Once(function()
