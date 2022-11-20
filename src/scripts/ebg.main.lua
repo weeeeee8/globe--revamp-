@@ -79,7 +79,6 @@ return function(Window)
                 label.Color = textColor
                 label.Outline = true
                 label.OutlineColor = Color3.new(0, 0, 0)
-                label.TextBounds = Vector2.new(workspace.CurrentCamera.ViewportSize.X, 100)
                 label.TextTransparency = 0.7
                 label.Center = true
 
