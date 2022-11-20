@@ -74,7 +74,7 @@ return function(Window)
 
             local function instantiateLabel(player)
                 local label = Drawing.new('Text')
-                label.TextFont = textFont
+                label.Font = textFont
                 label.Size = textSize
                 label.Color = textColor
                 label.Outline = true
