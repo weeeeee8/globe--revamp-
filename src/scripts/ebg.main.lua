@@ -146,12 +146,13 @@ return function(Window)
             return remoteHookOld(self, ...)
         end)
 
-        local mouseHook; mouseHook = hookmetamethod(playerMouse, '__index', function(self, key)
+        local mouseHook; mouseHook = hookmetamethod(game, '__index', function(self, key)
             if not checkcaller() then
-                if isMouseHitOverriden then
-                    print(key)
-                    if key == "Hit" then
-                        return overridenMouseCFrame
+                if self == playerMouse then
+                    if isMouseHitOverriden then
+                        if key == "Hit" then
+                            return overridenMouseCFrame
+                        end
                     end
                 end
             end
