@@ -174,12 +174,12 @@ return function(Window)
                     if toggled then
                         connectionsHolder:Insert(PlayerScripts.ChildAdded:Connect(function(c)
                             if c.Name:lower() == "DiscScript" then
-                                task.delay(0.07, c.Destroy, c)
+                                task.delay(1, c.Destroy, c)
                             end
                         end))
                         connectionsHolder:Insert(ClientEffectsFolder.ChildAdded:Connect(function(c)
                             if c.Name:lower() == "LightDisc" or c.Name:lower() == "DeadlyDisc" then
-                                task.delay(0.07, c.Destroy, c)
+                                task.delay(1, c.Destroy, c)
                             end
                         end))
                     else
