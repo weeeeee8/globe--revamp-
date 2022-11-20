@@ -389,7 +389,9 @@ return function(Window)
                 if targetingEnabled then
                     local foundRootPart
                     local rootPart = generic.GetPlayerBodyPart("HumanoidRootPart")
+                    print(1)
                     if rootPart then
+                        print(targetType)
                         if targetType == 'Locked' then
                             print(targetPlayer, targetPlayer.Character)
                             if targetPlayer then
