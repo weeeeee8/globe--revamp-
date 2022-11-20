@@ -473,6 +473,7 @@ return function(Window)
         local SERVER_TIME_CACHE_FILENAME = 'globe_servercache.txt'
         local SERVERS_CACHE_FILENAME = 'globe_notsameservers.json'
 
+        local desiredServerSize = 3
         local lastServerCursor
         local shouldAutoExecute = false
 
@@ -555,7 +556,7 @@ return function(Window)
                     generic.NotifyUser('Scanning a total of ' .. totalServers .. ' servers...', 1)
                     for _, serverdata in pairs(serverlist.data) do
                         local id = serverdata.id
-                        if tonumber(serverdata.maxPlayers) > tonumber(serverdata.playing) then
+                        if tonumber(serverdata.maxPlayers) > tonumber(serverdata.playing) and tonumber(serverdata.playing) > desiredServerSize then
                             if not isCurrentIdExisting(id) then
                                 table.insert(jobIds, id)
                                 local event = Instance.new("BindableEvent")
@@ -595,6 +596,16 @@ return function(Window)
 
                 getgenv().DisableAllInteractions = false
             end,
+        }
+
+        tab:CreateInput{
+            Name = "Desired Server Size",
+            PlaceholderText = "number",
+            Callback = function(text)
+                local num = tonumber(text) or 0
+                num = math.max(num, 0)
+                desiredServerSize = num
+            end
         }
     end
 
