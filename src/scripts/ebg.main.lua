@@ -6,11 +6,11 @@ return function(Window)
 
     local domagic, docmagic, clientdata, combat = generic.FindInstancesInReplicatedStorage('DoMagic', 'DoClientMagic', 'ClientData', 'Combat')
 
-    local tab = Window:CreateTab("Elemental Battlegrounds") do
+    local mainTab = Window:CreateTab("Elemental Battlegrounds") do
         local playerMouse = Players.LocalPlayer:GetMouse()
 
         local validNameCalls = {'FireServer', 'InvokeServer'}
-        local isMouseHitOverriden = false0
+        local isMouseHitOverriden = false
         local overridenMouseCFrame = playerMouse.Hit
         local spoofedSpells = generic.MakeSet(
             'Lightning Barrage',
@@ -41,12 +41,12 @@ return function(Window)
         end))
 
         local function buildSpellSection()
-            tab:CreateSection('Spell Exploit Options')
-            tab:CreateParagraph{Title = 'Information: ', Content = [[Enabling any of these options will spoof the data that are to be sent to the server.
+            mainTab:CreateSection('Spell Exploit Options')
+            mainTab:CreateParagraph{Title = 'Information: ', Content = [[Enabling any of these options will spoof the data that are to be sent to the server.
             When using Instant Casting, it'll be incrementing from the index 1 but can be locked by enabling "Lock Pattern Index"!]]}
 
             for k in pairs(spoofedSpells) do
-                tab:CreateToggle{
+                mainTab:CreateToggle{
                     Name = "Spoof " .. k,
                     CurrentValue = false,
                     Callback = function(toggled)
@@ -74,7 +74,8 @@ return function(Window)
                 local label = Drawing.new('Text')
             end
 
-            local colorPicker = utilityTab:CreateColorpicker{CurrentColor = Color3.fromRBG(220, 10, 0), Flag = "ESPLabelColor"}
+            print(unpack(utilityTab))
+            local colorPicker = utilityTab:CreateColorpicker{}
         end
 
         local function buildTechDiscSection()

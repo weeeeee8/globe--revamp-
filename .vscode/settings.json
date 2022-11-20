@@ -1,9 +1,23 @@
 {
     "robloxLsp.diagnostics.globals": [
         "getgenv",
-        "getgenv"
+        "debug",
+        "Globe",
+        "writefile",
+        "delfile",
+        "readfile",
+        "makefolder",
+        "isfolder",
+        "isfile",
+        "getnamecallmethod",
+        "getrawmetatable",
+        "hookfunction",
+        "queue_on_teleport",
+        "hookmetamethod",
+        "newcclosure",
+        "checkcaller",
+        "import",
+        "Drawing",
+        "request",
     ],
-    "robloxLsp.diagnostics.disable": [
-        "undefined-global"
-    ]
 }
