@@ -49,7 +49,6 @@ return function(Window)
                         local realArgs = {...}
                         local SpellName = tostring(realArgs[2])
                         local isSpoofed = spoofedSpells[SpellName]
-                        print(isSpoofed, SpellName)
                         if isSpoofed == true then
                             local fakeArgs = {unpack(realArgs)}
                             if SpellName == "Lightning Flash" then

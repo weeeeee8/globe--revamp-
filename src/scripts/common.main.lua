@@ -347,9 +347,9 @@ return function(Window)
         end))
         
         tab:CreateToggle{
+            Flag = "SavedESPToggle",
             Name = "Enable ESP",
             CurrentValue = false,
-            Flag = "SavedESPToggle",
             Callback = function(toggled)
                 espEnabled = toggled
             end,
