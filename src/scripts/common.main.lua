@@ -24,6 +24,38 @@ return function(Window)
     local playerNameFill = generic.NewAutofill("Name Fill", getPlayerFromInput)
 
     local tab = Window:CreateTab("Common")
+    local function buildAnimatorModifierSection()
+        local animator, hum
+        Globe.Maid:GiveTask(Players.LocalPlayer.CharacterAdded:Connect(function(character)
+            hum = character:WaitForChild("Humanoid")
+            animator = hum:WaitForChild("Animator")
+        end))
+
+        tab:CreateButton{
+            Name = "Remove Animator",
+            Callback = function()
+                if animator.Parent == nil then
+                    generic.NotifyUser('Animator is already removed!', 3)
+                    return
+                end
+
+                animator.Parent = nil
+            end
+        }
+
+        tab:CreateButton{
+            Name = "Add Animator",
+            Callback = function()
+                if animator.Parent == hum then
+                    generic.NotifyUser('Animator is already added!', 3)
+                    return
+                end
+
+                animator.Parent = hum
+            end
+        }
+    end
+
     local function buildFlySection()
         tab:CreateSection("Fly Options")
 
