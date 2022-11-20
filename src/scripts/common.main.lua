@@ -321,7 +321,7 @@ return function(Window)
         local espEnabled = false
         local trackedPlayers = {}
 
-        local textFont = Drawing.Fonts.Monospace
+        local textFont = Drawing.Fonts.UI
         local textSize = 14
         local textColor = Color3.fromRGB(239, 137, 42)
 
@@ -387,7 +387,7 @@ return function(Window)
                             end
 
                             local dist = (foundHumanoidRootPart.Position - rootPart.Position).Magnitude
-                            label.Position = Vector2.new(vector.X, vector.Y - 50)
+                            label.Position = Vector2.new(vector.X, vector.Y - 25)
 
                             local newText = string.format('[%i] %s (%i studs)', foundHumanoidRootPart.Parent.Humanoid.Health, player.Name, math.floor(dist))
                             if label.Text ~= newText then

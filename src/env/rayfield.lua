@@ -1273,6 +1273,7 @@ function RayfieldLibrary:CreateWindow(Settings)
 			bg.Parent = TabPage
 
 			local fg = Instance.new("ImageButton")
+			fg.Image = 'rbxassetid://8018522963'
 			fg.Size = UDim2.fromScale(1, 1)
 			fg.BackgroundTransparency = 1
 			fg.ZIndex = 2
