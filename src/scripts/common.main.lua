@@ -456,7 +456,7 @@ return function(Window)
 
                 local function isCurrentIdExisting(id)
                     for _, cache in ipairs(jobIds) do
-                        if id == cache then
+                        if tostring(id) == tostring(cache) then
                             return true
                         end
                     end
@@ -471,9 +471,8 @@ return function(Window)
                 local start = tick()
                 while true do
                     if foundLastCacheTime then
-                        if startHour ~= tonumber(foundLastCacheTime) then
+                        if tonumber(startHour) ~= tonumber(foundLastCacheTime) then
                             pcall(delfile, SERVER_TIME_CACHE_FILENAME)
-                            pcall(delfile, SERVERS_CACHE_FILENAME)
                             table.clear(jobIds)
                         end
                     end
