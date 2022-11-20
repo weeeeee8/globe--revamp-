@@ -48,14 +48,16 @@ return function(import)
     }
     environment.Globe.Window = Window
 
-    do import('scripts/common.main')(Window)
-    local function tryGetScriptNameFromGameId(gameId: number)
-       local scripts = {
-        [224422602] = 'ebg'
-       }
-       return scripts[gameId]
-    end
-    import('scripts/' .. tryGetScriptNameFromGameId(game.GameId) .. '.main')(Window) end
-
+    xpcall(function()
+        do import('scripts/common.main')(Window)
+        local function tryGetScriptNameFromGameId(gameId: number)
+        local scripts = {
+            [224422602] = 'ebg'
+        }
+        return scripts[gameId]
+        end
+        import('scripts/' .. tryGetScriptNameFromGameId(game.GameId) .. '.main')(Window) end
+    end, warn)
+    
     rayfield:LoadConfiguration()
 end

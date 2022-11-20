@@ -1354,7 +1354,7 @@ function RayfieldLibrary:CreateWindow(Settings)
 			end
 			
 			Globe.Maid:GiveTask(function()
-				colorChanged:Destroy()2
+				colorChanged:Destroy()
 			end)
 
 			fg.MouseEnter:Connect(function()
