@@ -387,7 +387,7 @@ return function(Window)
                     if foundRootPart then
                         local mouseLoc = UserInputService:GetMouseLocation()
                         local cameraRay = workspace.CurrentCamera:ViewportPointToRay(mouseLoc.X, mouseLoc.Y)
-                        mousePosition = calculateTrajectory.SolveTrajectory(cameraRay.Origin, projectileVelocity, foundRootPart.Position, foundRootPart.AssemblyLinearVelocity, true, 1)
+                        mousePosition = calculateTrajectory.SolveTrajectory(cameraRay.Origin, foundRootPart.AssemblyLinearVelocity.Magnitude, foundRootPart.Position, foundRootPart.AssemblyLinearVelocity, true, 1)
                     end
 
                     if mousePosition then

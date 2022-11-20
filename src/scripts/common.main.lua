@@ -297,6 +297,7 @@ return function(Window)
                     setCameraSubjectTo(result)
         
                     activeCharAdded = result.CharacterAdded:Connect(function()
+                        print(1)
                         setCameraSubjectTo(result, true)
                     end)
 
