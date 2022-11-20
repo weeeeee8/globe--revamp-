@@ -25,6 +25,7 @@ return function(Window)
 
     local tab = Window:CreateTab("Common")
     local function buildAnimatorModifierSection()
+        tab:CreateSection("Animator Modifier Options")
         local animator, hum
         local function onCharacterAdded(character)
             hum = character:WaitForChild("Humanoid")
