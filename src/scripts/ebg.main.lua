@@ -45,7 +45,10 @@ return function(Window)
             'Illusive Atake',
             'Blaze Column',
             'Amaurotic Lambent',
-            'Gravital Globe'
+            'Gravital Globe',
+            'Murky Missiles',
+            'Skeleton Grab',
+            'Sewer Burst'
         ):override(function() return false end):get()
 
         local remoteHookOld; remoteHookOld = hookmetamethod(game, '__namecall', function(self, ...)
@@ -68,7 +71,7 @@ return function(Window)
                                 fakeArgs[3] = if isMouseHitOverriden or playerMouse.Target then CFrame.lookAt(playerMouse.Hit.Position - Vector3.new(0, 20, 0), playerMouse.Hit.Position) else realArgs[3]
                             elseif SpellName == "Splitting Slime" or SpellName == "Illusive Atake" then
                                 fakeArgs[3] =  if isMouseHitOverriden or playerMouse.Target then CFrame.new(playerMouse.Hit.Position) else realArgs[3]
-                            elseif SpellName == "Blaze Column" then
+                            elseif SpellName == "Blaze Column" or SpellName == "Skeleton Grab" then
                                 fakeArgs[3] = if isMouseHitOverriden or playerMouse.Target then CFrame.new(playerMouse.Hit.Position) * CFrame.Angles(math.pi / 2, math.pi / 2, 0) else realArgs[3]
                             elseif SpellName == "Water Beam" then
                                 fakeArgs[3] = {}
@@ -87,7 +90,19 @@ return function(Window)
                                 fakeArgs[3] = newArgs
                             elseif SpellName == "Amaurotic Lambent" or SpellName == "Gravital Globe" then
                                 fakeArgs[3] = {
-                                    lastPos = if isMouseHitOverriden or playerMouse.Target then playerMouse.Hit.Position + Vector3.new(0, 2, 0) else realArgs[3].Origin
+                                    lastPos = if isMouseHitOverriden or playerMouse.Target then playerMouse.Hit.Position + Vector3.new(0, 2, 0) else realArgs[3].lastPos
+                                }
+                            elseif SpellName == "Murky Missiles" then
+                                fakeArgs[3] {
+                                    lastMousePosition = if isMouseHitOverriden or playerMouse.Target then CFrame.new(playerMouse.Hit.Position + Vector3.new(0, 2, 0)) else realArgs[3].lastMousePosition
+                                }
+                            elseif SpellName == "Sewer Burst" then
+                                local mousePosition = if isMouseHitOverriden or playerMouse.Target then CFrame.new(playerMouse.Hit.Position + Vector3.new(0, 2, 0)) else realArgs[3].Mouse
+                                fakeArgs[3] = {
+                                    Mouse = mousePosition,
+                                    Camera = mousePosition - Vector3.new(0, 4, 0),
+                                    Spawn = mousePosition,
+                                    Origin = mousePosition
                                 }
                             end
                             
