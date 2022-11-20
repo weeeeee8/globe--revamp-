@@ -20,6 +20,8 @@ return function(Window)
         end
         return nil
     end
+    
+    local playerNameFill = generic.NewAutofill("Name Fill", getPlayerFromInput)
 
     local tab = Window:CreateTab("Common", 4483364243)
     local function buildFlySection()
@@ -172,13 +174,11 @@ return function(Window)
 
         local activePlayerRemovedConn
 
-        local targetPlayerAutofill = generic.NewAutofill("Player to Teleport to", getPlayerFromInput)
-
         tab:CreateInput{
             Name = "Player to Teleport to",
             PlaceholderText = "Player DisplayName / Name",
             Callback = function(text: string)
-                local success, result: Player | string = targetPlayerAutofill.TryAutoFillFromInput(text)
+                local success, result: Player | string = playerNameFill.TryAutoFillFromInput(text)
                 if success then
                     targetPlayer = result
                     generic.NotifyUser(string.format('Connecting teleport bindings for player "%s"', result.Name), 1)
@@ -267,7 +267,6 @@ return function(Window)
     local function buildCameraSpySection()
         tab:CreateSection("Camera Spy Options")
 
-        local playerSpyAutofill = generic.NewAutofill("Camera Spy", getPlayerFromInput)
         local activeCharAdded
         local activePlayerRemovedConn
 
@@ -282,7 +281,7 @@ return function(Window)
             Name = "Player to Spy",
             PlaceholderText = "Player DisplayName / Name",
             Callback = function(text: string)
-                local success, result: Player | string = playerSpyAutofill.TryAutoFillFromInput(text)
+                local success, result: Player | string = playerNameFill.TryAutoFillFromInput(text)
                 
                 if activePlayerRemovedConn then
                     activePlayerRemovedConn:Disconnect()
@@ -323,9 +322,9 @@ return function(Window)
                 activePlayerRemovedConn = nil
             end
 
-            if activeOnDiedConn then
-                activeOnDiedConn:Disconnect()
-                activeOnDiedConn = nil
+            if activeCharAdded then
+                activeCharAdded:Disconnect()
+                activeCharAdded = nil
             end
         end)
 
@@ -341,6 +340,8 @@ return function(Window)
         local textFont = Drawing.Fonts.UI
         local textSize = 14
         local textColor = Color3.fromRGB(239, 137, 42)
+
+        local connectionsHolder = generic.NewConnectionsHolder()
 
         local function instantiateLabel(player)
             local label = Drawing.new('Text')
@@ -371,11 +372,48 @@ return function(Window)
                 espEnabled = toggled
             end,
         }
+        local input = tab:CreateInput{
+            Name = "Spawn watch Player",
+            PlaceholderText = "Player DisplayName / Name",
+            Callback = function(text)
+                local success, result = playerNameFill.TryAutoFillFromInput(text)
+                if success then
+                    generic.NotifyUser(string.format('Watching %s! You will be notified once they have entered/exited a safezone', result.Name))
+                    connectionsHolder:DisconnectAll()
+
+                    local function onCharacterAdded(char)
+                        connectionsHolder.Insert(char.ChildAdded:Connect(function(c)
+                            if c:IsA("ForceField") then
+                                generic.NotifyUser(string.format('%s has entered spawn!', result.Name))
+                            end
+                        end))
+                        connectionsHolder.Insert(char.ChildRemoved:Connect(function(c)
+                            if c:IsA("ForceField") then
+                                generic.NotifyUser(string.format('%s has exited spawn!', result.Name))
+                            end
+                        end))
+                    end
+
+                    connectionsHolder.Insert(result.CharacterAdded:Connect(onCharacterAdded))
+                end
+            end
+        }
+        tab:CreateButton{
+            Name = "Clear field",
+            Callback = function()
+                input:Set('', true)
+            end
+        }
+
+        Globe.Maid:GiveTask(function()
+            connectionsHolder.Destroy()
+        end)
 
         for _, player in ipairs(Players:GetPlayers()) do
             if player == Players.LocalPlayer then continue end
             instantiateLabel(player)
         end
+        
         Globe.Maid:GiveTask(Players.PlayerAdded:Connect(instantiateLabel))
         Globe.Maid:GiveTask(Players.PlayerRemoving:Connect(function(player)
             local indexOf = trackedPlayers[player]

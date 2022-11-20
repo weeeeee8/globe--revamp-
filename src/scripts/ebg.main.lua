@@ -6,8 +6,6 @@ return function(Window)
     local generic = import('env/util/generic')
     local Hook = import('env/lib/hook')
 
-    local domagic, docmagic, clientdata, combat = generic.FindInstancesInReplicatedStorage('DoMagic', 'DoClientMagic', 'ClientData', 'Combat')
-
     local function getPlayerFromInput(input)
         -- try this one first
         local players = Players:GetPlayers()
@@ -24,6 +22,9 @@ return function(Window)
         end
         return nil
     end
+    
+    local playerNameFill = generic.NewAutofill("Name Fill", getPlayerFromInput)
+    local domagic, docmagic, clientdata, combat = generic.FindInstancesInReplicatedStorage('DoMagic', 'DoClientMagic', 'ClientData', 'Combat')
 
     local mainTab = Window:CreateTab("Elemental Battlegrounds") do
         local playerMouse = Players.LocalPlayer:GetMouse()
@@ -189,13 +190,15 @@ return function(Window)
             end)
         end
 
-        local function buildPunchAuraSection()
-            local blacklistedPlayers = {}
+        local function buildAdvancedTargetingSection()
+            tab:CreateSection('Advanced Targeting Options')
+        end
 
+        local function buildPunchAuraSection()
             local MIN_DIST = 10--studs
 
-            local playerNameFill = generic.NewAutofill("Punch Aura", getPlayerFromInput)
             local auraEnabled = false
+            local blacklistedPlayers = {}
 
             local function findNearestPlayer()
                 local t = {}
