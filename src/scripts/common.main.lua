@@ -332,7 +332,7 @@ return function(Window)
             label.Color = textColor
             label.Outline = true
             label.OutlineColor = Color3.new(0, 0, 0)
-            label.TextTransparency = 0.7
+            label.Transparency = 0.7
             label.Center = true
 
             trackedPlayers[player] = label
