@@ -131,20 +131,20 @@ return function(Window)
             return remoteHookOld(self, ...)
         end)
 
-        Globe.Maid:GiveTask(function()
-            hookmetamethod(game, '__namecall', remoteHookOld)
-        end)
-
-        local mouseHook; mouseHook = Hook.new('ebg.mousehook', getrawmetatable(playerMouse).__index, function(self, key: string)
+        local mouseHook; mouseHook = hookmetamethod(playerMouse, '__index', function(self, key)
             if not checkcaller() then
                 if isMouseHitOverriden then
-                    print(key)
-                    if type(key) == "string" and key == "Hit" then
+                    if key == "Hit" then
                         return overridenMouseCFrame
                     end
                 end
             end
-            return mouseHook:Call(self, key)
+            return mouseHook(self, key)
+        end)
+
+        Globe.Maid:GiveTask(function()
+            hookmetamethod(game, '__namecall', remoteHookOld)
+            hookmetamethod(playerMouse, '__index', mouseHook)
         end)
 
         local function buildSpellSection()
