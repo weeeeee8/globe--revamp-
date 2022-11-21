@@ -395,6 +395,7 @@ return function(Window)
                         if targetType == 'Locked' then
                             print(targetPlayer, targetPlayer.Character)
                             if targetPlayer then
+                                print(targetPlayer.Character:FindFirstChild("HumanoidRootPart"))
                                 foundRootPart = if targetPlayer.Character then targetPlayer.Character:FindFirstChild("HumanoidRootPart") else nil
                             end
                         elseif targetType == 'Mouse' then
