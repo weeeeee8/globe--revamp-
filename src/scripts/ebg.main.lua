@@ -227,7 +227,6 @@ return function(Window)
 
             local MIN_DIST = 200
 
-            local projectileVelocity = 500
             local targetingEnabled = false
             local targetType = 'locked'
             local targetPlayer = nil
@@ -257,10 +256,6 @@ return function(Window)
             end
 
             local function clearPlayerBlacklistData(data)
-                if data.listenOnRemoving then
-                    data.listenOnRemoving:Disconnect()
-                    data.listenOnRemoving = nil
-                end
             end
 
             local toggle = utilityTab:CreateToggle{
@@ -278,7 +273,6 @@ return function(Window)
                 end
             }
 
-            local listenOnRemovingTargetPlayer
             local input = utilityTab:CreateInput{
                 Name = "Set Target Player",
                 PlaceholderText = "Player DisplayName / Name",
@@ -289,22 +283,10 @@ return function(Window)
                             generic.NotifyUser("Gave full name of a player but they're not in the server!", 4)
                             return
                         end 
-                        listenOnRemovingTargetPlayer = foundPlayer.Destroying:Once(function()
-                            listenOnRemovingTargetPlayer:Disconnect()
-                            listenOnRemovingTargetPlayer = nil
-
-                            generic.NotifyUser(string.format("[Targeting] %s has left the server, no active target!", foundPlayer.Name), 2)
-                            targetPlayer = nil
-                        end)
 
                         generic.NotifyUser(string.format("[Targeting] %s is currently being targeted! (Locked targeting option)", foundPlayer.Name), 2)
                         targetPlayer = foundPlayer
                     else
-                        if listenOnRemovingTargetPlayer then
-                            listenOnRemovingTargetPlayer:Disconnect()
-                            listenOnRemovingTargetPlayer = nil
-                        end
-
                         targetPlayer = nil
                     end
                 end
@@ -327,15 +309,7 @@ return function(Window)
                             generic.NotifyUser("Gave full name of a player but they're not in the server!", 4)
                             return
                         end
-                        local listenOnRemoving; listenOnRemoving = foundPlayer.Destroying:Once(function()
-                            listenOnRemoving:Disconnect()
-                            listenOnRemoving = nil
-
-                            generic.NotifyUser(string.format("[Targeting] %s has left the server. When they rejoin they'll still be blacklisted until then! (You can only unblacklist them when they returned from the server!)", foundPlayer.Name), 2)
-                        end)
-                        blacklistedPlayers[foundPlayer.UserId] = {
-                            listenOnRemoving = listenOnRemoving
-                        }
+                        blacklistedPlayers[foundPlayer.UserId] = {}
                     end
                 end
             }
@@ -384,6 +358,18 @@ return function(Window)
                     targetType = option
                 end
             }
+
+            Globe.Maid:GiveTask(Players.PlayerRemoving:Connect(function(player)
+                if blacklistedPlayers[player.UserId] then
+                    generic.NotifyUser(string.format("[Targeting] %s has left the server. When they rejoin they'll still be blacklisted until then! (You can only unblacklist them when they returned from the server!)", player.Name), 2)
+                end
+
+                if targetPlayer == player then
+                    generic.NotifyUser(string.format("[Targeting] %s has left the server, no active target!", player.Name), 2)
+                    targetPlayer = nil
+                    input:Set('', true)
+                end
+            end))
 
             Globe.Maid:GiveTask(RunService.Stepped:Connect(function(_, dt)
                 if targetingEnabled then
@@ -463,10 +449,6 @@ return function(Window)
             end
 
             local function clearPlayerBlacklistData(data)
-                if data.listenOnRemoving then
-                    data.listenOnRemoving:Disconnect()
-                    data.listenOnRemoving = nil
-                end
             end
 
             local toggle = utilityTab:CreateToggle{
@@ -494,15 +476,7 @@ return function(Window)
                             generic.NotifyUser("Gave full name of a player but they're not in the server!", 4)
                             return
                         end
-                        local listenOnRemoving; listenOnRemoving = foundPlayer.Destroying:Once(function()
-                            listenOnRemoving:Disconnect()
-                            listenOnRemoving = nil
-
-                            generic.NotifyUser(string.format("[Punch Aura] %s has left the server. When they rejoin they'll still be blacklisted until then! (You can only unblacklist them when they returned from the server!)", foundPlayer.Name), 2)
-                        end)
-                        blacklistedPlayers[foundPlayer.UserId] = {
-                            listenOnRemoving = listenOnRemoving
-                        }
+                        blacklistedPlayers[foundPlayer.UserId] = {}
                     end
                 end
             }
@@ -541,6 +515,13 @@ return function(Window)
                     end
                 end
             }
+
+            
+            Globe.Maid:GiveTask(Players.PlayerRemoving:Connect(function(player)
+                if blacklistedPlayers[player.UserId] then
+                    generic.NotifyUser(string.format("[Punch Aura] %s has left the server. When they rejoin they'll still be blacklisted until then! (You can only unblacklist them when they returned from the server!)", player.Name), 2)
+                end
+            end))
 
             Globe.Maid:GiveTask(RunService.Stepped:Connect(function()
                 if not auraEnabled then return end

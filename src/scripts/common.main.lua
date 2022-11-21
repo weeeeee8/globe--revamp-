@@ -306,8 +306,8 @@ return function(Window)
     local function buildCameraSpySection()
         tab:CreateSection("Camera Spy Options")
 
-        local activeCharAdded
-        local activePlayerRemovedConn
+        local watchedPlayer
+        local connectionsHolder = generic.NewConnectionsHolder()
 
         local function setCameraSubjectTo(player: Player, shouldYield)
             local hum = if player.Character then player.Character[if shouldYield then "WaitForChild" else "FindFirstChild"](player.Character, "Humanoid") else nil
@@ -322,27 +322,14 @@ return function(Window)
             Callback = function(text: string)
                 local success, result: Player | string = playerNameFill.TryAutoFillFromInput(text)
                 
-                if activePlayerRemovedConn then
-                    activePlayerRemovedConn:Disconnect()
-                    activePlayerRemovedConn = nil
-                end
-
-                if activeCharAdded then
-                    activeCharAdded:Disconnect()
-                    activeCharAdded = nil
-                end
+                connectionsHolder:DisconnectAll()
 
                 if success then
                     setCameraSubjectTo(result)
         
-                    activeCharAdded = result.CharacterAdded:Connect(function()
-                        print(1)
+                    connectionsHolder.Insert(result.CharacterAdded:Connect(function()
                         setCameraSubjectTo(result, true)
-                    end)
-
-                    activePlayerRemovedConn = result.Destroying:Once(function()
-                        input:Set('', true)
-                    end)
+                    end))
                 else
                     setCameraSubjectTo(Players.LocalPlayer)
                 end
@@ -356,16 +343,16 @@ return function(Window)
             end
         }
 
+        Globe.Maid:GiveTask(Players.PlayerRemoving:Connect(function(player)
+            if player == watchedPlayer then
+                connectionsHolder:DisconnectAll()
+                watchedPlayer = nil
+                input:Set('', true)
+            end
+        end))
+        
         Globe.Maid:GiveTask(function()
-            if activePlayerRemovedConn then
-                activePlayerRemovedConn:Disconnect()
-                activePlayerRemovedConn = nil
-            end
-
-            if activeCharAdded then
-                activeCharAdded:Disconnect()
-                activeCharAdded = nil
-            end
+            connectionsHolder:Destroy()
         end)
 
         setCameraSubjectTo(Players.LocalPlayer)
@@ -375,6 +362,7 @@ return function(Window)
         tab:CreateSection('ESP')
         
         local espEnabled = false
+        local watchedPlayer
         local trackedPlayers = {}
 
         local textFont = Drawing.Fonts.UI
@@ -435,11 +423,20 @@ return function(Window)
                     end
 
                     connectionsHolder:Insert(result.CharacterAdded:Connect(onCharacterAdded))
+                    watchedPlayer = result
                 else
                     connectionsHolder:DisconnectAll()
                 end
             end
         }
+
+        Globe.Maid:GiveTask(Players.PlayerRemoving:Connect(function(player)
+            if player == watchedPlayer then
+                connectionsHolder:DisconnectAll()
+                watchedPlayer = nil
+            end
+        end))
+
         tab:CreateButton{
             Name = "Clear field",
             Callback = function()
