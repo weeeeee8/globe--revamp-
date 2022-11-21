@@ -375,13 +375,9 @@ return function(Window)
                 if targetingEnabled then
                     local foundRootPart
                     local rootPart = generic.GetPlayerBodyPart("HumanoidRootPart")
-                    print(1)
                     if rootPart then
-                        print(targetType, targetType == 'Locked')
                         if targetType == 'locked' then
-                            print(targetPlayer, targetPlayer.Character)
                             if targetPlayer then
-                                print(targetPlayer.Character:FindFirstChild("HumanoidRootPart"))
                                 foundRootPart = if targetPlayer.Character then targetPlayer.Character:FindFirstChild("HumanoidRootPart") else nil
                             end
                         elseif targetType == 'mouse' then
@@ -396,11 +392,9 @@ return function(Window)
                             end
                         end
 
-                        print(foundRootPart)
                         local mousePosition = Vector3.zero
                         if foundRootPart then
-                            print(2)
-                            mousePosition = calculateTrajectory.SolveTrajectory(rootPart.Position, 21, foundRootPart.Position, foundRootPart.AssemblyLinearVelocity, false, 1)
+                            mousePosition = calculateTrajectory.SolveTrajectory(rootPart.Position, 500, foundRootPart.Position, foundRootPart.AssemblyLinearVelocity, true, 1)
                         end
 
                         isMouseHitOverriden = true
