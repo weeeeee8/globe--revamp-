@@ -409,9 +409,10 @@ return function(Window)
                             end
                         end
 
+                        print(foundRootPart)
                         local mousePosition = Vector3.zero
                         if foundRootPart then
-                            print(1)
+                            print(2)
                             mousePosition = calculateTrajectory.SolveTrajectory(rootPart.Position, 21, foundRootPart.Position, foundRootPart.AssemblyLinearVelocity, false, 1)
                         end
 
