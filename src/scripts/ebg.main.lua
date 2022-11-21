@@ -377,7 +377,7 @@ return function(Window)
                     local rootPart = generic.GetPlayerBodyPart("HumanoidRootPart")
                     print(1)
                     if rootPart then
-                        print(targetType)
+                        print(targetType, targetType == 'Locked')
                         if targetType == 'Locked' then
                             print(targetPlayer, targetPlayer.Character)
                             if targetPlayer then
