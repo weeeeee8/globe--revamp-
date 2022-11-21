@@ -378,18 +378,18 @@ return function(Window)
                     print(1)
                     if rootPart then
                         print(targetType, targetType == 'Locked')
-                        if targetType == 'Locked' then
+                        if targetType == 'locked' then
                             print(targetPlayer, targetPlayer.Character)
                             if targetPlayer then
                                 print(targetPlayer.Character:FindFirstChild("HumanoidRootPart"))
                                 foundRootPart = if targetPlayer.Character then targetPlayer.Character:FindFirstChild("HumanoidRootPart") else nil
                             end
-                        elseif targetType == 'Mouse' then
+                        elseif targetType == 'mouse' then
                             local foundPlayer = findNearestPlayerFromPosition(generic.GetMousePositionFromHook())
                             if foundPlayer then
                                 foundRootPart = if foundPlayer.Character then foundPlayer.Character:FindFirstChild("HumanoidRootPart") else nil
                             end
-                        elseif targetType == 'Character' then
+                        elseif targetType == 'character' then
                             local foundPlayer = findNearestPlayerFromPosition(rootPart.Position)
                             if foundPlayer then
                                 foundRootPart = if foundPlayer.Character then foundPlayer.Character:FindFirstChild("HumanoidRootPart") else nil
