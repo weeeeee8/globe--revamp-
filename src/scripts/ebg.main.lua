@@ -231,7 +231,140 @@ return function(Window)
             local targetType = 'locked'
             local targetPlayer = nil
             local blacklistedPlayers = {}
-            
+
+            local pointsFolder = workspace:FindFirstChild(".points") or Instance.new("Folder", workspace)
+            pointsFolder.Name = ".points"
+
+            local numsOfPoints = 10
+            local velocityTime = 1
+            local activelySimulatingObstructionCheck = false
+            local pointIndex = 4
+            local points = {}
+            points.target = nil
+            points.unrenderCF = CFrame.new(0, 10e5, 0)
+            points.lastTimeVelocities = {}
+            points.connectionsHolder = generic.NewConnectionsHolder()
+            --players
+            local function onOtherPlayerAdded(player)
+                points.lastTimeVelocities[player.UserId] = {
+                    lastVelocity = Vector3.zero,
+                    velocity = Vector3.zero,
+                    position = Vector3.zero,
+                    movementspeed = 16,
+                }
+                local profile = points.lastTimeVelocities[player.UserId]
+                player.CharacterAdded:Connect(function(char)
+                    local hum, rootpart = char:WaitForChild("Humanoid"), char:WaitForChild("HumanoidRootPart")
+                    local function onSpeedChanged()
+                        profile.movementspeed = hum.WalkSpeed
+                    end
+
+                    local function onVelocityChanged()
+                        profile.velocity = rootpart.AssemblyLinearVelocity
+                    end
+                    
+                    local function onPositionChanged()
+                        profile.position = rootpart.Position
+                    end
+
+                    onSpeedChanged()
+                    onVelocityChanged()
+                    onPositionChanged()
+                    hum:GetPropertyChangedSignal("WalkSpeed"):Connect(onSpeedChanged)
+                    rootpart:GetPropertyChangedSignal("Position"):Connect(onPositionChanged)
+                    rootpart:GetPropertyChangedSignal("AssemblyLinearVelocity"):Connect(onVelocityChanged)
+                end)
+            end
+            points.connectionsHolder:Insert(Players.PlayerAdded:Connect(onOtherPlayerAdded))
+            points.connectionsHolder:Insert(Players.PlayerRemoving:Connect(function(player)
+                local indexOf = points.lastTimeVelocities[player.UserId]
+                if indexOf then
+                    points.lastTimeVelocities[player.UserId] = nil
+                end
+            end))
+            for _, player in ipairs(Players:GetPlayers()) do
+                if player == Players.LocalPlayer then continue end
+                onOtherPlayerAdded(player)
+            end
+            --end players
+            function points:new()
+                local sphere = Instance.new("Part")
+                sphere.Anchored = true
+                sphere.Shape = Enum.PartType.Ball
+                sphere.Material = Enum.Material.Neon
+                sphere.CastShadow = true
+                sphere.CanCollide = false
+                sphere.CanQuery = false
+                sphere.Size = Vector3.one * 1.85
+                sphere.Parent = pointsFolder
+                table.insert(self, {
+                    active = false,
+                    shown = false,
+                    _shownDirty = false,
+                    part = sphere,
+                    position = Vector3.yAxis * 10e4
+                })
+
+                return #self
+            end
+            function points:remove(index)
+                local output = table.remove(index)
+                output.part:Destroy()
+                return output
+            end
+            function points:destroy()
+                while #self > 1 do
+                    local point = self:remove(#self)
+                    table.clear(point)
+                end
+                self.connectionsHolder:Destroy()
+                table.clear(self.lastTimeVelocities)
+                table.clear(self)
+            end
+            function points:getActivePoint()
+                for _, point in ipairs(self) do
+                    if point.active then
+                        return point
+                    end
+                end
+                return nil
+            end
+            function points:getPositionFromInterval(a, b, c)
+                return a + (b * c)
+            end
+            function points:update(deltaTime)
+                local foundProfile = self.lastTimeVelocities[self.target.UserId]
+                if not foundProfile then
+                    for i = #self, 1, -1 do
+                        local point = self[i]
+                        if point._shownDirty then
+                            point._shownDirty = false
+                            point.part.CFrame = points.unrenderCF
+                        end
+                    end
+                    return
+                end
+                local normalizedVelocity = foundProfile.lastVelocity - foundProfile[self.target.UserId].velocity
+                for i = #self, 1, -1 do
+                    local point = self[i]
+                    point.index = i == pointIndex
+                    if point.shown then
+                        point.position = self:getPositionFromInterval(foundProfile.position, normalizedVelocity, deltaTime * foundProfile.movementspeed * (i / #self))
+                        point.part.CFrame = CFrame.new(point.position)
+                        local newColor = if point.active then BrickColor.Green() else BrickColor.Red()
+                        if point.part.BrickColor ~= newColor then
+                            point.part.BrickColor = newColor
+                        end
+                        point._shownDirty = true
+                    else
+                        if point._shownDirty then
+                            point._shownDirty = false
+                            point.part.CFrame = points.unrenderCF
+                        end
+                    end
+                end
+            end
+
             local function findNearestPlayerFromPosition(position)
                 local t = {}
                 for _, player in ipairs(Players:GetPlayers()) do
@@ -256,6 +389,10 @@ return function(Window)
             end
 
             local function clearPlayerBlacklistData(data)
+            end
+
+            for i = 1, numsOfPoints do
+                points:new()
             end
 
             local toggle = utilityTab:CreateToggle{
@@ -359,6 +496,10 @@ return function(Window)
                 end
             }
 
+            Globe.Maid:GiveTask(function()
+                points:destroy()
+            end)
+
             Globe.Maid:GiveTask(Players.PlayerRemoving:Connect(function(player)
                 if blacklistedPlayers[player.UserId] then
                     generic.NotifyUser(string.format("[Targeting] %s has left the server. When they rejoin they'll still be blacklisted until then! (You can only unblacklist them when they returned from the server!)", player.Name), 2)
@@ -372,6 +513,8 @@ return function(Window)
             end))
 
             Globe.Maid:GiveTask(RunService.Stepped:Connect(function(_, dt)
+                points:update(dt)
+
                 if targetingEnabled then
                     local foundRootPart
                     local rootPart = generic.GetPlayerBodyPart("HumanoidRootPart")
@@ -394,7 +537,8 @@ return function(Window)
 
                         local mousePosition = Vector3.zero
                         if foundRootPart then
-                            mousePosition = calculateTrajectory.SolveTrajectory(rootPart.Position, 500, foundRootPart.Position, foundRootPart.AssemblyLinearVelocity, true, 1)
+                            points.target = targetPlayer
+                            mousePosition = points:getActivePoint().position
                         end
 
                         isMouseHitOverriden = true

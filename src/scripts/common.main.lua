@@ -327,7 +327,7 @@ return function(Window)
                 if success then
                     setCameraSubjectTo(result)
         
-                    connectionsHolder.Insert(result.CharacterAdded:Connect(function()
+                    connectionsHolder:Insert(result.CharacterAdded:Connect(function()
                         setCameraSubjectTo(result, true)
                     end))
                 else
