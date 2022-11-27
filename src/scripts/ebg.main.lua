@@ -299,7 +299,7 @@ return function(Window)
                 table.insert(self, {
                     active = false,
                     shown = false,
-                    _shownDirty = false,
+                    _shownDirty = true,
                     part = sphere,
                     position = Vector3.yAxis * 10e4
                 })
@@ -341,6 +341,16 @@ return function(Window)
                 return a + (b * c)
             end
             function points:update(deltaTime)
+                if not self.target then
+                    for i = #self, 1, -1 do
+                        local point = self[i]
+                        if point._shownDirty then
+                            point._shownDirty = false
+                            point.part.CFrame = points.unrenderCF
+                        end
+                    end
+                    return
+                end
                 local foundProfile = self.lastTimeVelocities[self.target.UserId]
                 if not foundProfile then
                     for i = #self, 1, -1 do
