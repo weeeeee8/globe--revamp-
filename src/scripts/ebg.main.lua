@@ -236,7 +236,6 @@ return function(Window)
             pointsFolder.Name = ".points"
 
             local numsOfPoints = 10
-            local velocityTime = 1
             local activelySimulatingObstructionCheck = false
             local pointIndex = 4
             local points = {}
@@ -329,6 +328,15 @@ return function(Window)
                 end
                 return nil
             end
+            function points:setActivePoint(index)
+                local foundPoint = self[index]
+                if foundPoint then
+                    for _, point in ipairs(self) do
+                        point.active = false
+                    end
+                    foundPoint.active = true
+                end
+            end
             function points:getPositionFromInterval(a, b, c)
                 return a + (b * c)
             end
@@ -349,7 +357,7 @@ return function(Window)
                     local point = self[i]
                     point.index = i == pointIndex
                     if point.shown then
-                        point.position = self:getPositionFromInterval(foundProfile.position, normalizedVelocity, deltaTime * foundProfile.movementspeed * (i / #self))
+                        point.position = point.position:Lerp(self:getPositionFromInterval(foundProfile.position, normalizedVelocity, deltaTime * foundProfile.movementspeed * (i / #self)), 0.75)
                         point.part.CFrame = CFrame.new(point.position)
                         local newColor = if point.active then BrickColor.Green() else BrickColor.Red()
                         if point.part.BrickColor ~= newColor then
@@ -394,6 +402,7 @@ return function(Window)
             for i = 1, numsOfPoints do
                 points:new()
             end
+            points:setActivePoint(4)
 
             local toggle = utilityTab:CreateToggle{
                 Name = "Enable Advanced Targeting",
@@ -433,6 +442,19 @@ return function(Window)
                 Name = "Clear field",
                 Callback = function()
                     input:Set('', true)
+                end
+            }
+
+            utilityTab:CreateInput{
+                Name = "Prediction Index",
+                PlaceholderText = "number",
+                Callback = function(text)
+                    local num = tonumber(text)
+                    if num then
+                        num = math.max(num, 0)
+                        points:setActivePoint(num)
+                        generic.NotifyUser("Prediction Waypoint Index is set to " .. num .. "!", 1)
+                    end
                 end
             }
 
