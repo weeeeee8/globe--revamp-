@@ -240,6 +240,7 @@ return function(Window)
             local pointIndex = 4
             local points = {}
             points.target = nil
+            points._pointsShownDirty = false
             points.unrenderCF = CFrame.new(0, 10e5, 0)
             points.lastTimeVelocities = {}
             points.connectionsHolder = generic.NewConnectionsHolder()
@@ -342,22 +343,28 @@ return function(Window)
             end
             function points:update(deltaTime)
                 if not self.target then
-                    for i = #self, 1, -1 do
-                        local point = self[i]
-                        if point._shownDirty then
-                            point._shownDirty = false
-                            point.part.CFrame = points.unrenderCF
+                    if self._pointsShownDirty then
+                        self._pointsShownDirty = false
+                        for i = #self, 1, -1 do
+                            local point = self[i]
+                            if point._shownDirty then
+                                point._shownDirty = false
+                                point.part.CFrame = points.unrenderCF
+                            end
                         end
                     end
                     return
                 end
                 local foundProfile = self.lastTimeVelocities[self.target.UserId]
                 if not foundProfile then
-                    for i = #self, 1, -1 do
-                        local point = self[i]
-                        if point._shownDirty then
-                            point._shownDirty = false
-                            point.part.CFrame = points.unrenderCF
+                    if self._pointsShownDirty then
+                        self._pointsShownDirty = false
+                        for i = #self, 1, -1 do
+                            local point = self[i]
+                            if point._shownDirty then
+                                point._shownDirty = false
+                                point.part.CFrame = points.unrenderCF
+                            end
                         end
                     end
                     return
@@ -381,6 +388,7 @@ return function(Window)
                         end
                     end
                 end
+                self._pointsShownDirty = true
             end
 
             local function findNearestPlayerFromPosition(position)
