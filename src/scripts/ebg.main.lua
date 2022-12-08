@@ -5,8 +5,6 @@ local UserInputService = game:GetService("UserInputService")
 
 return function(Window)
     local generic = import('env/util/generic')
-    local calculateTrajectory = import('env/util/calculateTrajectory')
-    local Hook = import('env/lib/hook')
 
     local function getPlayerFromInput(input)
         -- try this one first
@@ -192,8 +190,6 @@ return function(Window)
     local utilityTab = Window:CreateTab("Utility - Elemental Battlegrounds") do
         local function buildTechDiscSection()
             local connectionsHolder = generic.NewConnectionsHolder()
-            local PlayerScripts = Players.LocalPlayer:WaitForChild("PlayerScripts")
-            local ClientEffectsFolder = workspace:WaitForChild('.Ignore'):WaitForChild('.LocalEffects')
 
             utilityTab:CreateSection('Disable Techlag (Technology Light Disk Bug) State')
             utilityTab:CreateToggle{
@@ -201,6 +197,8 @@ return function(Window)
                 CurrentValue = true,
                 Callback = function(toggled)
                     if toggled then
+                        local PlayerScripts = Players.LocalPlayer:WaitForChild("PlayerScripts")
+                        local ClientEffectsFolder = workspace:WaitForChild('.Ignore'):WaitForChild('.LocalEffects')
                         connectionsHolder:Insert(PlayerScripts.ChildAdded:Connect(function(c)
                             if c.Name:lower() == "DiscScript" then
                                 task.delay(1, c.Destroy, c)
