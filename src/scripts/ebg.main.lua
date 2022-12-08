@@ -369,7 +369,7 @@ return function(Window)
                     end
                     return
                 end
-                local normalizedVelocity = foundProfile.lastVelocity - foundProfile[self.target.UserId].velocity
+                local normalizedVelocity = foundProfile.lastVelocity - foundProfile.velocity
                 for i = #self, 1, -1 do
                     local point = self[i]
                     point.index = i == pointIndex
