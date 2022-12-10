@@ -337,7 +337,7 @@ return function(Window)
         }
 
         tab:CreateButton{
-            Name = "Clear field",
+            Name = "Clear field (above)",
             Callback = function()
                 input:Set('', true)
             end
@@ -438,7 +438,7 @@ return function(Window)
         end))
 
         tab:CreateButton{
-            Name = "Clear field",
+            Name = "Clear field (above)",
             Callback = function()
                 input:Set('', true)
             end

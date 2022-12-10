@@ -456,7 +456,7 @@ return function(Window)
             }
 
             utilityTab:CreateButton{
-                Name = "Clear field",
+                Name = "Clear field (above)",
                 Callback = function()
                     input:Set('', true)
                 end
