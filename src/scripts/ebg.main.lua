@@ -350,8 +350,10 @@ return function(Window)
                     end
                     return
                 end
+                
                 foundProfile.position = foundProfile.root.Position
                 foundProfile.velocity = foundProfile.root.AssemblyLinearVelocity
+
                 local normalizedVelocity = foundProfile.velocity - foundProfile.lastVelocity
                 for i = 1, #self, 1 do
                     local point = self[i]
