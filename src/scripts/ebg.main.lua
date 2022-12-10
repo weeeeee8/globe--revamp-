@@ -248,29 +248,12 @@ return function(Window)
                     lastVelocity = Vector3.zero,
                     velocity = Vector3.zero,
                     position = Vector3.zero,
-                    movementspeed = 16,
                 }
                 local profile = points.lastTimeVelocities[player.UserId]
                 player.CharacterAdded:Connect(function(char)
                     local hum, rootpart = char:WaitForChild("Humanoid"), char:WaitForChild("HumanoidRootPart")
-                    local function onSpeedChanged()
-                        profile.movementspeed = hum.WalkSpeed
-                    end
-
-                    local function onVelocityChanged()
-                        profile.velocity = rootpart.AssemblyLinearVelocity
-                    end
-                    
-                    local function onPositionChanged()
-                        profile.position = rootpart.Position
-                    end
-
-                    onSpeedChanged()
-                    onVelocityChanged()
-                    onPositionChanged()
-                    hum:GetPropertyChangedSignal("WalkSpeed"):Connect(onSpeedChanged)
-                    rootpart:GetPropertyChangedSignal("Position"):Connect(onPositionChanged)
-                    rootpart:GetPropertyChangedSignal("AssemblyLinearVelocity"):Connect(onVelocityChanged)
+                    profile.hum = hum
+                    profile.root = rootpart
                 end)
             end
             points.connectionsHolder:Insert(Players.PlayerAdded:Connect(onOtherPlayerAdded))
@@ -353,7 +336,6 @@ return function(Window)
                     end
                     return
                 end
-                print(1)
                 local foundProfile = self.lastTimeVelocities[self.target.UserId]
                 if not foundProfile then
                     if self._pointsShownDirty then
@@ -368,11 +350,12 @@ return function(Window)
                     end
                     return
                 end
-                print(2)
+                foundProfile.position = foundProfile.root.Position
+                foundProfile.velocity = foundProfile.root.AssemblyLinearVelocity
                 local normalizedVelocity = foundProfile.velocity - foundProfile.lastVelocity
                 for i = 1, #self, 1 do
                     local point = self[i]
-                    point.position = point.position:Lerp(self:getPositionFromInterval(foundProfile.position, foundProfile.velocity, (foundProfile.movementspeed / 16) * (i / #self), normalizedVelocity / deltaTime), 0.75)
+                    point.position = point.position:Lerp(self:getPositionFromInterval(foundProfile.position, foundProfile.velocity, (foundProfile.hum.WalkSpeed / 16) * (i / #self), normalizedVelocity / deltaTime), 0.75)
                     point.part.CFrame = CFrame.new(point.position)
                     local newColor = if point.active then BrickColor.Green() else BrickColor.Red()
                     if point.part.BrickColor ~= newColor then
