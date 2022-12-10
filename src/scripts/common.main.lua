@@ -598,6 +598,7 @@ return function(Window)
                         if tonumber(serverdata.maxPlayers) > tonumber(serverdata.playing) and tonumber(serverdata.playing) > desiredServerSize then
                             if not isCurrentIdExisting(id) then
                                 generic.NotifyUser('Found a server with an id of "' .. id .. '"!', 1)
+                                setclipboard(id)
 
                                 table.insert(jobIds, id)
                                 local event = Instance.new("BindableEvent")
