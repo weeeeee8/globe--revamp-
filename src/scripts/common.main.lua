@@ -148,9 +148,11 @@ return function(Window)
 
         RunService:BindToRenderStep("fly.update", Enum.RenderPriority.Character.Value, function(dt)
             local rootPart = generic.GetPlayerBodyPart('HumanoidRootPart')
+            local hum = generic.GetPlayerBodyPart('Humanoid')
             if not rootPart then return end
             if flightEnabled then
                 modifyBodyMovers(rootPart, false)
+                hum.AutoRotate = false
                 local direction: Vector3 = getDirectionFromActiveStates(flightSpeed + dt)
                 
                 if bodyvelocity then
@@ -162,6 +164,7 @@ return function(Window)
                 end
             else
                 modifyBodyMovers(rootPart, true)
+                hum.AutoRotate = true
             end
         end)
 
