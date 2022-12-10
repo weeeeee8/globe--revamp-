@@ -353,6 +353,7 @@ return function(Window)
                     end
                     return
                 end
+                print(1)
                 local foundProfile = self.lastTimeVelocities[self.target.UserId]
                 if not foundProfile then
                     if self._pointsShownDirty then
@@ -367,6 +368,7 @@ return function(Window)
                     end
                     return
                 end
+                print(2)
                 local normalizedVelocity = foundProfile.velocity - foundProfile.lastVelocity
                 for i = 1, #self, 1 do
                     local point = self[i]
