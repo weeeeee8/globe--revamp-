@@ -99,7 +99,7 @@ return function(Window)
                                 fakeArgs[3] = {
                                     Mouse = mousePosition,
                                     Camera = mousePosition - Vector3.new(0, 4, 0),
-                                    Spawn = mousePosition,
+                                    Spawn = CFrame.new(mousePosition),
                                     Origin = CFrame.new(mousePosition)
                                 }
                             end
@@ -370,21 +370,13 @@ return function(Window)
                 local normalizedVelocity = foundProfile.velocity - foundProfile.lastVelocity
                 for i = 1, #self, 1 do
                     local point = self[i]
-                    point.index = i == pointIndex
-                    if point.shown then
-                        point.position = point.position:Lerp(self:getPositionFromInterval(foundProfile.position, foundProfile.velocity, (foundProfile.movementspeed / 16) * (i / #self), normalizedVelocity / deltaTime), 0.75)
-                        point.part.CFrame = CFrame.new(point.position)
-                        local newColor = if point.active then BrickColor.Green() else BrickColor.Red()
-                        if point.part.BrickColor ~= newColor then
-                            point.part.BrickColor = newColor
-                        end
-                        point._shownDirty = true
-                    else
-                        if point._shownDirty then
-                            point._shownDirty = false
-                            point.part.CFrame = points.unrenderCF
-                        end
+                    point.position = point.position:Lerp(self:getPositionFromInterval(foundProfile.position, foundProfile.velocity, (foundProfile.movementspeed / 16) * (i / #self), normalizedVelocity / deltaTime), 0.75)
+                    point.part.CFrame = CFrame.new(point.position)
+                    local newColor = if point.active then BrickColor.Green() else BrickColor.Red()
+                    if point.part.BrickColor ~= newColor then
+                        point.part.BrickColor = newColor
                     end
+                    point._shownDirty = true
                 end
                 foundProfile.lastVelocity = foundProfile.velocity
                 self._pointsShownDirty = true
