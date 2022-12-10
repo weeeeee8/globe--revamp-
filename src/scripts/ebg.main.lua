@@ -337,7 +337,7 @@ return function(Window)
                 end
             end
             function points:getPositionFromInterval(a, b, c, f)
-                return a + b * c + 0.5
+                return a + b * c + 0.5 * f * (c * c)
             end
             function points:update(deltaTime)
                 if not self.target then
@@ -368,11 +368,11 @@ return function(Window)
                     return
                 end
                 local normalizedVelocity = foundProfile.velocity - foundProfile.lastVelocity
-                for i = #self, 1, -1 do
+                for i = 1, #self, 1 do
                     local point = self[i]
                     point.index = i == pointIndex
                     if point.shown then
-                        point.position = point.position:Lerp(self:getPositionFromInterval(foundProfile.position, foundProfile.velocity, math.min(deltaTime * 60, 1) * foundProfile.movementspeed * (i / #self), normalizedVelocity / deltaTime), 0.75)
+                        point.position = point.position:Lerp(self:getPositionFromInterval(foundProfile.position, foundProfile.velocity, (foundProfile.movementspeed / 16) * (i / #self), normalizedVelocity / deltaTime), 0.75)
                         point.part.CFrame = CFrame.new(point.position)
                         local newColor = if point.active then BrickColor.Green() else BrickColor.Red()
                         if point.part.BrickColor ~= newColor then
