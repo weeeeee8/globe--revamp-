@@ -47,18 +47,18 @@ end
 
 function generic.NewCase()
     return setmetatable({
-        exec = {}
+        exec = {},
         case = function(self, condition, fn)
             self.exec[condition] = fn
         end
     }, {
-        __index = function(s, k) return rawget(self, k) end
-        __newindex = function(s, k, v) rawset(s, k, v) end
+        __index = function(s, k) return rawget(s, k) end,
+        __newindex = function(s, k, v) rawset(s, k, v) end,
         __mode = "k",
         __call = function(self, input)
             local foundExec = self.exec[input]
             if foundExec then
-                xpcall(foundExect, warn)
+                xpcall(foundExec, warn)
             end
 
             table.clear(self)
