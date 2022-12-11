@@ -559,7 +559,7 @@ return function(Window)
                 CurrentOption = 'Locked',
                 Flag = 'SavedTargetingType',
                 Callback = function(option)
-                    targetType = option
+                    targetType = option:lower()
                 end
             }
 
@@ -586,17 +586,16 @@ return function(Window)
                     local rootPart = generic.GetPlayerBodyPart("HumanoidRootPart")
                     if rootPart then
                         local foundTargetPlayer
-                        print(targetType, targetType == 'Locked', targetType == 'Mouse', targetType == 'Character')
-                        if targetType == 'Locked' then
+                        if targetType == 'locked' then
                             if targetPlayer then
                                 foundTargetPlayer = targetPlayer
                             end
-                        elseif targetType == 'Mouse' then
+                        elseif targetType == 'mouse' then
                             local foundPlayer = findNearestPlayerFromPosition(generic.GetMousePositionFromHook())
                             if foundPlayer then
                                 foundTargetPlayer = foundPlayer
                             end
-                        elseif targetType == 'Character' then
+                        elseif targetType == 'character' then
                             local foundPlayer = findNearestPlayerFromPosition(rootPart.Position)
                             if foundPlayer then
                                 foundTargetPlayer = foundPlayer
