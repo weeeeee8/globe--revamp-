@@ -586,6 +586,7 @@ return function(Window)
                     local rootPart = generic.GetPlayerBodyPart("HumanoidRootPart")
                     if rootPart then
                         local foundTargetPlayer
+                        print(targetType)
                         if targetType == 'locked' then
                             if targetPlayer then
                                 foundTargetPlayer = targetPlayer
