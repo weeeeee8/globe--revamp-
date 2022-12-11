@@ -577,7 +577,7 @@ return function(Window)
                     self:remove(#self)
                 end
             end
-            function points:new2(locked)
+            function points:new(locked)
                 local sphere = Instance.new("Part")
                 sphere.Anchored = true
                 sphere.Shape = Enum.PartType.Ball
