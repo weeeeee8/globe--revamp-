@@ -35,6 +35,7 @@ return function(Window)
         local spoofedSpells = generic.MakeSet(
             'Lightning Flash',
             'Lightning Barrage',
+            'Asteroid Belt',
             'Orbs of Enlightenment',
             'Orbital Strike',
             'Refraction',
@@ -47,7 +48,8 @@ return function(Window)
             'Murky Missiles',
             'Skeleton Grab',
             'Sewer Burst',
-            'Asteroid Belt'
+            'Arcane Guardian',
+            'Ethereal Acumen'
         ):override(function() return false end):get()
 
         local remoteHookOld; remoteHookOld = hookmetamethod(game, '__namecall', function(self, ...)
@@ -186,28 +188,61 @@ return function(Window)
                 'Illusion',
                 'Slime',
                 'Gravity',
+                'Angel',
                 'Fire'
             ):override(function(parent)
                 parent = parent:lower()
                 if parent == 'light' then
                     return generic.MakeSet('Orbs of Enlightenment', 'Amaurotic Lambent'):get()
-                elseif parent == 'light' then
+                elseif parent == 'technology' then
+                    return generic.MakeSet('Orbital Strike'):get()
+                elseif parent == 'water' then
+                    return generic.MakeSet('Water Beam'):get()
+                elseif parent == 'acid' then
+                    return generic.MakeSet('Sewer Burst'):get()
+                elseif parent == 'nightmare' then
+                    return generic.MakeSet('Skeleton Grab'):get()
+                elseif parent == 'darkness' then
+                    return generic.MakeSet('Murky Missiles'):get()
+                elseif parent == 'storm' then
+                    return generic.MakeSet('Lightning Flash', 'Lightning Barrage'):get()
+                elseif parent == 'illusion' then
+                    return generic.MakeSet('Refraction', 'Ethereal Acumen'):get()
+                elseif parent == 'slime' then
+                    return generic.MakeSet('Splitting Slime'):get()
+                elseif parent == 'gravity' then
                     return generic.MakeSet('Gravital Globe'):get()
-                elseif parent == 'light' then
-                    return generic.MakeSet('Gravital Globe'):get()
-                elseif parent == 'light' then
-                    return generic.MakeSet('Gravital Globe'):get()
+                elseif parent == 'angel' then
+                    return generic.MakeSet('Arcane Guardian'):get()
+                elseif parent == 'fire' then
+                    return generic.MakeSet('Blaze Column'):get()
                 end
             end):get()
 
             local function findSpellParentByName(text)
-                
+                for k, spells in pairs(parentsOfSpells) do
+                    if spells[text] then
+                        return k
+                    end
+                end
             end
 
             local patternLocked = false
             local patternIndex = 1
             local patternContainer = {}
-            mainTab:CreateLabel("Current Pattern Index: " .. patternIndex)
+
+            for k in pairs(spoofedSpells) do
+                mainTab:CreateToggle{
+                    Name = "Spoof " .. k,
+                    Flag = k .. "SavedValue",
+                    CurrentValue = false,
+                    Callback = function(toggled)
+                        spoofedSpells[k] = toggled
+                    end,
+                }
+            end
+            
+            local label = mainTab:CreateLabel("Current Pattern Index: " .. patternIndex)
             mainTab:CreateInput{
                 Name = "Add Spell to Pattern",
                 Placeholder = "Spell Name",
@@ -216,7 +251,8 @@ return function(Window)
                     if success then
                         local index = #patternContainer+1
                         patternContainer[index] = {
-                            
+                            [1] = findSpellParentByName(name),
+                            [2] = name,
                         }
                         generic.NotifyUser('Spell "'.. name .. '" is set to index ' .. index .. '!', 1)
                     else
@@ -253,17 +289,48 @@ return function(Window)
                     table.clear(patternContainer)
                 end
             }
+            mainTab:CreateToggle{
+                Name = "Lock Pattern",
+                CurrentValue = true,
+                Callback = function(toggled)
+                    patternLocked = toggled
+                end,
+            }
+            mainTab:CreateInput{
+                Name = "Set Pattern Index",
+                PlaceholderText = "number",
+                Callback = function(text)
+                    local num = tonumber(text)
+                    if num then
+                        num = math.clamp(num, 1, #patternContainer)
+                        patternIndex = num
+                        label:Set("Current Pattern Index: " .. patternIndex)
+                    else
+                        generic.NotifyUser("Expected a number!", 2)
+                    end
+                end
+            }
+            mainTab:CreateKeybind{
+                Name = "Cast Spell by Index",
+                CurrentKeybind = "V",
+                Callback = function()
+                    local foundSpellData = patternContainer[patternIndex]
+                    if not spoofedSpells[foundSpellData[2]] then
+                        generic.NotifyUser('Spell "' .. foundSpellData[2] .. '" should be spoofed! Skipping...', 2)
+                    else
+                        docmagic:FireServer(foundSpellData[1], foundSpellData[2])
+                        domagic:InvokeServer(foundSpellData[1], foundSpellData[2])
+                    end
 
-            for k in pairs(spoofedSpells) do
-                mainTab:CreateToggle{
-                    Name = "Spoof " .. k,
-                    Flag = k .. "SavedValue",
-                    CurrentValue = false,
-                    Callback = function(toggled)
-                        spoofedSpells[k] = toggled
-                    end,
-                }
-            end
+                    if not patternLocked then
+                        patternIndex += 1
+                        if patternIndex > #patternContainer then
+                            patternIndex = 1
+                        end
+                        label:Set("Current Pattern Index: " .. patternIndex)
+                    end
+                end
+            }
         end
 
         local function buildDisorderIgnitionSection()
