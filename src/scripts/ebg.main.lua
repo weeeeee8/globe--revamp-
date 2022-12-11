@@ -592,6 +592,7 @@ return function(Window)
                             end
                         elseif targetType == 'mouse' then
                             local foundPlayer = findNearestPlayerFromPosition(generic.GetMousePositionFromHook())
+                            print(foundPlayer)
                             if foundPlayer then
                                 foundTargetPlayer = foundPlayer
                             end
