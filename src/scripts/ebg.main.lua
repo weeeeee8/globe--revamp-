@@ -250,11 +250,13 @@ return function(Window)
                     position = Vector3.zero,
                 }
                 local profile = points.lastTimeVelocities[player.UserId]
-                player.CharacterAdded:Connect(function(char)
+                local function onCharAdd(char)
                     local hum, rootpart = char:WaitForChild("Humanoid"), char:WaitForChild("HumanoidRootPart")
                     profile.hum = hum
                     profile.root = rootpart
-                end)
+                end
+                if player.Character then onCharAdd(player.Character) end
+                player.CharacterAdded:Connect(onCharAdd)
             end
             points.connectionsHolder:Insert(Players.PlayerAdded:Connect(onOtherPlayerAdded))
             points.connectionsHolder:Insert(Players.PlayerRemoving:Connect(function(player)
@@ -359,7 +361,7 @@ return function(Window)
                     return
                 end
 
-                if #self < 1 then
+                if #self < 1 or not (foundProfile.hum and foundProfile.root) then
                     return
                 end
 
