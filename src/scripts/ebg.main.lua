@@ -234,9 +234,9 @@ return function(Window)
             pointsFolder.Name = ".points"
 
             local numsOfPoints = 10
-            local activelySimulatingObstructionCheck = false
-            local pointIndex = 4
             local points = {}
+            points.activelySimulatingObstructionCheck = false
+            points.waypointSmoothingSpeed = 0.75
             points.target = nil
             points._pointsShownDirty = false
             points.unrenderCF = CFrame.new(0, 10e5, 0)
@@ -319,6 +319,9 @@ return function(Window)
                     foundPoint.active = true
                 end
             end
+            function points:setSmoothingSpeed(speed)
+                self.pointsSmoothingSpeed = speed
+            end
             function points:getPositionFromInterval(a, b, c, f)
                 return a + b * c + 0.5 * f * (c * c)
             end
@@ -350,14 +353,14 @@ return function(Window)
                     end
                     return
                 end
-                
+
                 foundProfile.position = foundProfile.root.Position
                 foundProfile.velocity = foundProfile.root.AssemblyLinearVelocity
 
                 local normalizedVelocity = foundProfile.velocity - foundProfile.lastVelocity
                 for i = 1, #self, 1 do
                     local point = self[i]
-                    point.position = point.position:Lerp(self:getPositionFromInterval(foundProfile.position, foundProfile.velocity, (foundProfile.hum.WalkSpeed / 16) * (i / #self), normalizedVelocity / deltaTime), 0.75)
+                    point.position = point.position:Lerp(self:getPositionFromInterval(foundProfile.position, foundProfile.velocity, (foundProfile.hum.WalkSpeed / 16) * (i / #self), normalizedVelocity / deltaTime), self.pointsSmoothingSpeed)
                     point.part.CFrame = CFrame.new(point.position)
                     local newColor = if point.active then BrickColor.Green() else BrickColor.Red()
                     if point.part.BrickColor ~= newColor then
@@ -442,7 +445,7 @@ return function(Window)
             }
 
             utilityTab:CreateInput{
-                Name = "Prediction Index",
+                Name = "Prediction Index (1 - 10)",
                 PlaceholderText = "number",
                 Callback = function(text)
                     local num = tonumber(text)
@@ -450,6 +453,23 @@ return function(Window)
                         num = math.max(num, 0)
                         points:setActivePoint(num)
                         generic.NotifyUser("Prediction Waypoint Index is set to " .. num .. "!", 1)
+                    else
+                        generic.NotifyUser("Expected a number!", 2)
+                    end
+                end
+            }
+
+            utilityTab:CreateInput{
+                Name = "Points Smoothing Speed (0.25 - 1)",
+                PlaceholderText = "number",
+                Callback = function(text)
+                    local num = tonumber(text)
+                    if num then
+                        num = math.clamp(num, 0.25, 1)
+                        points:setSmoothingSpeed(num)
+                        generic.NotifyUser("Prediction waypoints are smoothen to " .. num .. " seconds!", 1)
+                    else
+                        generic.NotifyUser("Expected a number!", 2)
                     end
                 end
             }
@@ -491,7 +511,7 @@ return function(Window)
             }
 
             utilityTab:CreateButton{
-                Name = "Clear All Blacklist",
+                Name = "Clear All Blacklisted",
                 Callback = function()
                     for _, player in ipairs(Players:GetPlayers()) do
                         if player == Players.LocalPlayer then continue end
