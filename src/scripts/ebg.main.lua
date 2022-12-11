@@ -46,98 +46,97 @@ return function(Window)
             'Gravital Globe',
             'Murky Missiles',
             'Skeleton Grab',
-            'Sewer Burst'
+            'Sewer Burst',
+            'Asteroid Belt'
         ):override(function() return false end):get()
 
         local remoteHookOld; remoteHookOld = hookmetamethod(game, '__namecall', function(self, ...)
-            if not checkcaller() then
-                if getnamecallmethod() == "InvokeServer" then
-                    if (self == domagic) then
-                        local realArgs = {...}
-                        local SpellName = tostring(realArgs[2])
-                        local isSpoofed = spoofedSpells[SpellName]
-                        if isSpoofed == true then
-                            local fakeArgs = {unpack(realArgs)}
-                            if SpellName == "Lightning Flash" then
-                                fakeArgs[3] = {}
-                                fakeArgs[3].Origin = realArgs[3].Origin
-                                fakeArgs[3].End = generic.GetMousePositionFromHook()
-                            elseif SpellName == "Lightning Barrage" then
-                                fakeArgs[3] = {}
-                                fakeArgs[3].Direction = if isMouseHitOverriden or playerMouse.Target then CFrame.lookAt(playerMouse.Hit.Position - Vector3.new(0, 17, 0), playerMouse.Hit.Position) else realArgs[3].Direction
-                            elseif SpellName == "Refraction" then
-                                fakeArgs[3] = if isMouseHitOverriden or playerMouse.Target then CFrame.lookAt(playerMouse.Hit.Position - Vector3.new(0, 20, 0), playerMouse.Hit.Position) else realArgs[3]
-                            elseif SpellName == "Splitting Slime" or SpellName == "Illusive Atake" then
-                                fakeArgs[3] =  if isMouseHitOverriden or playerMouse.Target then CFrame.new(playerMouse.Hit.Position) else realArgs[3]
-                            elseif SpellName == "Blaze Column" or SpellName == "Skeleton Grab" then
-                                fakeArgs[3] = if isMouseHitOverriden or playerMouse.Target then CFrame.new(playerMouse.Hit.Position) * CFrame.Angles(math.pi / 2, math.pi / 2, 0) else realArgs[3]
-                            elseif SpellName == "Water Beam" then
-                                fakeArgs[3] = {}
-                                fakeArgs[3].Origin = if isMouseHitOverriden or playerMouse.Target then playerMouse.Hit.Position + Vector3.new(0, 7, 0) else realArgs[3].Origin
-                            elseif SpellName == "Orbital Strike" then
-                                fakeArgs[3] = if isMouseHitOverriden or playerMouse.Target then CFrame.lookAt(playerMouse.Hit.Position, playerMouse.Hit.Position - Vector3.new(0, 20, 0)) else realArgs[3]
-                            elseif SpellName == "Orbs of Enlightenment" then
-                                local c = {}
-                                for i = 1, #realArgs[3].Coordinates do
-                                    c[i] = if isMouseHitOverriden or playerMouse.Target then CFrame.new(playerMouse.Hit.Position + Vector3.new(0, 2, 0)) else CFrame.identity
-                                end
-                                local newArgs = {
-                                    Origin = if isMouseHitOverriden or playerMouse.Target then CFrame.new(playerMouse.Hit.Position + Vector3.new(0, 2, 0)) else realArgs[3].Origin,
-                                    Coordinates = c
-                                }
-                                fakeArgs[3] = newArgs
-                            elseif SpellName == "Amaurotic Lambent" or SpellName == "Gravital Globe" then
-                                fakeArgs[3] = {
-                                    lastPos = if isMouseHitOverriden or playerMouse.Target then playerMouse.Hit.Position + Vector3.new(0, 2, 0) else realArgs[3].lastPos
-                                }
-                            elseif SpellName == "Murky Missiles" then
-                                fakeArgs[3] = {
-                                    lastMousePosition = if isMouseHitOverriden or playerMouse.Target then CFrame.new(playerMouse.Hit.Position + Vector3.new(0, 2, 0)) else realArgs[3].lastMousePosition
-                                }
-                            elseif SpellName == "Sewer Burst" then
-                                local mousePosition = if isMouseHitOverriden or playerMouse.Target then CFrame.new(playerMouse.Hit.Position + Vector3.new(0, 2, 0)) else realArgs[3].Mouse
-                                fakeArgs[3] = {
-                                    Mouse = mousePosition,
-                                    Camera = mousePosition - Vector3.new(0, 4, 0),
-                                    Spawn = CFrame.new(mousePosition),
-                                    Origin = CFrame.new(mousePosition)
-                                }
+            if getnamecallmethod() == "InvokeServer" then
+                if (self == domagic) then
+                    local realArgs = {...}
+                    local SpellName = tostring(realArgs[2])
+                    local isSpoofed = spoofedSpells[SpellName]
+                    if isSpoofed == true then
+                        local fakeArgs = {unpack(realArgs)}
+                        if SpellName == "Lightning Flash" then
+                            fakeArgs[3] = {}
+                            fakeArgs[3].Origin = realArgs[3].Origin
+                            fakeArgs[3].End = generic.GetMousePositionFromHook()
+                        elseif SpellName == "Lightning Barrage" then
+                            fakeArgs[3] = {}
+                            fakeArgs[3].Direction = if isMouseHitOverriden or playerMouse.Target then CFrame.lookAt(playerMouse.Hit.Position - Vector3.new(0, 17, 0), playerMouse.Hit.Position) else realArgs[3].Direction
+                        elseif SpellName == "Refraction" then
+                            fakeArgs[3] = if isMouseHitOverriden or playerMouse.Target then CFrame.lookAt(playerMouse.Hit.Position - Vector3.new(0, 20, 0), playerMouse.Hit.Position) else realArgs[3]
+                        elseif SpellName == "Splitting Slime" or SpellName == "Illusive Atake" then
+                            fakeArgs[3] =  if isMouseHitOverriden or playerMouse.Target then CFrame.new(playerMouse.Hit.Position) else realArgs[3]
+                        elseif SpellName == "Blaze Column" or SpellName == "Skeleton Grab" then
+                            fakeArgs[3] = if isMouseHitOverriden or playerMouse.Target then CFrame.new(playerMouse.Hit.Position) * CFrame.Angles(math.pi / 2, math.pi / 2, 0) else realArgs[3]
+                        elseif SpellName == "Water Beam" then
+                            fakeArgs[3] = {}
+                            fakeArgs[3].Origin = if isMouseHitOverriden or playerMouse.Target then playerMouse.Hit.Position + Vector3.new(0, 7, 0) else realArgs[3].Origin
+                        elseif SpellName == "Orbital Strike" then
+                            fakeArgs[3] = if isMouseHitOverriden or playerMouse.Target then CFrame.lookAt(playerMouse.Hit.Position, playerMouse.Hit.Position - Vector3.new(0, 20, 0)) else realArgs[3]
+                        elseif SpellName == "Orbs of Enlightenment" then
+                            local c = {}
+                            for i = 1, #realArgs[3].Coordinates do
+                                c[i] = if isMouseHitOverriden or playerMouse.Target then CFrame.new(playerMouse.Hit.Position + Vector3.new(0, 2, 0)) else CFrame.identity
                             end
-                            
-                            return remoteHookOld(self, unpack(fakeArgs))
-                        else
-                            local fakeArgs = {unpack(realArgs)}
-                            if SpellName == "Lightning Flash" then
-                                if isMouseHitOverriden then
-                                    local hrp = Players.LocalPlayer.Character.FindFirstChild(Players.LocalPlayer.Character, "HumanoidRootPart")
-                                    if hrp then
-                                        fakeArgs[3] = {}
-                                        fakeArgs[3].Origin = hrp.Position
-                                        fakeArgs[3].End = hrp.Position + ((generic.GetMousePositionFromHook() - hrp.Position).Unit * 50)
-                                    end
-                                end
-                            elseif SpellName == "Rainbow Dash" then
-                                if isMouseHitOverriden then
-                                    local hrp = Players.LocalPlayer.Character.FindFirstChild(Players.LocalPlayer.Character, "HumanoidRootPart")
-                                    if hrp then
-                                        fakeArgs[3] = {}
-                                        fakeArgs[3].Dir = CFrame.lookAt(hrp, generic.GetMousePositionFromHook())
-                                    end
-                                end
-                            end
-                            
-                            return remoteHookOld(self, unpack(fakeArgs))
+                            local newArgs = {
+                                Origin = if isMouseHitOverriden or playerMouse.Target then CFrame.new(playerMouse.Hit.Position + Vector3.new(0, 2, 0)) else realArgs[3].Origin,
+                                Coordinates = c
+                            }
+                            fakeArgs[3] = newArgs
+                        elseif SpellName == "Amaurotic Lambent" or SpellName == "Gravital Globe" then
+                            fakeArgs[3] = {
+                                lastPos = if isMouseHitOverriden or playerMouse.Target then playerMouse.Hit.Position + Vector3.new(0, 2, 0) else realArgs[3].lastPos
+                            }
+                        elseif SpellName == "Murky Missiles" then
+                            fakeArgs[3] = {
+                                lastMousePosition = if isMouseHitOverriden or playerMouse.Target then CFrame.new(playerMouse.Hit.Position + Vector3.new(0, 2, 0)) else realArgs[3].lastMousePosition
+                            }
+                        elseif SpellName == "Sewer Burst" then
+                            local mousePosition = if isMouseHitOverriden or playerMouse.Target then CFrame.new(playerMouse.Hit.Position + Vector3.new(0, 2, 0)) else realArgs[3].Mouse
+                            fakeArgs[3] = {
+                                Mouse = mousePosition,
+                                Camera = mousePosition - Vector3.new(0, 4, 0),
+                                Spawn = CFrame.new(mousePosition),
+                                Origin = CFrame.new(mousePosition)
+                            }
                         end
+                        
+                        return remoteHookOld(self, unpack(fakeArgs))
+                    else
+                        local fakeArgs = {unpack(realArgs)}
+                        if SpellName == "Lightning Flash" then
+                            if isMouseHitOverriden then
+                                local hrp = Players.LocalPlayer.Character.FindFirstChild(Players.LocalPlayer.Character, "HumanoidRootPart")
+                                if hrp then
+                                    fakeArgs[3] = {}
+                                    fakeArgs[3].Origin = hrp.Position
+                                    fakeArgs[3].End = hrp.Position + ((generic.GetMousePositionFromHook() - hrp.Position).Unit * 50)
+                                end
+                            end
+                        elseif SpellName == "Rainbow Dash" then
+                            if isMouseHitOverriden then
+                                local hrp = Players.LocalPlayer.Character.FindFirstChild(Players.LocalPlayer.Character, "HumanoidRootPart")
+                                if hrp then
+                                    fakeArgs[3] = {}
+                                    fakeArgs[3].Dir = CFrame.lookAt(hrp, generic.GetMousePositionFromHook())
+                                end
+                            end
+                        end
+                        
+                        return remoteHookOld(self, unpack(fakeArgs))
                     end
-                if getnamecallmethod() == "FireServer" then
-                    elseif (self == docmagic) then
-                    elseif (self == clientdata) then
-                        local realArgs = {...}
-                        local tbl = HttpService.JSONDecode(HttpService, realArgs[1])
-                        tbl.Cooldowns = {}
-                        tbl = HttpService.JSONEncode(HttpService, tbl)
-                        return remoteHookOld(self, tbl)
-                    end
+                end
+            if getnamecallmethod() == "FireServer" then
+                elseif (self == docmagic) then
+                elseif (self == clientdata) then
+                    local realArgs = {...}
+                    local tbl = HttpService.JSONDecode(HttpService, realArgs[1])
+                    tbl.Cooldowns = {}
+                    tbl = HttpService.JSONEncode(HttpService, tbl)
+                    return remoteHookOld(self, tbl)
                 end
             end
 
@@ -166,6 +165,94 @@ return function(Window)
             mainTab:CreateSection('Spell Exploit Options')
             mainTab:CreateParagraph{Title = 'Information: ', Content = [[Enabling any of these options will spoof the data that are to be sent to the server.
             When using Instant Casting, it'll be incrementing from the index 1 but can be locked by enabling "Lock Pattern Index"!]]}
+
+            local specialSpellNameAutofil = generic.NewAutofill("Spell Autofill", function(text)
+                for k in pairs(spoofedSpells) do
+                    if k:sub(1, #text) == text then
+                        return k
+                    end
+                end
+                return nil
+            end)
+
+            local parentsOfSpells = generic.MakeSet(
+                'Light',
+                'Technology',
+                'Water',
+                'Acid',
+                'Nightmare',
+                'Darkness',
+                'Storm',
+                'Illusion',
+                'Slime',
+                'Gravity',
+                'Fire'
+            ):override(function(parent)
+                parent = parent:lower()
+                if parent == 'light' then
+                    return generic.MakeSet('Orbs of Enlightenment', 'Amaurotic Lambent'):get()
+                elseif parent == 'light' then
+                    return generic.MakeSet('Gravital Globe'):get()
+                elseif parent == 'light' then
+                    return generic.MakeSet('Gravital Globe'):get()
+                elseif parent == 'light' then
+                    return generic.MakeSet('Gravital Globe'):get()
+                end
+            end):get()
+
+            local function findSpellParentByName(text)
+                
+            end
+
+            local patternLocked = false
+            local patternIndex = 1
+            local patternContainer = {}
+            mainTab:CreateLabel("Current Pattern Index: " .. patternIndex)
+            mainTab:CreateInput{
+                Name = "Add Spell to Pattern",
+                Placeholder = "Spell Name",
+                Callback = function(text)
+                    local success, name = specialSpellNameAutofil.TryAutofillFromInput(text)
+                    if success then
+                        local index = #patternContainer+1
+                        patternContainer[index] = {
+                            
+                        }
+                        generic.NotifyUser('Spell "'.. name .. '" is set to index ' .. index .. '!', 1)
+                    else
+                        generic.NotifyUser('Spell "' .. text .. '" may: not have any available autofill placeholder; or not exist', 3)
+                    end
+                end
+            }
+            mainTab:CreateInput{
+                Name = "Remove Spell from Pattern",
+                Placeholder = "string | number",
+                Callback = function(text)
+                    if tonumber(text) then
+                        local data = table.remove(patternContainer, tonumber(text))
+                        generic.NotifyUser('Successfully removed Spell "'.. data[2] .. '" from pattern!', 1)
+                    else
+                        local success, name = specialSpellNameAutofil.TryAutofillFromInput(text)
+                        if success then
+                            for i, data in ipairs(patternContainer) do
+                                if data[2] == name then
+                                    table.remove(patternContainer, i)
+                                    generic.NotifyUser('Successfully removed Spell "'.. name .. '" from pattern!', 1)
+                                    break
+                                end
+                            end
+                        else
+                            generic.NotifyUser('Spell "' .. text .. '" may: not have any available autofill placeholder; or not exist', 3)
+                        end
+                    end
+                end
+            }
+            mainTab:CreateButton{
+                Name = "Clear Pattern",
+                Callback = function()
+                    table.clear(patternContainer)
+                end
+            }
 
             for k in pairs(spoofedSpells) do
                 mainTab:CreateToggle{
@@ -239,7 +326,7 @@ return function(Window)
                 CurrentKeybind = "X",
                 Name = "Cast Disorder Ignition",
                 Callback = function()
-                    if targetPlayer then
+                    if targetPlayer and typeof(targetPlayer) == "Instance" then
                         local character = targetPlayer.Character
                         if not character then
                             generic.NotifyUser("[Disorder Ignition] Current targeted player does not exist yet!", 3)
@@ -422,7 +509,7 @@ return function(Window)
                     self:remove(#self)
                 end
             end
-            function points:new()
+            function points:new2(locked)
                 local sphere = Instance.new("Part")
                 sphere.Anchored = true
                 sphere.Shape = Enum.PartType.Ball
@@ -437,6 +524,7 @@ return function(Window)
                     shown = false,
                     _shownDirty = true,
                     part = sphere,
+                    locked = locked,
                     position = Vector3.yAxis * 10e4
                 })
 
@@ -518,7 +606,7 @@ return function(Window)
                 local normalizedVelocity = foundProfile.velocity - foundProfile.lastVelocity
                 for i = 1, #self, 1 do
                     local point = self[i]
-                    point.position = point.position:Lerp(self:getPositionFromInterval(foundProfile.position, foundProfile.velocity, (foundProfile.hum.WalkSpeed / 16) * (i / #self), normalizedVelocity / deltaTime), self.pointsSmoothingSpeed)
+                    point.position = point.position:Lerp(self:getPositionFromInterval(foundProfile.position, foundProfile.velocity, if point.locked then 0 else (foundProfile.hum.WalkSpeed / 16) * (i / #self), normalizedVelocity / deltaTime), self.pointsSmoothingSpeed)
                     point.part.CFrame = CFrame.new(point.position)
                     local newColor = if point.active then BrickColor.Green() else BrickColor.Red()
                     if point.part.BrickColor ~= newColor then
@@ -555,8 +643,8 @@ return function(Window)
             local function clearPlayerBlacklistData(data)
             end
 
-            for i = 1, numsOfPoints do
-                points:new()
+            for i = 0, numsOfPoints do
+                points:new(i == 0)
             end
             points:setActivePoint(4)
 
@@ -611,8 +699,8 @@ return function(Window)
                     if num then
                         num = math.clamp(num, 5, 20)
                         points:clear()
-                        for i = 1, num do
-                            points:new()
+                        for i = 0, num do
+                            points:new(i == 0)
                         end
                         generic.NotifyUser("Numbers of Waypoints is set to " .. num .. "!", 1)
                     else

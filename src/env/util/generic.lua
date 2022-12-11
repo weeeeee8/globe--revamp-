@@ -45,6 +45,28 @@ function generic.GetPlayerBodyPart(bodyPartName)
     return if Players.LocalPlayer.Character then Players.LocalPlayer.Character:FindFirstChild(bodyPartName, true) else nil
 end
 
+function generic.NewCase()
+    return setmetatable({
+        exec = {}
+        case = function(self, condition, fn)
+            self.exec[condition] = fn
+        end
+    }, {
+        __index = function(s, k) return rawget(self, k) end
+        __newindex = function(s, k, v) rawset(s, k, v) end
+        __mode = "k",
+        __call = function(self, input)
+            local foundExec = self.exec[input]
+            if foundExec then
+                xpcall(foundExect, warn)
+            end
+
+            table.clear(self)
+            setmetatable(self, nil)
+        end
+    })
+end
+
 function generic.NewConnectionsHolder()
     local connections = {}
     return {
