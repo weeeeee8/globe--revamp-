@@ -200,12 +200,12 @@ return function(Window)
                         local PlayerScripts = Players.LocalPlayer:WaitForChild("PlayerScripts")
                         local ClientEffectsFolder = workspace:WaitForChild('.Ignore'):WaitForChild('.LocalEffects')
                         connectionsHolder:Insert(PlayerScripts.ChildAdded:Connect(function(c)
-                            if c.Name:lower() == "DiscScript" then
+                            if c.Name == "DiscScript" then
                                 task.delay(1, c.Destroy, c)
                             end
                         end))
                         connectionsHolder:Insert(ClientEffectsFolder.ChildAdded:Connect(function(c)
-                            if c.Name:lower() == "LightDisc" or c.Name:lower() == "DeadlyDisc" then
+                            if c.Name == "LightDisc" or c.Name == "DeadlyDisc" then
                                 task.delay(1, c.Destroy, c)
                             end
                         end))
