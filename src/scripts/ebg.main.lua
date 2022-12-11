@@ -711,8 +711,8 @@ return function(Window)
             local function clearPlayerBlacklistData(data)
             end
 
-            for i = 0, numsOfPoints do
-                points:new(i == 0)
+            for i = 1, numsOfPoints+1 do
+                points:new(i == 1)
             end
             points:setActivePoint(4)
 
@@ -767,8 +767,8 @@ return function(Window)
                     if num then
                         num = math.clamp(num, 5, 20)
                         points:clear()
-                        for i = 0, num do
-                            points:new(i == 0)
+                        for i = 1, num+1 do
+                            points:new(i == 1)
                         end
                         generic.NotifyUser("Numbers of Waypoints is set to " .. num .. "!", 1)
                     else
