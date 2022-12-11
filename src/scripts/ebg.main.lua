@@ -586,18 +586,16 @@ return function(Window)
                     local rootPart = generic.GetPlayerBodyPart("HumanoidRootPart")
                     if rootPart then
                         local foundTargetPlayer
-                        print(targetType)
-                        if targetType == 'locked' then
+                        if targetType == 'Locked' then
                             if targetPlayer then
                                 foundTargetPlayer = targetPlayer
                             end
-                        elseif targetType == 'mouse' then
+                        elseif targetType == 'Mouse' then
                             local foundPlayer = findNearestPlayerFromPosition(generic.GetMousePositionFromHook())
-                            print(foundPlayer)
                             if foundPlayer then
                                 foundTargetPlayer = foundPlayer
                             end
-                        elseif targetType == 'character' then
+                        elseif targetType == 'Character' then
                             local foundPlayer = findNearestPlayerFromPosition(rootPart.Position)
                             if foundPlayer then
                                 foundTargetPlayer = foundPlayer
