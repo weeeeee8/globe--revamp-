@@ -530,28 +530,6 @@ return function(Window)
         tab:CreateLabel("Miscellaneous")
 
         tab:CreateButton{
-            Name = "Copy Server Region Code",
-            Callback = function()
-                -- ripped off devforum because im lazy
-                local longitude = HttpService:JSONDecode(game:HttpGet('http://ip-api.com/json/')).lon
-                local host = 'North America'
-                if(longitude>-180 and longitude<=-105)then
-                    host = 'Western US'
-                elseif(longitude>-105 and longitude<=-90)then
-                    host = 'Central US'
-                elseif(longitude>-90 and longitude<=0)then
-                    host = 'Eastern US'
-                elseif(longitude<=75 and longitude>0)then
-                    host = 'Europe'
-                elseif(longitude<=180 and longitude>75)then
-                    host = 'Asia'
-                end
-                setclipboard(host)
-                generic.NotifyUser("Copied to clipboard! got: " .. host, 1)
-            end
-        }
-
-        tab:CreateButton{
             Name = "Copy Place JobId",
             Callback = function()
                 local id = game.JobId
