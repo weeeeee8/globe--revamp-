@@ -528,22 +528,24 @@ return function(Window)
             end
         }
 
+        tab:CreateLabel("Miscellaneous")
+
         tab:CreateButton{
             Name = "Copy Server Region Code",
             Callback = function()
                 -- ripped off devforum because im lazy
                 local longitude = HttpService:JSONDecode(game:HttpGet('http://ip-api.com/json/')).lon
-                local host = 'NA'
+                local host = 'North America'
                 if(longitude>-180 and longitude<=-105)then
-                    host = 'WUS'
+                    host = 'Western US'
                 elseif(longitude>-105 and longitude<=-90)then
-                    host = 'CUS'
+                    host = 'Central US'
                 elseif(longitude>-90 and longitude<=0)then
-                    host = 'EUS'
+                    host = 'Eastern US'
                 elseif(longitude<=75 and longitude>0)then
-                    host = 'EU'
+                    host = 'Europe'
                 elseif(longitude<=180 and longitude>75)then
-                    host = 'AS'
+                    host = 'Asia'
                 end
                 setclipboard(host)
                 generic.NotifyUser("Copied to clipboard! got: " .. host, 1)
@@ -569,6 +571,8 @@ return function(Window)
                 generic.NotifyUser("Created a join link!")
             end
         }
+        
+        tab:CreateLabel("Joining")
         
         tab:CreateButton{
             Name = "Rejoin",
