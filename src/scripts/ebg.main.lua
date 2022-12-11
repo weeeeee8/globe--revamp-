@@ -391,9 +391,8 @@ return function(Window)
                         blacklistedPlayers[player.UserId]
                     then continue end
                     
-                    local foundRootPart = if player.Character then player.Character:FindFirstChild("HumanoidRootPart") else nil
-                    if foundRootPart then
-                        local dist = (foundRootPart.Position - position).Magnitude
+                    if player.Character then
+                        local dist = player:DistanceFromCharacter(position)
                         if dist <= MIN_DIST then
                             table.insert(t, {
                                 dist = dist,
@@ -583,34 +582,28 @@ return function(Window)
                 points:update(dt)
 
                 if targetingEnabled then
-                    local foundRootPart
                     local rootPart = generic.GetPlayerBodyPart("HumanoidRootPart")
                     if rootPart then
                         local foundTargetPlayer
                         if targetType == 'locked' then
                             if targetPlayer then
-                                foundRootPart = if targetPlayer.Character then targetPlayer.Character:FindFirstChild("HumanoidRootPart") else nil
                                 foundTargetPlayer = targetPlayer
                             end
                         elseif targetType == 'mouse' then
                             local foundPlayer = findNearestPlayerFromPosition(generic.GetMousePositionFromHook())
                             if foundPlayer then
-                                foundRootPart = if foundPlayer.Character then foundPlayer.Character:FindFirstChild("HumanoidRootPart") else nil
                                 foundTargetPlayer = foundPlayer
                             end
                         elseif targetType == 'character' then
                             local foundPlayer = findNearestPlayerFromPosition(rootPart.Position)
                             if foundPlayer then
-                                foundRootPart = if foundPlayer.Character then foundPlayer.Character:FindFirstChild("HumanoidRootPart") else nil
                                 foundTargetPlayer = foundPlayer
                             end
                         end
 
                         local mousePosition = Vector3.zero
-                        if foundRootPart then
-                            points.target = foundTargetPlayer
-                            mousePosition = points:getActivePoint().position
-                        end
+                        points.target = foundTargetPlayer
+                        mousePosition = points:getActivePoint().position
 
                         isMouseHitOverriden = true
                         overridenMouseCFrame = CFrame.new(mousePosition)
