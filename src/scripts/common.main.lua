@@ -527,6 +527,48 @@ return function(Window)
                 shouldAutoExecute = toggled
             end
         }
+
+        tab:CreateButton{
+            Name = "Copy Server Region Code",
+            Callback = function()
+                -- ripped off devforum because im lazy
+                local longitude = HttpService:JSONDecode(game:HttpGet('http://ip-api.com/json/')).lon
+                local host = 'NA'
+                if(longitude>-180 and longitude<=-105)then
+                    host = 'WUS'
+                elseif(longitude>-105 and longitude<=-90)then
+                    host = 'CUS'
+                elseif(longitude>-90 and longitude<=0)then
+                    host = 'EUS'
+                elseif(longitude<=75 and longitude>0)then
+                    host = 'EU'
+                elseif(longitude<=180 and longitude>75)then
+                    host = 'AS'
+                end
+                setclipboard(host)
+                generic.NotifyUser("Copied to clipboard! got: " .. host, 1)
+            end
+        }
+
+        tab:CreateButton{
+            Name = "Copy Place JobId",
+            Callback = function()
+                local id = game.JobId
+                setclipboard(id)
+                generic.NotifyUser("Copied to clipboard! got: " .. id, 1)
+            end
+        }
+
+        tab:CreateButton{
+            Name = "Create Join Link (other exploiter must be in a game)",
+            Callback = function()
+                local placeid = game.PlaceId
+                local id = game.JobId
+                local src = string.format("game:GetService(\"TeleportService\"):TeleportToPlaceInstance(%i,%s,game.Players.LocalPlayer)", placeid, id)
+                setclipboard(src)
+                generic.NotifyUser("Created a join link!")
+            end
+        }
         
         tab:CreateButton{
             Name = "Rejoin",
