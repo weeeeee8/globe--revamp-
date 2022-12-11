@@ -95,93 +95,99 @@ return function(Window)
             'Ethereal Acumen'
         ):override(function() return false end):get()
 
-        local remoteHookOld; remoteHookOld = hookmetamethod(game, '__namecall', function(self, ...)
-            if getnamecallmethod() == "InvokeServer" then
-                if (self == domagic) then
-                    local realArgs = {...}
-                    local SpellName = tostring(realArgs[2])
-                    local isSpoofed = spoofedSpells[SpellName]
-                    if isSpoofed == true then
-                        local fakeArgs = {unpack(realArgs)}
-                        if SpellName == "Lightning Flash" then
-                            fakeArgs[3] = {}
-                            fakeArgs[3].Origin = realArgs[3].Origin
-                            fakeArgs[3].End = generic.GetMousePositionFromHook()
-                        elseif SpellName == "Lightning Barrage" then
-                            fakeArgs[3] = {}
-                            fakeArgs[3].Direction = if isMouseHitOverriden or playerMouse.Target then CFrame.lookAt(playerMouse.Hit.Position - Vector3.new(0, 17, 0), playerMouse.Hit.Position) else realArgs[3].Direction
-                        elseif SpellName == "Refraction" then
-                            fakeArgs[3] = if isMouseHitOverriden or playerMouse.Target then CFrame.lookAt(playerMouse.Hit.Position - Vector3.new(0, 20, 0), playerMouse.Hit.Position) else realArgs[3]
-                        elseif SpellName == "Splitting Slime" or SpellName == "Illusive Atake" then
-                            fakeArgs[3] =  if isMouseHitOverriden or playerMouse.Target then CFrame.new(playerMouse.Hit.Position) else realArgs[3]
-                        elseif SpellName == "Blaze Column" or SpellName == "Skeleton Grab" then
-                            fakeArgs[3] = if isMouseHitOverriden or playerMouse.Target then CFrame.new(playerMouse.Hit.Position) * CFrame.Angles(math.pi / 2, math.pi / 2, 0) else realArgs[3]
-                        elseif SpellName == "Water Beam" then
-                            fakeArgs[3] = {}
-                            fakeArgs[3].Origin = if isMouseHitOverriden or playerMouse.Target then playerMouse.Hit.Position + Vector3.new(0, 7, 0) else realArgs[3].Origin
-                        elseif SpellName == "Orbital Strike" then
-                            fakeArgs[3] = if isMouseHitOverriden or playerMouse.Target then CFrame.lookAt(playerMouse.Hit.Position, playerMouse.Hit.Position - Vector3.new(0, 20, 0)) else realArgs[3]
-                        elseif SpellName == "Orbs of Enlightenment" then
-                            local c = {}
-                            for i = 1, #realArgs[3].Coordinates do
-                                c[i] = if isMouseHitOverriden or playerMouse.Target then CFrame.new(playerMouse.Hit.Position + Vector3.new(0, 2, 0)) else CFrame.identity
-                            end
-                            local newArgs = {
-                                Origin = if isMouseHitOverriden or playerMouse.Target then CFrame.new(playerMouse.Hit.Position + Vector3.new(0, 2, 0)) else realArgs[3].Origin,
-                                Coordinates = c
-                            }
-                            fakeArgs[3] = newArgs
-                        elseif SpellName == "Amaurotic Lambent" or SpellName == "Gravital Globe" then
-                            fakeArgs[3] = {
-                                lastPos = if isMouseHitOverriden or playerMouse.Target then playerMouse.Hit.Position + Vector3.new(0, 2, 0) else realArgs[3].lastPos
-                            }
-                        elseif SpellName == "Murky Missiles" then
-                            fakeArgs[3] = {
-                                lastMousePosition = if isMouseHitOverriden or playerMouse.Target then CFrame.new(playerMouse.Hit.Position + Vector3.new(0, 2, 0)) else realArgs[3].lastMousePosition
-                            }
-                        elseif SpellName == "Sewer Burst" then
-                            local mousePosition = if isMouseHitOverriden or playerMouse.Target then CFrame.new(playerMouse.Hit.Position + Vector3.new(0, 2, 0)) else realArgs[3].Mouse
-                            fakeArgs[3] = {
-                                Mouse = mousePosition,
-                                Camera = mousePosition - Vector3.new(0, 4, 0),
-                                Spawn = CFrame.new(mousePosition),
-                                Origin = CFrame.new(mousePosition)
-                            }
-                        end
-                        
-                        return remoteHookOld(self, unpack(fakeArgs))
-                    else
-                        local fakeArgs = {unpack(realArgs)}
-                        if SpellName == "Lightning Flash" then
-                            if isMouseHitOverriden then
-                                local hrp = Players.LocalPlayer.Character.FindFirstChild(Players.LocalPlayer.Character, "HumanoidRootPart")
-                                if hrp then
-                                    fakeArgs[3] = {}
-                                    fakeArgs[3].Origin = hrp.Position
-                                    fakeArgs[3].End = hrp.Position + ((generic.GetMousePositionFromHook() - hrp.Position).Unit * 50)
-                                end
-                            end
-                        elseif SpellName == "Rainbow Dash" then
-                            if isMouseHitOverriden then
-                                local hrp = Players.LocalPlayer.Character.FindFirstChild(Players.LocalPlayer.Character, "HumanoidRootPart")
-                                if hrp then
-                                    fakeArgs[3] = {}
-                                    fakeArgs[3].Dir = CFrame.lookAt(hrp, generic.GetMousePositionFromHook())
-                                end
-                            end
-                        end
-                        
-                        return remoteHookOld(self, unpack(fakeArgs))
-                    end
+        local function processArgs(realArgs, SpellName)
+            local fakeArgs = {unpack(realArgs)}
+            if SpellName == "Lightning Flash" then
+                fakeArgs[3] = {}
+                fakeArgs[3].Origin = realArgs[3].Origin
+                fakeArgs[3].End = generic.GetMousePositionFromHook()
+            elseif SpellName == "Lightning Barrage" then
+                fakeArgs[3] = {}
+                fakeArgs[3].Direction = if isMouseHitOverriden or playerMouse.Target then CFrame.lookAt(playerMouse.Hit.Position - Vector3.new(0, 17, 0), playerMouse.Hit.Position) else realArgs[3].Direction
+            elseif SpellName == "Refraction" then
+                fakeArgs[3] = if isMouseHitOverriden or playerMouse.Target then CFrame.lookAt(playerMouse.Hit.Position - Vector3.new(0, 20, 0), playerMouse.Hit.Position) else realArgs[3]
+            elseif SpellName == "Splitting Slime" or SpellName == "Illusive Atake" then
+                fakeArgs[3] =  if isMouseHitOverriden or playerMouse.Target then CFrame.new(playerMouse.Hit.Position) else realArgs[3]
+            elseif SpellName == "Blaze Column" or SpellName == "Skeleton Grab" then
+                fakeArgs[3] = if isMouseHitOverriden or playerMouse.Target then CFrame.new(playerMouse.Hit.Position) * CFrame.Angles(math.pi / 2, math.pi / 2, 0) else realArgs[3]
+            elseif SpellName == "Water Beam" then
+                fakeArgs[3] = {}
+                fakeArgs[3].Origin = if isMouseHitOverriden or playerMouse.Target then playerMouse.Hit.Position + Vector3.new(0, 7, 0) else realArgs[3].Origin
+            elseif SpellName == "Orbital Strike" then
+                fakeArgs[3] = if isMouseHitOverriden or playerMouse.Target then CFrame.lookAt(playerMouse.Hit.Position, playerMouse.Hit.Position - Vector3.new(0, 20, 0)) else realArgs[3]
+            elseif SpellName == "Orbs of Enlightenment" then
+                local c = {}
+                for i = 1, #realArgs[3].Coordinates do
+                    c[i] = if isMouseHitOverriden or playerMouse.Target then CFrame.new(playerMouse.Hit.Position + Vector3.new(0, 2, 0)) else CFrame.identity
                 end
-            if getnamecallmethod() == "FireServer" then
-                elseif (self == docmagic) then
-                elseif (self == clientdata) then
-                    local realArgs = {...}
-                    local tbl = HttpService.JSONDecode(HttpService, realArgs[1])
-                    tbl.Cooldowns = {}
-                    tbl = HttpService.JSONEncode(HttpService, tbl)
-                    return remoteHookOld(self, tbl)
+                local newArgs = {
+                    Origin = if isMouseHitOverriden or playerMouse.Target then CFrame.new(playerMouse.Hit.Position + Vector3.new(0, 2, 0)) else realArgs[3].Origin,
+                    Coordinates = c
+                }
+                fakeArgs[3] = newArgs
+            elseif SpellName == "Amaurotic Lambent" or SpellName == "Gravital Globe" then
+                fakeArgs[3] = {
+                    lastPos = if isMouseHitOverriden or playerMouse.Target then playerMouse.Hit.Position + Vector3.new(0, 2, 0) else realArgs[3].lastPos
+                }
+            elseif SpellName == "Murky Missiles" then
+                fakeArgs[3] = {
+                    lastMousePosition = if isMouseHitOverriden or playerMouse.Target then CFrame.new(playerMouse.Hit.Position + Vector3.new(0, 2, 0)) else realArgs[3].lastMousePosition
+                }
+            elseif SpellName == "Sewer Burst" then
+                local mousePosition = if isMouseHitOverriden or playerMouse.Target then CFrame.new(playerMouse.Hit.Position + Vector3.new(0, 2, 0)) else realArgs[3].Mouse
+                fakeArgs[3] = {
+                    Mouse = mousePosition,
+                    Camera = mousePosition - Vector3.new(0, 4, 0),
+                    Spawn = CFrame.new(mousePosition),
+                    Origin = CFrame.new(mousePosition)
+                }
+            end
+        end
+
+        local remoteHookOld; remoteHookOld = hookmetamethod(game, '__namecall', function(self, ...)
+            if not checkcaller() then
+                if getnamecallmethod() == "InvokeServer" then
+                    if (self == domagic) then
+                        local realArgs = {...}
+                        local SpellName = tostring(realArgs[2])
+                        local isSpoofed = spoofedSpells[SpellName]
+                        if isSpoofed == true then
+                            local fakeArgs = processArgs(realArgs, SpellName)
+                            
+                            return remoteHookOld(self, unpack(fakeArgs))
+                        else
+                            local fakeArgs = {unpack(realArgs)}
+                            if SpellName == "Lightning Flash" then
+                                if isMouseHitOverriden then
+                                    local hrp = Players.LocalPlayer.Character.FindFirstChild(Players.LocalPlayer.Character, "HumanoidRootPart")
+                                    if hrp then
+                                        fakeArgs[3] = {}
+                                        fakeArgs[3].Origin = hrp.Position
+                                        fakeArgs[3].End = hrp.Position + ((generic.GetMousePositionFromHook() - hrp.Position).Unit * 50)
+                                    end
+                                end
+                            elseif SpellName == "Rainbow Dash" then
+                                if isMouseHitOverriden then
+                                    local hrp = Players.LocalPlayer.Character.FindFirstChild(Players.LocalPlayer.Character, "HumanoidRootPart")
+                                    if hrp then
+                                        fakeArgs[3] = {}
+                                        fakeArgs[3].Dir = CFrame.lookAt(hrp, generic.GetMousePositionFromHook())
+                                    end
+                                end
+                            end
+                            
+                            return remoteHookOld(self, unpack(fakeArgs))
+                        end
+                    end
+                if getnamecallmethod() == "FireServer" then
+                    elseif (self == docmagic) then
+                    elseif (self == clientdata) then
+                        local realArgs = {...}
+                        local tbl = HttpService.JSONDecode(HttpService, realArgs[1])
+                        tbl.Cooldowns = {}
+                        tbl = HttpService.JSONEncode(HttpService, tbl)
+                        return remoteHookOld(self, tbl)
+                    end
                 end
             end
 
