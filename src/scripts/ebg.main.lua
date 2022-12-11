@@ -268,6 +268,11 @@ return function(Window)
                 onOtherPlayerAdded(player)
             end
             --end players
+            function points:clear()
+                while #self > 1 do
+                    self:remove(#self)
+                end
+            end
             function points:new()
                 local sphere = Instance.new("Part")
                 sphere.Anchored = true
@@ -441,6 +446,24 @@ return function(Window)
                 Name = "Clear field (above)",
                 Callback = function()
                     input:Set('', true)
+                end
+            }
+
+            utilityTab:CreateInput{
+                Name = "# of Waypoints (5 - 20)",
+                PlaceholderText = "number",
+                Callback = function(text)
+                    local num = tonumber(text)
+                    if num then
+                        num = math.clamp(num, 5, 20)
+                        points:clear()
+                        for i = 1, num do
+                            points:new()
+                        end
+                        generic.NotifyUser("Numbers of Waypoints is set to " .. num .. "!", 1)
+                    else
+                        generic.NotifyUser("Expected a number!", 2)
+                    end
                 end
             }
 
