@@ -177,7 +177,7 @@ return function(Window)
                 return nil
             end)
 
-            local parentsOfSpells = generic.MakeSet(
+            --[[local parentsOfSpells = generic.MakeSet(
                 'Light',
                 'Technology',
                 'Water',
@@ -218,10 +218,10 @@ return function(Window)
                     return generic.MakeSet('Blaze Column'):get()
                 end
                 return true
-            end):get()
+            end):get()]]
 
             local function findSpellParentByName(text)
-                for k, spells in pairs(parentsOfSpells) do
+                for k, spells in pairs({}) do
                     if spells[text] then
                         return k
                     end
