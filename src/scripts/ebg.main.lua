@@ -32,6 +32,49 @@ return function(Window)
     local overridenMouseCFrame = playerMouse.Hit
 
     local mainTab = Window:CreateTab("Elemental Battlegrounds") do
+        local parentsOfSpells = generic.MakeSet(
+            'Light',
+            'Technology',
+            'Water',
+            'Acid',
+            'Nightmare',
+            'Darkness',
+            'Storm',
+            'Illusion',
+            'Slime',
+            'Gravity',
+            'Angel',
+            'Fire'
+        ):override(function(parent)
+            parent = parent:lower()
+            if parent == 'light' then
+                return generic.MakeSet('Orbs of Enlightenment', 'Amaurotic Lambent'):get()
+            elseif parent == 'technology' then
+                return generic.MakeSet('Orbital Strike'):get()
+            elseif parent == 'water' then
+                return generic.MakeSet('Water Beam'):get()
+            elseif parent == 'acid' then
+                return generic.MakeSet('Sewer Burst'):get()
+            elseif parent == 'nightmare' then
+                return generic.MakeSet('Skeleton Grab'):get()
+            elseif parent == 'darkness' then
+                return generic.MakeSet('Murky Missiles'):get()
+            elseif parent == 'storm' then
+                return generic.MakeSet('Lightning Flash', 'Lightning Barrage'):get()
+            elseif parent == 'illusion' then
+                return generic.MakeSet('Refraction', 'Ethereal Acumen'):get()
+            elseif parent == 'slime' then
+                return generic.MakeSet('Splitting Slime'):get()
+            elseif parent == 'gravity' then
+                return generic.MakeSet('Gravital Globe'):get()
+            elseif parent == 'angel' then
+                return generic.MakeSet('Arcane Guardian'):get()
+            elseif parent == 'fire' then
+                return generic.MakeSet('Blaze Column'):get()
+            end
+            return true
+        end):get()
+
         local spoofedSpells = generic.MakeSet(
             'Lightning Flash',
             'Lightning Barrage',
@@ -177,51 +220,8 @@ return function(Window)
                 return nil
             end)
 
-            --[[local parentsOfSpells = generic.MakeSet(
-                'Light',
-                'Technology',
-                'Water',
-                'Acid',
-                'Nightmare',
-                'Darkness',
-                'Storm',
-                'Illusion',
-                'Slime',
-                'Gravity',
-                'Angel',
-                'Fire'
-            ):override(function(parent)
-                parent = parent:lower()
-                if parent == 'light' then
-                    return generic.MakeSet('Orbs of Enlightenment', 'Amaurotic Lambent'):get()
-                elseif parent == 'technology' then
-                    return generic.MakeSet('Orbital Strike'):get()
-                elseif parent == 'water' then
-                    return generic.MakeSet('Water Beam'):get()
-                elseif parent == 'acid' then
-                    return generic.MakeSet('Sewer Burst'):get()
-                elseif parent == 'nightmare' then
-                    return generic.MakeSet('Skeleton Grab'):get()
-                elseif parent == 'darkness' then
-                    return generic.MakeSet('Murky Missiles'):get()
-                elseif parent == 'storm' then
-                    return generic.MakeSet('Lightning Flash', 'Lightning Barrage'):get()
-                elseif parent == 'illusion' then
-                    return generic.MakeSet('Refraction', 'Ethereal Acumen'):get()
-                elseif parent == 'slime' then
-                    return generic.MakeSet('Splitting Slime'):get()
-                elseif parent == 'gravity' then
-                    return generic.MakeSet('Gravital Globe'):get()
-                elseif parent == 'angel' then
-                    return generic.MakeSet('Arcane Guardian'):get()
-                elseif parent == 'fire' then
-                    return generic.MakeSet('Blaze Column'):get()
-                end
-                return true
-            end):get()]]
-
             local function findSpellParentByName(text)
-                for k, spells in pairs({}) do
+                for k, spells in pairs(parentsOfSpells) do
                     if spells[text] then
                         return k
                     end
@@ -329,7 +329,7 @@ return function(Window)
                         if patternIndex > #patternContainer then
                             patternIndex = 1
                         end
-                        --label:Set("Current Pattern Index: " .. patternIndex)
+                        label:Set("Current Pattern Index: " .. patternIndex)
                     end
                 end
             }
