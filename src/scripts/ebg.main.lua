@@ -424,6 +424,7 @@ return function(Window)
                 Name = "Toggle bind",
                 CurrentKeybind = "C",
                 Callback = function()
+                    generic.NotifyUser((if targetingEnabled then "Dis" else "En").."abled Advanced Targeting!", 1)
                     toggle:Set(not targetingEnabled)
                 end
             }

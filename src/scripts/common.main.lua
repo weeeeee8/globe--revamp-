@@ -142,6 +142,7 @@ return function(Window)
             Name = "Start/Stop flight",
             CurrentKeybind = "F",
             Callback = function()
+                generic.NotifyUser((if flightEnabled then "Dis" else "En").."abled Flight mode!", 1)
                flightEnabled = not flightEnabled
             end
         }
