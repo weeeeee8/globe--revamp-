@@ -194,7 +194,7 @@ return function(Window)
             return remoteHookOld(self, ...)
         end)
 
-        local mouseHook; mouseHook = hookmetamethod(game, '__index', function(self, key)
+        local indexHook; indexHook = hookmetamethod(playerMouse, '__index', function(self, key)
             if not checkcaller() then
                 if self == playerMouse then
                     if isMouseHitOverriden then
@@ -204,12 +204,12 @@ return function(Window)
                     end
                 end
             end
-            return mouseHook(self, key)
+            return indexHook(self, key)
         end)
 
         Globe.Maid:GiveTask(function()
             hookmetamethod(game, '__namecall', remoteHookOld)
-            hookmetamethod(playerMouse, '__index', mouseHook)
+            hookmetamethod(playerMouse, '__index', indexHook)
         end)
 
         local function buildSpellSection()
