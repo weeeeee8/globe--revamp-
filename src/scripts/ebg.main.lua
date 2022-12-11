@@ -24,7 +24,7 @@ return function(Window)
     end
     
     local playerNameFill = generic.NewAutofill("Name Fill", getPlayerFromInput)
-    local domagic, docmagic, clientdata, combat, sendloadout = generic.FindInstancesInReplicatedStorage('DoMagic', 'DoClientMagic', 'ClientData', 'Combat')
+    local domagic, docmagic, clientdata, combat, reservekey, sendloadout = generic.FindInstancesInReplicatedStorage('DoMagic', 'DoClientMagic', 'ClientData', 'KeyReserve', 'Combat')
 
     local playerMouse = Players.LocalPlayer:GetMouse()
 
@@ -181,6 +181,143 @@ return function(Window)
 
         local function buildDisorderIgnitionSection()
             mainTab:CreateSection("Disorder Ignition Options")
+
+            local tpDelay = 3
+            local voidPosition = Vector3.new(0, workspace.FallenPartsDestroyHeight + 2, 0)
+            local lockedSpawnsPositionsOfMaps = {
+                [2569625809]  = Vector3.new(-1100.52, 65.125, 282.28),
+                [570158081] = Vector3.new(-1907.776, 126.015, -414.179),
+                [537600204] = Vector3.new(1282.834, -83.49, -758.368),
+            }
+
+            local targetPlayer
+            local teleportOption = "void"
+        
+            mainTab:CreateInput{
+                Name = "Set Teleport Delay (3s-7s)",
+                PlaceholderText = "number",
+                Callback = function(text)
+                    local num = tonumber(text)
+                    if num then
+                        num = math.clamp(num, 3, 7)
+                        tpDelay = num
+                        generic.NotifyUser("Set Teleport Delay to " .. num .. "!", 1)
+                    else
+                        generic.NotifyUser("Expected a number!", 2)
+                    end
+                end
+            }
+
+            local input = mainTab:CreateInput{
+                Name = "Set Target Player",
+                PlaceholderText = "Player DisplayName / Name",
+                Callback = function(text)
+                    local success, foundPlayer = playerNameFill.TryAutoFillFromInput(text)
+                    if success then
+                        if (type(foundPlayer) == "number") then
+                            generic.NotifyUser("Gave full name of a player but they're not in the server!", 4)
+                            return
+                        end 
+
+                        generic.NotifyUser(string.format("[Disorder Ignition] %s is currently being targeted!", foundPlayer.Name), 2)
+                        targetPlayer = foundPlayer
+                    else
+                        targetPlayer = nil
+                    end
+                end
+            }
+
+            mainTab:CreateButton{
+                Name = "Clear field (above)",
+                Callback = function()
+                    input:Set('', true)
+                end
+            }
+
+            mainTab:CreateKeybind{
+                CurrentKeybind = "X",
+                Name = "Cast Disorder Ignition",
+                Callback = function()
+                    if targetPlayer then
+                        local character = targetPlayer.Character
+                        if not character then
+                            generic.NotifyUser("[Disorder Ignition] Current targeted player does not exist!", 3)
+                            return
+                        end
+                        
+                        if character:FindFirstChildOfClass("ForceField") then
+                            generic.NotifyUser("[Disorder Ignition] Current targeted player is in spawn!", 2)
+                            return
+                        end
+                        
+                        local otherHum, otherRoot, rootPart = character:FindFirstChild("Humanoid"), character:FindFirstChild("HumanoidRootPart"), generic.GetPlayerBodyPart("HumanoidRootPart")
+                        if not (otherHum and otherRoot) then
+                            generic.NotifyUser("[Disorder Ignition] Current targeted player has not yet loaded their character!", 2)
+                            return
+                        end
+
+                        if rootPart then
+                            local finalPosition = Vector3.zero
+                            if teleportOption == "void" then
+                                finalPosition = voidPosition
+                            elseif teleportOption == "spawn" then
+                                finalPosition = lockedSpawnsPositionsOfMaps[game.PlaceId] or voidPosition
+                            elseif teleportOption == "null" then
+                                local i = 0
+                                local pos = Vector3.zero
+                                while i < 5 do
+                                    pos += Vector3.new(10e5,10e5,10e5)
+                                    i+=1
+                                end
+                                finalPosition = pos
+                            end
+
+                            local targetPosition = otherRoot.Position
+                            local _velocity = otherRoot.HumanoidRootPart.AssemblyLinearVelocity
+                            if _velocity.Magnitude > 0 then
+                                targetPlayer = otherRoot.Position + (_velocity.Unit * _velocity.Magnitude)
+                            end
+                            rootPart.CFrame = CFrame.new(targetPosition)
+
+                            task.wait(0.15)
+                            local args = {[1] = "Chaos", [2] = "Disorder Ignition"}
+                            docmagic:FireServer(unpack(args))
+                            args[3] = {
+                                ['nearestHRP'] = character.Head,
+                                ['nearestPlayer'] = targetPlayer,
+                                ['rpos'] = otherHum.Position,
+                                ['norm'] = Vector3.yAxis,
+                                ['rhit'] = workspace.Map.Part
+                            }
+                            domagic:InvokeServer(unpack(args))
+                            reservekey:FireServer(Enum.KeyCode.Y)
+                            local _s = tick()
+                            while tick()-_s < tpDelay do task.wait() end
+                            if rootPart:FindFirstChild("ChaosLink") == nil then
+                                generic.NotifyUser("[Disorder Ignition] Failed to catch target!", 3)
+                                return
+                            end
+                            if otherHum.Health <= 0 then
+                                generic.NotifyUser("[Disorder Ignition] Current targeted player died before teleportation!", 2)
+                                return
+                            end
+                            rootPart.CFrame = CFrame.new(finalPosition)
+                            task.wait(0.1)
+                            reservekey:FireServer(Enum.KeyCode.Y)
+                        end
+                    end
+                end,
+            }
+            
+            mainTab:CreateDropdown{
+                Name = "Targeting Type",
+                Options = {'Void', 'Null', 'Spawn'},
+                CurrentOption = 'void',
+                Flag = 'SavedTargetingType',
+                Callback = function(option)
+                    teleportOption = option:lower()
+                end
+            }
         end
 
         buildSpellSection()
@@ -238,6 +375,7 @@ return function(Window)
             points.activelySimulatingObstructionCheck = false
             points.pointsSmoothingSpeed = 0.75
             points.target = nil
+            points.activated = false
             points._pointsShownDirty = false
             points.unrenderCF = CFrame.new(0, 10e5, 0)
             points.lastTimeVelocities = {}
@@ -333,7 +471,7 @@ return function(Window)
                 return a + b * c + 0.5 * f * (c * c)
             end
             function points:update(deltaTime)
-                if not self.target then
+                if not self.target or not self.activated then
                     if self._pointsShownDirty then
                         self._pointsShownDirty = false
                         for i = #self, 1, -1 do
@@ -416,6 +554,7 @@ return function(Window)
             local toggle = utilityTab:CreateToggle{
                 Name = "Enable Advanced Targeting",
                 Callback = function(toggled)
+                    points.activated = toggled
                     targetingEnabled = toggled
                 end
             }
