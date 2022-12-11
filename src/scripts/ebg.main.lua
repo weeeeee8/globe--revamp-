@@ -219,13 +219,14 @@ return function(Window)
                             return
                         end 
 
-                        generic.NotifyUser(string.format("[Disorder Ignition] %s is currently being targeted!", foundPlayer.Name), 2)
+                        generic.NotifyUser(string.format("[Disorder Ignition] %s is currently being targeted!", foundPlayer.Name), 1)
                         targetPlayer = foundPlayer
                     else
                         targetPlayer = nil
                     end
                 end
             }
+            
 
             mainTab:CreateButton{
                 Name = "Clear field (above)",
@@ -241,7 +242,7 @@ return function(Window)
                     if targetPlayer then
                         local character = targetPlayer.Character
                         if not character then
-                            generic.NotifyUser("[Disorder Ignition] Current targeted player does not exist!", 3)
+                            generic.NotifyUser("[Disorder Ignition] Current targeted player does not exist yet!", 3)
                             return
                         end
                         
@@ -273,7 +274,7 @@ return function(Window)
                             end
 
                             local targetPosition = otherRoot.Position
-                            local _velocity = otherRoot.HumanoidRootPart.AssemblyLinearVelocity
+                            local _velocity = otherRoot.AssemblyLinearVelocity
                             if _velocity.Magnitude > 0 then
                                 targetPlayer = otherRoot.Position + (_velocity.Unit * _velocity.Magnitude)
                             end
@@ -317,7 +318,15 @@ return function(Window)
                 Callback = function(option)
                     teleportOption = option:lower()
                 end
+
             }
+            Globe.Maid:GiveTask(Players.PlayerRemoving:Connect(function(player)
+                if targetPlayer == player then
+                    generic.NotifyUser(string.format("[Disorder Ignition] %s has left the server, no active target!", player.Name), 2)
+                    targetPlayer = nil
+                    input:Set('', true)
+                end
+            end))
         end
 
         buildSpellSection()
@@ -579,7 +588,7 @@ return function(Window)
                             return
                         end 
 
-                        generic.NotifyUser(string.format("[Targeting] %s is currently being targeted! (Locked targeting option)", foundPlayer.Name), 2)
+                        generic.NotifyUser(string.format("[Targeting] %s is currently being targeted! (Locked targeting option)", foundPlayer.Name), 1)
                         targetPlayer = foundPlayer
                     else
                         targetPlayer = nil
