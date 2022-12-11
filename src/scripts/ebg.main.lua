@@ -484,7 +484,7 @@ return function(Window)
             end))
         end
 
-        buildSpellSection()
+        --buildSpellSection()
         buildDisorderIgnitionSection()
     end
 
