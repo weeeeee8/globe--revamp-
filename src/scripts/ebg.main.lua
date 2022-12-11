@@ -286,7 +286,7 @@ return function(Window)
                             args[3] = {
                                 ['nearestHRP'] = character.Head,
                                 ['nearestPlayer'] = targetPlayer,
-                                ['rpos'] = otherHum.Position,
+                                ['rpos'] = otherRoot.Position,
                                 ['norm'] = Vector3.yAxis,
                                 ['rhit'] = workspace.Map.Part
                             }
