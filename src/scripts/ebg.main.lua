@@ -236,7 +236,7 @@ return function(Window)
             local numsOfPoints = 10
             local points = {}
             points.activelySimulatingObstructionCheck = false
-            points.waypointSmoothingSpeed = 0.75
+            points.pointsSmoothingSpeed = 0.75
             points.target = nil
             points._pointsShownDirty = false
             points.unrenderCF = CFrame.new(0, 10e5, 0)
@@ -356,6 +356,10 @@ return function(Window)
                             end
                         end
                     end
+                    return
+                end
+
+                if #self < 1 then
                     return
                 end
 
@@ -665,6 +669,7 @@ return function(Window)
                 Name = "Toggle bind",
                 CurrentKeybind = "Z",
                 Callback = function()
+                    generic.NotifyUser((if auraEnabled then "Dis" else "En").."abled Punch Aura!", 1)
                     toggle:Set(not auraEnabled)
                 end
             }
