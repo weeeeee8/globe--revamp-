@@ -241,9 +241,10 @@ return function(Window)
                         spoofedSpells[k] = toggled
                     end,
                 }
+                task.wait(0.2)--might lag when we ahve more spells to add
             end
             
-            --[[local label = mainTab:CreateLabel("Current Pattern Index: " .. patternIndex)
+            local label = mainTab:CreateLabel("Current Pattern Index: " .. patternIndex)
             mainTab:CreateInput{
                 Name = "Add Spell to Pattern",
                 Placeholder = "Spell Name",
@@ -310,7 +311,7 @@ return function(Window)
                         generic.NotifyUser("Expected a number!", 2)
                     end
                 end
-            }]]
+            }
             mainTab:CreateKeybind{
                 Name = "Cast Spell by Index",
                 CurrentKeybind = "V",
@@ -435,7 +436,7 @@ return function(Window)
                             end
                             rootPart.CFrame = CFrame.new(targetPosition)
 
-                            task.wait(0.15)
+                            task.wait(0.175)
                             local args = {[1] = "Chaos", [2] = "Disorder Ignition"}
                             docmagic:FireServer(unpack(args))
                             args[3] = {
