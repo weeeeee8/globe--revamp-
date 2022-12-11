@@ -241,7 +241,7 @@ return function(Window)
                         spoofedSpells[k] = toggled
                     end,
                 }
-                task.wait(0.2)--might lag when we ahve more spells to add
+                task.wait(0.5)--might lag when we ahve more spells to add
             end
             
             local label = mainTab:CreateLabel("Current Pattern Index: " .. patternIndex)
@@ -776,7 +776,7 @@ return function(Window)
                         end
                         generic.NotifyUser("Numbers of Waypoints is set to " .. num .. "!", 1)
                     else
-                        generic.NotifyUser("Expected a number!", 2)
+                        error("Expected a number!", 2)
                     end
                 end
             }
@@ -791,7 +791,7 @@ return function(Window)
                         points:setActivePoint(num)
                         generic.NotifyUser("Prediction Waypoint Index is set to " .. num .. "!", 1)
                     else
-                        generic.NotifyUser("Expected a number!", 2)
+                        error("Expected a number!", 2)
                     end
                 end
             }
@@ -806,7 +806,7 @@ return function(Window)
                         points:setSmoothingSpeed(num)
                         generic.NotifyUser("Prediction waypoints are smoothen to " .. num .. " seconds!", 1)
                     else
-                        generic.NotifyUser("Expected a number!", 2)
+                        error("Expected a number!", 2)
                     end
                 end
             }
