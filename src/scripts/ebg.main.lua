@@ -490,7 +490,7 @@ return function(Window)
     end
 
     -- wait for the ones above to finish
-    task.wait(1)
+    task.wait(2)
 
     local utilityTab = Window:CreateTab("Utility - Elemental Battlegrounds") do
         local function buildTechDiscSection()
