@@ -243,7 +243,7 @@ return function(Window)
                 }
             end
             
-            local label = mainTab:CreateLabel("Current Pattern Index: " .. patternIndex)
+            --[[local label = mainTab:CreateLabel("Current Pattern Index: " .. patternIndex)
             mainTab:CreateInput{
                 Name = "Add Spell to Pattern",
                 Placeholder = "Spell Name",
@@ -310,7 +310,7 @@ return function(Window)
                         generic.NotifyUser("Expected a number!", 2)
                     end
                 end
-            }
+            }]]
             mainTab:CreateKeybind{
                 Name = "Cast Spell by Index",
                 CurrentKeybind = "V",
@@ -331,7 +331,7 @@ return function(Window)
                         label:Set("Current Pattern Index: " .. patternIndex)
                     end
                 end
-            }
+            }]
         end
 
         local function buildDisorderIgnitionSection()
@@ -487,6 +487,9 @@ return function(Window)
         buildSpellSection()
         buildDisorderIgnitionSection()
     end
+
+    -- wait for the ones above to finish
+    task.wait(1)
 
     local utilityTab = Window:CreateTab("Utility - Elemental Battlegrounds") do
         local function buildTechDiscSection()
