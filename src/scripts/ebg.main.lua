@@ -328,10 +328,10 @@ return function(Window)
                         if patternIndex > #patternContainer then
                             patternIndex = 1
                         end
-                        label:Set("Current Pattern Index: " .. patternIndex)
+                        --label:Set("Current Pattern Index: " .. patternIndex)
                     end
                 end
-            }]
+            }
         end
 
         local function buildDisorderIgnitionSection()
