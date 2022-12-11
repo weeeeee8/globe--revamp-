@@ -54,7 +54,6 @@ function generic.NewCase()
     }, {
         __index = function(s, k) return rawget(s, k) end,
         __newindex = function(s, k, v) rawset(s, k, v) end,
-        __mode = "k",
         __call = function(self, input)
             local foundExec = self.exec[input]
             if foundExec then

@@ -217,6 +217,7 @@ return function(Window)
                 elseif parent == 'fire' then
                     return generic.MakeSet('Blaze Column'):get()
                 end
+                return true
             end):get()
 
             local function findSpellParentByName(text)
