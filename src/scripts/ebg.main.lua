@@ -91,8 +91,7 @@ return function(Window)
             'Murky Missiles',
             'Skeleton Grab',
             'Sewer Burst',
-            'Arcane Guardian',
-            'Ethereal Acumen'
+            'Asteroid Belt'
         ):override(function() return false end):get()
 
         local function processArgs(realArgs, SpellName)
@@ -125,6 +124,12 @@ return function(Window)
                     Coordinates = c
                 }
                 fakeArgs[3] = newArgs
+            elseif SpellName == "Asteroid Belt" then
+                local c = {}
+                for i = 1, #realArgs[3] do
+                    c[i] = if isMouseHitOverriden or playerMouse.Target then CFrame.new(playerMouse.Hit.Position + Vector3.new(0, 1, 0)) else CFrame.identity
+                end
+                fakeArgs[3] = c
             elseif SpellName == "Amaurotic Lambent" or SpellName == "Gravital Globe" then
                 fakeArgs[3] = {
                     lastPos = if isMouseHitOverriden or playerMouse.Target then playerMouse.Hit.Position + Vector3.new(0, 2, 0) else realArgs[3].lastPos
@@ -142,6 +147,7 @@ return function(Window)
                     Origin = CFrame.new(mousePosition)
                 }
             end
+            return fakeArgs
         end
 
         local remoteHookOld; remoteHookOld = hookmetamethod(game, '__namecall', function(self, ...)
@@ -216,30 +222,6 @@ return function(Window)
 
         local function buildSpellSection()
             mainTab:CreateSection('Spell Exploit Options')
-            mainTab:CreateParagraph{Title = 'Information: ', Content = [[Enabling any of these options will spoof the data that are to be sent to the server.
-            When using Instant Casting, it'll be incrementing from the index 1 but can be locked by enabling "Lock Pattern Index"!]]}
-
-            local specialSpellNameAutofil = generic.NewAutofill("Spell Autofill", function(text)
-                for k in pairs(spoofedSpells) do
-                    if k:sub(1, #text) == text then
-                        return k
-                    end
-                end
-                return nil
-            end)
-
-            local function findSpellParentByName(text)
-                for k, spells in pairs(parentsOfSpells) do
-                    if spells[text] then
-                        return k
-                    end
-                end
-            end
-
-            local patternLocked = false
-            local patternIndex = 1
-            local patternContainer = {}
-
             for k in pairs(spoofedSpells) do
                 mainTab:CreateToggle{
                     Name = "Spoof " .. k,
