@@ -520,13 +520,7 @@ return function(Window)
             function points:getActivePoint()
                 for _, point in ipairs(self) do
                     if point.active then
-                        if self.root:FindFirstChildOfClass("BodyPosition") or self.head:FindFirstChildOfClass("BodyPosition") then
-                            return {
-                                position = self.root.Position
-                            } 
-                        else
-                            return point
-                        end
+                        return point
                     end
                 end
                 return nil
@@ -585,7 +579,11 @@ return function(Window)
                 local normalizedVelocity = foundProfile.velocity - foundProfile.lastVelocity
                 for i = 1, #self, 1 do
                     local point = self[i]
-                    point.position = point.position:Lerp(self:getPositionFromInterval(foundProfile.position, foundProfile.velocity, if point.locked then 0 else (foundProfile.hum.WalkSpeed / 16) * (i / #self), normalizedVelocity / deltaTime), self.pointsSmoothingSpeed)
+                    if foundProfile.root:FindFirstChildOfClass("BodyPosition") or foundProfile.head:FindFirstChildOfClass("BodyPosition") then
+                        point.position = point.position:Lerp(foundProfile.root.Position, self.pointsSmoothingSpeed)
+                    else
+                        point.position = point.position:Lerp(self:getPositionFromInterval(foundProfile.position, foundProfile.velocity, if point.locked then 0 else (foundProfile.hum.WalkSpeed / 16) * (i / #self), normalizedVelocity / deltaTime), self.pointsSmoothingSpeed)
+                    end
                     point.part.CFrame = CFrame.new(point.position)
                     local newColor = if point.active then BrickColor.Green() else BrickColor.Red()
                     if point.part.BrickColor ~= newColor then
