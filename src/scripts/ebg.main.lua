@@ -127,7 +127,7 @@ return function(Window)
             elseif SpellName == "Asteroid Belt" then
                 local c = {}
                 for i = 1, #realArgs[3] do
-                    c[i] = if isMouseHitOverriden or playerMouse.Target then CFrame.new(playerMouse.Hit.Position) * CFrame.Angles(math.pi / 2, math.pi / 2, 0) else CFrame.identity
+                    c[i] = if isMouseHitOverriden or playerMouse.Target then CFrame.lookAt(playerMouse.Hit.Position + Vector3.new(0, 1, 0), playerMouse.Hit.Position) else CFrame.identity
                 end
                 fakeArgs[3] = c
             elseif SpellName == "Amaurotic Lambent" or SpellName == "Gravital Globe" then
@@ -962,12 +962,17 @@ return function(Window)
                 end
             end))
 
+            local last = tick()
             Globe.Maid:GiveTask(RunService.Stepped:Connect(function()
                 if not auraEnabled then return end
-                local foundPlayer = findNearestPlayer()
-                if foundPlayer then
-                    combat:FireServer(1)
-                    combat:FireServer(foundPlayer.Character)
+                local now = tick()
+                if now - last > 0.2 then
+                    last = now
+                    local foundPlayer = findNearestPlayer()
+                    if foundPlayer then
+                        combat:FireServer(1)
+                        combat:FireServer(foundPlayer.Character)
+                    end
                 end
             end))
         end
