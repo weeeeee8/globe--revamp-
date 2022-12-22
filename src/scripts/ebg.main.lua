@@ -336,7 +336,7 @@ return function(Window)
                             end
                             rootPart.CFrame = CFrame.new(targetPosition)
 
-                            task.wait(0.2)
+                            task.wait(0.15)
                             local args = {[1] = "Chaos", [2] = "Disorder Ignition"}
                             docmagic:FireServer(unpack(args))
                             args[3] = {
