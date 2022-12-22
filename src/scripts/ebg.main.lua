@@ -616,7 +616,7 @@ return function(Window)
                     
                     if player.Character then
                         local dist = player:DistanceFromCharacter(position)
-                        if dist <= MIN_DIST then
+                        if dist <= MIN_DIST and (player.Character:FindFirstChild("Humanoid") and player.Character.Humaoid.Health > 0) then
                             table.insert(t, {
                                 dist = dist,
                                 player = player
