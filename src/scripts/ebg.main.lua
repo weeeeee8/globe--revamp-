@@ -359,7 +359,7 @@ return function(Window)
                                 return
                             end
                             rootPart.CFrame = CFrame.new(finalPosition)
-                            task.wait(0.1)
+                            task.wait(0.2)
                             reservekey:FireServer(Enum.KeyCode.Y)
                         end
                     end
@@ -852,7 +852,7 @@ return function(Window)
         local function buildPunchAuraSection()
             utilityTab:CreateSection("Punch Aura Options")
 
-            local MIN_DIST = 10--studs
+            local MIN_DIST = 30--studs
 
             local auraEnabled = false
             local blacklistedPlayers = {}
