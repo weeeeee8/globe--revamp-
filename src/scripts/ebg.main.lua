@@ -590,7 +590,7 @@ return function(Window)
                         point.position = point.position:Lerp(self:getPositionFromInterval(foundProfile.position, foundProfile.velocity, if point.locked then 0 else (math.min(foundProfile.hum.WalkSpeed / 16, 1) + if self.accountsDistance then (foundProfile.root.Position - generic.GetPlayerBodyPart("HumanoidRootPart").Position).Magnitude else 0) * (i / #self), normalizedVelocity / deltaTime), self.pointsSmoothingSpeed)
                     end
 
-                    local _result = workspace:Raycast(point.position, foundProfile.head.Position - point.position)
+                    local _result = workspace:Raycast(point.position, foundProfile.head.Position - point.position, params)
                     if _result then
                         point.position = Vector3.new(_result.Position.X, _result.Position.Y, _result.Position.Z)
                     end
@@ -698,6 +698,7 @@ return function(Window)
                         for i = 1, num+1 do
                             points:new(i == 1)
                         end
+                        points:setActivePoint(num / 2)
                         generic.NotifyUser("Numbers of Waypoints is set to " .. num .. "!", 1)
                     else
                         error("Expected a number!", 2)
@@ -836,8 +837,10 @@ return function(Window)
 
                         local mousePosition = Vector3.zero
                         points.target = foundTargetPlayer
-                        mousePosition = points:getActivePoint().position
-
+                        local point = points:getActivePoint()
+                        if point then
+                            mousePosition = point.position
+                        end
                         isMouseHitOverriden = true
                         overridenMouseCFrame = CFrame.new(mousePosition)
                     else
