@@ -576,14 +576,24 @@ return function(Window)
                 foundProfile.position = foundProfile.root.Position
                 foundProfile.velocity = foundProfile.root.AssemblyLinearVelocity
 
+                local params = RaycastParams.new()
+                params.FilterDescendantsInstances = {workspace.Map}
+                params.FilterType = Enum.RaycastFilterType.Whitelist
+
                 local normalizedVelocity = foundProfile.velocity - foundProfile.lastVelocity
                 for i = 1, #self, 1 do
                     local point = self[i]
-                    if foundProfile.root:FindFirstChildOfClass("BodyPosition") or foundProfile.head:FindFirstChildOfClass("BodyPosition") then
+                    if foundProfile.root:FindFirstChildOfClass("BodyPosition") or foundProfile.head:FindFirstChildOfClass("BodyPosition") or foundProfile.hum.PlatformStanding == true then
                         point.position = point.position:Lerp(foundProfile.root.Position, self.pointsSmoothingSpeed)
                     else
-                        point.position = point.position:Lerp(self:getPositionFromInterval(foundProfile.position, foundProfile.velocity, if point.locked then 0 else (foundProfile.hum.WalkSpeed / 16) * (i / #self), normalizedVelocity / deltaTime), self.pointsSmoothingSpeed)
+                        point.position = point.position:Lerp(self:getPositionFromInterval(foundProfile.position, foundProfile.velocity, if point.locked then 0 else math.min(foundProfile.hum.WalkSpeed / 16, 1) * (i / #self), normalizedVelocity / deltaTime), self.pointsSmoothingSpeed)
                     end
+
+                    local _result = workspace:Raycast(point.position, foundProfile.head.Position - point.position)
+                    if _result then
+                        point.position = Vector3.new(point.position.X, _result.Position.Y + 1, point.position.Z)
+                    end
+
                     point.part.CFrame = CFrame.new(point.position)
                     local newColor = if point.active then BrickColor.Green() else BrickColor.Red()
                     if point.part.BrickColor ~= newColor then
