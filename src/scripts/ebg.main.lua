@@ -127,7 +127,7 @@ return function(Window)
             elseif SpellName == "Asteroid Belt" then
                 local c = {}
                 for i = 1, #realArgs[3] do
-                    c[i] = if isMouseHitOverriden or playerMouse.Target then CFrame.new(playerMouse.Hit.Position + Vector3.new(0, 1, 0)) else CFrame.identity
+                    c[i] = if isMouseHitOverriden or playerMouse.Target then CFrame.new(playerMouse.Hit.Position) * CFrame.Angles(math.pi / 2, math.pi / 2, 0) else CFrame.identity
                 end
                 fakeArgs[3] = c
             elseif SpellName == "Amaurotic Lambent" or SpellName == "Gravital Globe" then
@@ -136,7 +136,7 @@ return function(Window)
                 }
             elseif SpellName == "Murky Missiles" then
                 fakeArgs[3] = {
-                    lastMousePosition = if isMouseHitOverriden or playerMouse.Target then CFrame.new(playerMouse.Hit.Position + Vector3.new(0, 2, 0)) else realArgs[3].lastMousePosition
+                    lastMousePosition = if isMouseHitOverriden or playerMouse.Target then CFrame.new(playerMouse.Hit.Position + Vector3.new(0, 2, 0)) * CFrame.new else realArgs[3].lastMousePosition
                 }
             elseif SpellName == "Sewer Burst" then
                 local mousePosition = if isMouseHitOverriden or playerMouse.Target then CFrame.new(playerMouse.Hit.Position + Vector3.new(0, 2, 0)) else realArgs[3].Mouse
