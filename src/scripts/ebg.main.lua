@@ -440,6 +440,7 @@ return function(Window)
 
             local numsOfPoints = 10
             local points = {}
+            points.accountsDistance = false
             points.activelySimulatingObstructionCheck = false
             points.pointsSmoothingSpeed = 0.75
             points.target = nil
@@ -586,7 +587,7 @@ return function(Window)
                     if foundProfile.root:FindFirstChildOfClass("BodyPosition") or foundProfile.head:FindFirstChildOfClass("BodyPosition") or foundProfile.hum.PlatformStanding == true then
                         point.position = point.position:Lerp(foundProfile.root.Position, self.pointsSmoothingSpeed)
                     else
-                        point.position = point.position:Lerp(self:getPositionFromInterval(foundProfile.position, foundProfile.velocity, if point.locked then 0 else (math.min(foundProfile.hum.WalkSpeed / 16, 1) + (foundProfile.root.Position - generic.GetPlayerBodyPart("HumanoidRootPart").Position).Magnitude) * (i / #self), normalizedVelocity / deltaTime), self.pointsSmoothingSpeed)
+                        point.position = point.position:Lerp(self:getPositionFromInterval(foundProfile.position, foundProfile.velocity, if point.locked then 0 else (math.min(foundProfile.hum.WalkSpeed / 16, 1) + if self.accountsDistance then (foundProfile.root.Position - generic.GetPlayerBodyPart("HumanoidRootPart").Position).Magnitude else 0) * (i / #self), normalizedVelocity / deltaTime), self.pointsSmoothingSpeed)
                     end
 
                     local _result = workspace:Raycast(point.position, foundProfile.head.Position - point.position)
@@ -675,6 +676,14 @@ return function(Window)
                 Name = "Clear field (above)",
                 Callback = function()
                     input:Set('', true)
+                end
+            }
+
+            utilityTab:CreateToggle{
+                Name = "Prediction scales with distance",
+                CurrentValue = false,
+                Callback = function(toggled)
+                    points.accountsDistance = toggled
                 end
             }
 
