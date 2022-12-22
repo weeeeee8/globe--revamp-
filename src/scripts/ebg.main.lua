@@ -332,7 +332,7 @@ return function(Window)
                             local targetPosition = otherRoot.Position
                             local _velocity = otherRoot.AssemblyLinearVelocity
                             if _velocity.Magnitude > 0 then
-                                targetPlayer = otherRoot.Position + (_velocity.Unit * _velocity.Magnitude)
+                                targetPlayer = otherRoot.Position + (_velocity.Unit * (otherHum.WalkSpeed * 0.75))
                             end
                             rootPart.CFrame = CFrame.new(targetPosition)
 
