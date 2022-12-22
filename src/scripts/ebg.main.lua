@@ -460,6 +460,7 @@ return function(Window)
                     local hum, rootpart = char:WaitForChild("Humanoid"), char:WaitForChild("HumanoidRootPart")
                     profile.hum = hum
                     profile.root = rootpart
+                    profile.head = char.Head
                 end
                 if player.Character then onCharAdd(player.Character) end
                 player.CharacterAdded:Connect(onCharAdd)
@@ -497,13 +498,13 @@ return function(Window)
                     _shownDirty = true,
                     part = sphere,
                     locked = locked,
-                    position = Vector3.yAxis * 10e4
+                    position = Vector3.yAxis * 10e4,
                 })
 
                 return #self
             end
             function points:remove(index)
-                local output = table.remove(index)
+                local output = table.remove(self ,index)
                 output.part:Destroy()
                 return output
             end
@@ -519,7 +520,13 @@ return function(Window)
             function points:getActivePoint()
                 for _, point in ipairs(self) do
                     if point.active then
-                        return point
+                        if self.root:FindFirstChildOfClass("BodyPosition") or self.head:FindFirstChildOfClass("BodyPosition") then
+                            return {
+                                position = self.root.Position
+                            } 
+                        else
+                            return point
+                        end
                     end
                 end
                 return nil
