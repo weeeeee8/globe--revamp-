@@ -580,7 +580,7 @@ return function(Window)
 
                 local function isCurrentIdExisting(id)
                     for _, cache in ipairs(jobIds) do
-                        if tostring(id) == tostring(cache) then
+                        if tostring(id) == tostring(cache) then 
                             return true
                         end
                     end

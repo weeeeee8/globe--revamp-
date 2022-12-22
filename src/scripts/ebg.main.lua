@@ -194,26 +194,24 @@ return function(Window)
             return remoteHookOld(self, ...)
         end)
 
-        local mouseMeta = getrawmetatable(playerMouse)
-        setreadonly(mouseMeta, false)
-        local oldIndex = mouseMeta.__index
-        mouseMeta.__index = function(s, k)
+        local indexOld; indexOld = hookmetamethod(game, '__index', function(self, index)
             if not checkcaller() then
-                if isMouseHitOverriden then
-                    if k == "Hit" then
-                        return overridenMouseCFrame
+                if self == playerMouse then
+                    if index == "Hit" then
+                        if isMouseHitOverriden then
+                            return overridenMouseCFrame
+                        else
+                            return indexOld(self, index)
+                        end
                     end
                 end
             end
-            return oldIndex(s, k)
-        end
-        setreadonly(mouseMeta, true)
+            return indexOld(self, index)
+        end)
 
         Globe.Maid:GiveTask(function()
             hookmetamethod(game, '__namecall', remoteHookOld)
-            setreadonly(mouseMeta, false)
-            mouseMeta.__index = oldIndex
-            setreadonly(mouseMeta, true)
+            hookmetamethod(game, '__index', indexOld)
         end)
 
         local function buildSpellSection()
