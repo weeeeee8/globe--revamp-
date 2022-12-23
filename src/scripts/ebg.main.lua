@@ -332,11 +332,11 @@ return function(Window)
                             local targetPosition = otherRoot.Position
                             local _velocity = otherRoot.AssemblyLinearVelocity
                             if _velocity.Magnitude > 0 then
-                                targetPlayer = otherRoot.Position + (_velocity.Unit * (otherHum.WalkSpeed * 0.75))
+                                targetPlayer = otherRoot.Position + (_velocity.Unit * otherHum.WalkSpeed)
                             end
                             rootPart.CFrame = CFrame.new(targetPosition)
 
-                            task.wait(0.15)
+                            task.wait(0.25)
                             local args = {[1] = "Chaos", [2] = "Disorder Ignition"}
                             docmagic:FireServer(unpack(args))
                             args[3] = {
@@ -388,9 +388,6 @@ return function(Window)
         buildSpellSection()
         buildDisorderIgnitionSection()
     end
-
-    -- wait for the ones above to finish
-    task.wait(2)
 
     local utilityTab = Window:CreateTab("Utility - Elemental Battlegrounds") do
         local function buildTechDiscSection()
