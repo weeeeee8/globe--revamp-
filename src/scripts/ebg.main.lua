@@ -127,7 +127,7 @@ return function(Window)
             elseif SpellName == "Asteroid Belt" then
                 local c = {}
                 for i = 1, #realArgs[3] do
-                    c[i] = if isMouseHitOverriden or playerMouse.Target then CFrame.lookAt(playerMouse.Hit.Position + Vector3.new(0, 1, 0), playerMouse.Hit.Position) else CFrame.identity
+                    c[i] = if isMouseHitOverriden or playerMouse.Target then CFrame.lookAt(playerMouse.Hit.Position + Vector3.new(0, 1, 0), playerMouse.Hit.Position) * CFrame.Angles(math.pi/2, 0, 0) else CFrame.identity
                 end
                 fakeArgs[3] = c
             elseif SpellName == "Amaurotic Lambent" or SpellName == "Gravital Globe" then
@@ -231,7 +231,6 @@ return function(Window)
                         spoofedSpells[k] = toggled
                     end,
                 }
-                task.wait(0.5)--might lag when we ahve more spells to add
             end
         end
 
@@ -347,6 +346,7 @@ return function(Window)
                                 ['rhit'] = workspace.Map.Part
                             }
                             domagic:InvokeServer(unpack(args))
+                            task.wait()
                             reservekey:FireServer(Enum.KeyCode.Y)
                             local _s = tick()
                             while tick()-_s < tpDelay do task.wait() end
@@ -359,7 +359,7 @@ return function(Window)
                                 return
                             end
                             rootPart.CFrame = CFrame.new(finalPosition)
-                            task.wait(0.2)
+                            task.wait(0.3)
                             reservekey:FireServer(Enum.KeyCode.Y)
                         end
                     end
