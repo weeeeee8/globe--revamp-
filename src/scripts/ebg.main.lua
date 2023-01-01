@@ -294,75 +294,79 @@ return function(Window)
                 CurrentKeybind = "X",
                 Name = "Cast Disorder Ignition",
                 Callback = function()
-                    if targetPlayer and typeof(targetPlayer) == "Instance" then
-                        local character = targetPlayer.Character
-                        if not character then
-                            generic.NotifyUser("[Disorder Ignition] Current targeted player does not exist yet!", 3)
-                            return
-                        end
-                        
-                        if character:FindFirstChildOfClass("ForceField") then
-                            generic.NotifyUser("[Disorder Ignition] Current targeted player is in spawn!", 2)
-                            return
-                        end
-                        
-                        local otherHum, otherRoot, rootPart = character:FindFirstChild("Humanoid"), character:FindFirstChild("HumanoidRootPart"), generic.GetPlayerBodyPart("HumanoidRootPart")
-                        if not (otherHum and otherRoot) then
-                            generic.NotifyUser("[Disorder Ignition] Current targeted player has not yet loaded their character!", 2)
-                            return
-                        end
-
-                        if rootPart then
-                            local finalPosition = Vector3.zero
-                            if teleportOption == "void" then
-                                finalPosition = voidPosition
-                            elseif teleportOption == "spawn" then
-                                finalPosition = lockedSpawnsPositionsOfMaps[game.PlaceId] or voidPosition
-                            elseif teleportOption == "null" then
-                                local i = 0
-                                local pos = Vector3.zero
-                                while i < 5 do
-                                    pos += Vector3.new(10e5,10e5,10e5)
-                                    i+=1
+                    coroutine.wrap(function()
+                        if targetPlayer then
+                            local character = targetPlayer.Character
+                            if not character then
+                                generic.NotifyUser("[Disorder Ignition] Current targeted player does not exist yet!", 3)
+                                return
+                            end
+                            
+                            if character:FindFirstChildOfClass("ForceField") then
+                                generic.NotifyUser("[Disorder Ignition] Current targeted player is in spawn!", 2)
+                                return
+                            end
+                            
+                            local otherHum, otherRoot, rootPart = character:FindFirstChild("Humanoid"), character:FindFirstChild("HumanoidRootPart"), generic.GetPlayerBodyPart("HumanoidRootPart")
+                            if not (otherHum and otherRoot) then
+                                generic.NotifyUser("[Disorder Ignition] Current targeted player has not yet loaded their character!", 2)
+                                return
+                            end
+    
+                            if rootPart then
+                                local finalPosition = Vector3.zero
+                                if teleportOption == "void" then
+                                    finalPosition = voidPosition
+                                elseif teleportOption == "spawn" then
+                                    finalPosition = lockedSpawnsPositionsOfMaps[game.PlaceId] or voidPosition
+                                elseif teleportOption == "null" then
+                                    local i = 0
+                                    local pos = Vector3.zero
+                                    while i < 5 do
+                                        pos += Vector3.new(10e5,10e5,10e5)
+                                        i+=1
+                                    end
+                                    finalPosition = pos
                                 end
-                                finalPosition = pos
+    
+                                local targetPosition = otherRoot.Position
+                                local _velocity = otherRoot.AssemblyLinearVelocity
+                                if _velocity.Magnitude > 0 then
+                                    targetPlayer = otherRoot.Position + (_velocity.Unit * otherHum.WalkSpeed)
+                                end
+                                rootPart.CFrame = CFrame.new(targetPosition)
+    
+                                task.wait(0.25)
+                                local args = {[1] = "Chaos", [2] = "Disorder Ignition"}
+                                docmagic:FireServer(unpack(args))
+                                args[3] = {
+                                    ['nearestHRP'] = character.Head,
+                                    ['nearestPlayer'] = targetPlayer,
+                                    ['rpos'] = otherRoot.Position,
+                                    ['norm'] = Vector3.yAxis,
+                                    ['rhit'] = workspace.Map.Part
+                                }
+                                domagic:InvokeServer(unpack(args))
+                                task.wait()
+                                reservekey:FireServer(Enum.KeyCode.Y)
+                                local _s = tick()
+                                while tick()-_s < tpDelay do task.wait() end
+                                if rootPart:FindFirstChild("ChaosLink") == nil then
+                                    generic.NotifyUser("[Disorder Ignition] Failed to catch target!", 3)
+                                    reservekey:FireServer(Enum.KeyCode.Y)
+                                    return
+                                end
+                                if otherHum.Health <= 0 then
+                                    generic.NotifyUser("[Disorder Ignition] Current targeted player died before teleportation!", 2)
+                                    reservekey:FireServer(Enum.KeyCode.Y)
+                                    return
+                                end
+                                rootPart.CFrame = CFrame.new(finalPosition)
+                                task.wait(0.3)
+                                reservekey:FireServer(Enum.KeyCode.Y)
                             end
-
-                            local targetPosition = otherRoot.Position
-                            local _velocity = otherRoot.AssemblyLinearVelocity
-                            if _velocity.Magnitude > 0 then
-                                targetPlayer = otherRoot.Position + (_velocity.Unit * otherHum.WalkSpeed)
-                            end
-                            rootPart.CFrame = CFrame.new(targetPosition)
-
-                            task.wait(0.25)
-                            local args = {[1] = "Chaos", [2] = "Disorder Ignition"}
-                            docmagic:FireServer(unpack(args))
-                            args[3] = {
-                                ['nearestHRP'] = character.Head,
-                                ['nearestPlayer'] = targetPlayer,
-                                ['rpos'] = otherRoot.Position,
-                                ['norm'] = Vector3.yAxis,
-                                ['rhit'] = workspace.Map.Part
-                            }
-                            domagic:InvokeServer(unpack(args))
-                            task.wait()
-                            reservekey:FireServer(Enum.KeyCode.Y)
-                            local _s = tick()
-                            while tick()-_s < tpDelay do task.wait() end
-                            if rootPart:FindFirstChild("ChaosLink") == nil then
-                                generic.NotifyUser("[Disorder Ignition] Failed to catch target!", 3)
-                                return
-                            end
-                            if otherHum.Health <= 0 then
-                                generic.NotifyUser("[Disorder Ignition] Current targeted player died before teleportation!", 2)
-                                return
-                            end
-                            rootPart.CFrame = CFrame.new(finalPosition)
-                            task.wait(0.3)
-                            reservekey:FireServer(Enum.KeyCode.Y)
                         end
-                    end
+                    end)()
                 end,
             }
             
@@ -574,9 +578,6 @@ return function(Window)
                 foundProfile.position = foundProfile.root.Position
                 foundProfile.velocity = foundProfile.root.AssemblyLinearVelocity
 
-                local params = RaycastParams.new()
-                params.FilterDescendantsInstances = {workspace.Map}
-                params.FilterType = Enum.RaycastFilterType.Whitelist
 
                 local normalizedVelocity = foundProfile.velocity - foundProfile.lastVelocity
                 for i = 1, #self, 1 do
@@ -587,7 +588,7 @@ return function(Window)
                         point.position = point.position:Lerp(self:getPositionFromInterval(foundProfile.position, foundProfile.velocity, if point.locked then 0 else (math.min(foundProfile.hum.WalkSpeed / 16, 1) + if self.accountsDistance then (foundProfile.root.Position - generic.GetPlayerBodyPart("HumanoidRootPart").Position).Magnitude else 0) * (i / #self), normalizedVelocity / deltaTime), self.pointsSmoothingSpeed)
                     end
 
-                    local _result = workspace:Raycast(point.position, foundProfile.head.Position - point.position, params)
+                    local _result = workspace:Raycast(point.position, foundProfile.head.Position - point.position)
                     if _result then
                         point.position = Vector3.new(_result.Position.X, _result.Position.Y, _result.Position.Z)
                     end
@@ -857,7 +858,7 @@ return function(Window)
             local auraEnabled = false
             local blacklistedPlayers = {}
 
-            local function findNearestPlayer()
+            local function findNearestPlayer(position)
                 local t = {}
                 for _, player in ipairs(Players:GetPlayers()) do
                     if 
@@ -865,17 +866,13 @@ return function(Window)
                         blacklistedPlayers[player.UserId]
                     then continue end
                     
-                    local foundRootPart = if player.Character then player.Character:FindFirstChild("HumanoidRootPart") else nil
-                    if foundRootPart then
-                        local rootPart = Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-                        if rootPart then
-                            local dist = (foundRootPart.Position - rootPart.Position).Magnitude
-                            if dist <= MIN_DIST then
-                                table.insert(t, {
-                                    dist = dist,
-                                    player = player
-                                })
-                            end
+                    if player.Character then
+                        local dist = player:DistanceFromCharacter(position)
+                        if dist <= MIN_DIST and (player.Character:FindFirstChild("Humanoid") and player.Character.Humanoid.Health > 0) then
+                            table.insert(t, {
+                                dist = dist,
+                                player = player
+                            })
                         end
                     end
                 end
@@ -960,12 +957,12 @@ return function(Window)
             end))
 
             local last = tick()
-            Globe.Maid:GiveTask(RunService.Stepped:Connect(function()
+            Globe.Maid:GiveTask(RunService.Heartbeat:Connect(function()
                 if not auraEnabled then return end
                 local now = tick()
                 if now - last > 0.2 then
                     last = now
-                    local foundPlayer = findNearestPlayer()
+                    local foundPlayer = findNearestPlayer(generic.GetPlayerBodyPart("HumanoidRootPart").Position)
                     if foundPlayer then
                         combat:FireServer(1)
                         combat:FireServer(foundPlayer.Character)

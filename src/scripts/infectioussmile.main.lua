@@ -1,0 +1,4 @@
+
+return function(Window)
+        
+end
