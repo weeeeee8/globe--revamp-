@@ -578,6 +578,8 @@ return function(Window)
                 foundProfile.position = foundProfile.root.Position
                 foundProfile.velocity = foundProfile.root.AssemblyLinearVelocity
 
+                local params = RaycastParams.new()
+                params.FilterDescendantsInstances = {foundProfile.head.Parent}
 
                 local normalizedVelocity = foundProfile.velocity - foundProfile.lastVelocity
                 for i = 1, #self, 1 do
@@ -588,7 +590,7 @@ return function(Window)
                         point.position = point.position:Lerp(self:getPositionFromInterval(foundProfile.position, foundProfile.velocity, if point.locked then 0 else (math.min(foundProfile.hum.WalkSpeed / 16, 1) + if self.accountsDistance then (foundProfile.root.Position - generic.GetPlayerBodyPart("HumanoidRootPart").Position).Magnitude else 0) * (i / #self), normalizedVelocity / deltaTime), self.pointsSmoothingSpeed)
                     end
 
-                    local _result = workspace:Raycast(point.position, foundProfile.head.Position - point.position)
+                    local _result = workspace:Raycast(foundProfile.head.Position, point.position - foundProfile.head.Position, params)
                     if _result then
                         point.position = Vector3.new(_result.Position.X, _result.Position.Y, _result.Position.Z)
                     end
