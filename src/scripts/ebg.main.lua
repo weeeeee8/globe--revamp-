@@ -603,15 +603,15 @@ return function(Window)
                     end
                     point._shownDirty = true
                 end
-                foundProfile.lastVelocity = foundProfile.velocity
-                self._pointsShownDirty = true
-            end
+                    foundProfile.lastVelocity = foundProfile.velocity
+                    self._pointsShownDirty = true
+                end
 
-            local function findNearestPlayerFromPosition(position)
-                local t = {}
-                for _, player in ipairs(Players:GetPlayers()) do
-                    if 
-                        player == Players.LocalPlayer or
+                local function findNearestPlayerFromPosition(position)
+                    local t = {}
+                    for _, player in ipairs(Players:GetPlayers()) do
+                        if 
+                            player == Players.LocalPlayer or
                         blacklistedPlayers[player.UserId]
                     then continue end
                     
