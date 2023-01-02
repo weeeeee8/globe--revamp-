@@ -430,6 +430,7 @@ return function(Window)
             utilityTab:CreateSection('Advanced Targeting Options')
 
             local MIN_DIST = 200
+            local shouldCheckForObstruction = false
 
             local targetingEnabled = false
             local targetType = 'locked'
@@ -442,7 +443,6 @@ return function(Window)
             local numsOfPoints = 10
             local points = {}
             points.accountsDistance = false
-            points.activelySimulatingObstructionCheck = false
             points.pointsSmoothingSpeed = 0.75
             points.target = nil
             points.activated = false
@@ -588,11 +588,11 @@ return function(Window)
                     if foundProfile.root:FindFirstChildOfClass("BodyPosition") or foundProfile.head:FindFirstChildOfClass("BodyPosition") or foundProfile.hum.PlatformStanding == true then
                         point.position = point.position:Lerp(foundProfile.root.Position, self.pointsSmoothingSpeed)
                     else
-                        point.position = point.position:Lerp(self:getPositionFromInterval(foundProfile.position, foundProfile.velocity, if point.locked then 0 else (math.min(foundProfile.hum.WalkSpeed / 16, 1) + if self.accountsDistance then (foundProfile.root.Position - generic.GetPlayerBodyPart("HumanoidRootPart").Position).Magnitude / i else 0) * (i / #self), normalizedVelocity / deltaTime), self.pointsSmoothingSpeed)
+                        point.position = point.position:Lerp(self:getPositionFromInterval(foundProfile.position, foundProfile.velocity, if point.locked then 0 else ((math.min(foundProfile.hum.WalkSpeed / 16, 1)) * (i / #self)) + if self.accountsDistance then (foundProfile.root.Position - generic.GetPlayerBodyPart("HumanoidRootPart").Position).Magnitude / i else 0, normalizedVelocity / deltaTime), self.pointsSmoothingSpeed)
                     end
 
                     local _result = workspace:Raycast(foundProfile.head.Position, point.position - foundProfile.head.Position, params)
-                    if _result then
+                    if _result and shouldCheckForObstruction then
                         point.position = Vector3.new(point.position.X, _result.Position.Y, point.position.Z)
                     end
 
@@ -685,6 +685,27 @@ return function(Window)
                 CurrentValue = false,
                 Callback = function(toggled)
                     points.accountsDistance = toggled
+                end
+            }
+
+            utilityTab:CreateToggle{
+                Name = "Points collide with terrain",
+                CurrentValue = false,
+                Callback = function(toggled)
+                    shouldCheckForObstruction = toggled
+                end
+            }
+
+            utilityTab:CreateInput{
+                Name = "Minimum radius distance (mouse and character, cannot go below 100)",
+                PlaceholderText = "number",
+                Callback = function(text)
+                    local num = tonumber(text)
+                    if num then
+                        MIN_DIST = math.max(num, 100)
+                    else
+                        error("Expected a number!", 2)
+                    end
                 end
             }
 
