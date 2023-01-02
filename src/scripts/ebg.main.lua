@@ -580,6 +580,7 @@ return function(Window)
 
                 local params = RaycastParams.new()
                 params.FilterDescendantsInstances = {foundProfile.head.Parent}
+                params.FilterType = Enum.RaycastFilterType.Blacklist
 
                 local normalizedVelocity = foundProfile.velocity - foundProfile.lastVelocity
                 for i = 1, #self, 1 do
@@ -592,6 +593,7 @@ return function(Window)
 
                     local _result = workspace:Raycast(foundProfile.head.Position, point.position - foundProfile.head.Position, params)
                     if _result then
+                        print(_result.Instance)
                         point.position = Vector3.new(_result.Position.X, _result.Position.Y, _result.Position.Z)
                     end
 
