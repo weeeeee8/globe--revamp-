@@ -588,7 +588,7 @@ return function(Window)
                     if foundProfile.root:FindFirstChildOfClass("BodyPosition") or foundProfile.head:FindFirstChildOfClass("BodyPosition") or foundProfile.hum.PlatformStanding == true then
                         point.position = point.position:Lerp(foundProfile.root.Position, self.pointsSmoothingSpeed)
                     else
-                        point.position = point.position:Lerp(self:getPositionFromInterval(foundProfile.position, foundProfile.velocity, if point.locked then 0 else ((math.min(foundProfile.hum.WalkSpeed / 16, 1)) * (i / #self)) + if self.accountsDistance then (foundProfile.root.Position - generic.GetPlayerBodyPart("HumanoidRootPart").Position).Magnitude * deltaTime else 0, normalizedVelocity / deltaTime), self.pointsSmoothingSpeed)
+                        point.position = point.position:Lerp(self:getPositionFromInterval(foundProfile.position, foundProfile.velocity, if point.locked then 0 else ((math.min(foundProfile.hum.WalkSpeed / 16, 1)) * (i / #self)) + if self.accountsDistance then (foundProfile.root.Position - generic.GetPlayerBodyPart("HumanoidRootPart").Position).Magnitude * 0.05 * i * deltaTime else 0, normalizedVelocity / deltaTime), self.pointsSmoothingSpeed)
                     end
 
                     local _result = workspace:Raycast(foundProfile.head.Position, point.position - foundProfile.head.Position, params)
