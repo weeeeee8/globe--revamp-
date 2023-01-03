@@ -294,78 +294,80 @@ return function(Window)
                 CurrentKeybind = "X",
                 Name = "Cast Disorder Ignition",
                 Callback = function()
-                    coroutine.wrap(function()
-                        if targetPlayer then
-                            local character = targetPlayer.Character
-                            if not character then
-                                generic.NotifyUser("[Disorder Ignition] Current targeted player does not exist yet!", 3)
-                                return
-                            end
-                            
-                            if character:FindFirstChildOfClass("ForceField") then
-                                generic.NotifyUser("[Disorder Ignition] Current targeted player is in spawn!", 2)
-                                return
-                            end
-                            
-                            local otherHum, otherRoot, rootPart = character:FindFirstChild("Humanoid"), character:FindFirstChild("HumanoidRootPart"), generic.GetPlayerBodyPart("HumanoidRootPart")
-                            if not (otherHum and otherRoot) then
-                                generic.NotifyUser("[Disorder Ignition] Current targeted player has not yet loaded their character!", 2)
-                                return
-                            end
-    
-                            if rootPart then
-                                local finalPosition = Vector3.zero
-                                if teleportOption == "void" then
-                                    finalPosition = voidPosition
-                                elseif teleportOption == "spawn" then
-                                    finalPosition = lockedSpawnsPositionsOfMaps[game.PlaceId] or voidPosition
-                                elseif teleportOption == "null" then
-                                    local i = 0
-                                    local pos = Vector3.zero
-                                    while i < 5 do
-                                        pos += Vector3.new(10e5,10e5,10e5)
-                                        i+=1
+                    xpcall(function()
+                        coroutine.wrap(function()
+                            if targetPlayer and typeof(targetPlayer) == "Instance" and targetPlayer:IsA("Player") then
+                                local character = targetPlayer.Character
+                                if not character then
+                                    generic.NotifyUser("[Disorder Ignition] Current targeted player does not exist yet!", 3)
+                                    return
+                                end
+                                
+                                if character:FindFirstChildOfClass("ForceField") then
+                                    generic.NotifyUser("[Disorder Ignition] Current targeted player is in spawn!", 2)
+                                    return
+                                end
+                                
+                                local otherHum, otherRoot, rootPart = character:FindFirstChild("Humanoid"), character:FindFirstChild("HumanoidRootPart"), generic.GetPlayerBodyPart("HumanoidRootPart")
+                                if not (otherHum and otherRoot) then
+                                    generic.NotifyUser("[Disorder Ignition] Current targeted player has not yet loaded their character!", 2)
+                                    return
+                                end
+        
+                                if rootPart then
+                                    local finalPosition = Vector3.zero
+                                    if teleportOption == "void" then
+                                        finalPosition = voidPosition
+                                    elseif teleportOption == "spawn" then
+                                        finalPosition = lockedSpawnsPositionsOfMaps[game.PlaceId] or voidPosition
+                                    elseif teleportOption == "null" then
+                                        local i = 0
+                                        local pos = Vector3.zero
+                                        while i < 5 do
+                                            pos += Vector3.new(10e5,10e5,10e5)
+                                            i+=1
+                                        end
+                                        finalPosition = pos
                                     end
-                                    finalPosition = pos
-                                end
-    
-                                local targetPosition = otherRoot.Position
-                                local _velocity = otherRoot.AssemblyLinearVelocity
-                                if _velocity.Magnitude > 0 then
-                                    targetPlayer = otherRoot.Position + (_velocity.Unit * otherHum.WalkSpeed)
-                                end
-                                rootPart.CFrame = CFrame.new(targetPosition)
-    
-                                task.wait(0.175)
-                                local args = {[1] = "Chaos", [2] = "Disorder Ignition"}
-                                docmagic:FireServer(unpack(args))
-                                local args = {[1] = "Chaos", [2] = "Disorder Ignition", [3] = {
-                                    ['nearestHRP'] = character.Head,
-                                    ['nearestPlayer'] = targetPlayer,
-                                    ['rpos'] = otherRoot.Position,
-                                    ['norm'] = Vector3.yAxis,
-                                    ['rhit'] = workspace.Map.Part
-                                }}
-                                domagic:InvokeServer(unpack(args))
-                                reservekey:FireServer(Enum.KeyCode.Y)
-                                local _s = tick()
-                                while tick()-_s < tpDelay do task.wait() end
-                                if rootPart:FindFirstChild("ChaosLink") == nil then
-                                    generic.NotifyUser("[Disorder Ignition] Failed to catch target!", 3)
+        
+                                    local targetPosition = otherRoot.Position
+                                    local _velocity = otherRoot.AssemblyLinearVelocity
+                                    if _velocity.Magnitude > 0 then
+                                        targetPlayer = otherRoot.Position + (_velocity.Unit * otherHum.WalkSpeed)
+                                    end
+                                    rootPart.CFrame = CFrame.new(targetPosition)
+        
+                                    task.wait(0.175)
+                                    local args = {[1] = "Chaos", [2] = "Disorder Ignition"}
+                                    docmagic:FireServer(unpack(args))
+                                    local args = {[1] = "Chaos", [2] = "Disorder Ignition", [3] = {
+                                        ['nearestHRP'] = character.Head,
+                                        ['nearestPlayer'] = targetPlayer,
+                                        ['rpos'] = otherRoot.Position,
+                                        ['norm'] = Vector3.yAxis,
+                                        ['rhit'] = workspace.Map.Part
+                                    }}
+                                    domagic:InvokeServer(unpack(args))
                                     reservekey:FireServer(Enum.KeyCode.Y)
-                                    return
-                                end
-                                if otherHum.Health <= 0 then
-                                    generic.NotifyUser("[Disorder Ignition] Current targeted player died before teleportation!", 2)
+                                    local _s = tick()
+                                    while tick()-_s < tpDelay do task.wait() end
+                                    if rootPart:FindFirstChild("ChaosLink") == nil then
+                                        generic.NotifyUser("[Disorder Ignition] Failed to catch target!", 3)
+                                        reservekey:FireServer(Enum.KeyCode.Y)
+                                        return
+                                    end
+                                    if otherHum.Health <= 0 then
+                                        generic.NotifyUser("[Disorder Ignition] Current targeted player died before teleportation!", 2)
+                                        reservekey:FireServer(Enum.KeyCode.Y)
+                                        return
+                                    end
+                                    rootPart.CFrame = CFrame.new(finalPosition)
+                                    task.wait(0.1)
                                     reservekey:FireServer(Enum.KeyCode.Y)
-                                    return
                                 end
-                                rootPart.CFrame = CFrame.new(finalPosition)
-                                task.wait(0.1)
-                                reservekey:FireServer(Enum.KeyCode.Y)
                             end
-                        end
-                    end)()
+                        end)()
+                    end, warn)
                 end,
             }
             
