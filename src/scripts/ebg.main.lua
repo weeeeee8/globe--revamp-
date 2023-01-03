@@ -314,6 +314,7 @@ return function(Window)
                             end
     
                             if rootPart then
+                                task.wait(1)
                                 local finalPosition = Vector3.zero
                                 if teleportOption == "void" then
                                     finalPosition = voidPosition
@@ -336,18 +337,17 @@ return function(Window)
                                 end
                                 rootPart.CFrame = CFrame.new(targetPosition)
     
-                                task.wait(0.25)
+                                task.wait(0.175)
                                 local args = {[1] = "Chaos", [2] = "Disorder Ignition"}
                                 docmagic:FireServer(unpack(args))
-                                args[3] = {
+                                local args = {[1] = "Chaos", [2] = "Disorder Ignition", [3] = {
                                     ['nearestHRP'] = character.Head,
                                     ['nearestPlayer'] = targetPlayer,
                                     ['rpos'] = otherRoot.Position,
                                     ['norm'] = Vector3.yAxis,
                                     ['rhit'] = workspace.Map.Part
-                                }
+                                }}
                                 domagic:InvokeServer(unpack(args))
-                                task.wait()
                                 reservekey:FireServer(Enum.KeyCode.Y)
                                 local _s = tick()
                                 while tick()-_s < tpDelay do task.wait() end
@@ -362,7 +362,7 @@ return function(Window)
                                     return
                                 end
                                 rootPart.CFrame = CFrame.new(finalPosition)
-                                task.wait(0.3)
+                                task.wait(0.1)
                                 reservekey:FireServer(Enum.KeyCode.Y)
                             end
                         end
@@ -980,12 +980,8 @@ return function(Window)
                 end
             end))
 
-            local last = tick()
             Globe.Maid:GiveTask(RunService.Heartbeat:Connect(function()
-                if not auraEnabled then return end
-                local now = tick()
-                if now - last > 0.2 then
-                    last = now
+                if auraEnabled then
                     local foundPlayer = findNearestPlayer(generic.GetPlayerBodyPart("HumanoidRootPart").Position)
                     if foundPlayer then
                         combat:FireServer(1)
