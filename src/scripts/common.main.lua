@@ -590,82 +590,84 @@ return function(Window)
                 generic.NotifyUser('Finding new servers..', 1)
                 getgenv().DisableAllInteractions = true
 
-                local scanned = 0
-                local attempts = 0
-                local start = tick()
-                while true do
-                    if foundLastCacheTime then
-                        if tonumber(startHour) ~= tonumber(foundLastCacheTime) then
-                            pcall(delfile, SERVER_TIME_CACHE_FILENAME)
-                            table.clear(jobIds)
-                        end
-                    end
-
-                    local now = tick()
-                    if now - start > SERVER_HOP_TIMEOUT then
-                        generic.NotifyUser('Serverhopping timeout! Please try again!', 2)
-                        break
-                    end
-
-                    local serverlist
-                    if lastServerCursor then
-                        serverlist = HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. game.PlaceId .. '/servers/Public?sortOrder=Asc&limit=100&cursor=' .. lastServerCursor))
-                    else
-                        serverlist = HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. game.PlaceId .. '/servers/Public?sortOrder=Asc&limit=100'))
-                    end
-
-                    if serverlist.nextPageCursor and serverlist.nextPageCursor ~= "null" and serverlist.nextPageCursor ~= nil then
-                        lastServerCursor = serverlist.nextPageCursor
-                    end
-
-                    local totalServers = generic.LenDictionary(serverlist.data)
-                    generic.NotifyUser('Scanning a total of ' .. totalServers .. ' servers...', 1)
-                    for _, serverdata in pairs(serverlist.data) do
-                        local id = serverdata.id
-                        if tonumber(serverdata.maxPlayers) > tonumber(serverdata.playing) and tonumber(serverdata.playing) > desiredServerSize then
-                            if not isCurrentIdExisting(id) then
-                                generic.NotifyUser('Found a server with an id of "' .. id .. '"!', 1)
-                                setclipboard(id)
-
-                                table.insert(jobIds, id)
-                                local event = Instance.new("BindableEvent")
-                                
-                                writefile(SERVERS_CACHE_FILENAME, HttpService:JSONEncode(jobIds))
-
-                                local function tryTeleport()
-                                    if attempts > MAX_JOIN_ATTEMPTS then
-                                        generic.NotifyUser('Unable to teleport!', 3)
-                                        pcall(delfile, SERVERS_CACHE_FILENAME)
-                                        event:Fire()
-                                        writefile(SERVERS_CACHE_FILENAME, HttpService:JSONEncode({}))
-                                        return
-                                    end
-
-                                    if shouldAutoExecute then
-                                        queue_on_teleport('loadstring(game:HttpGet("https://raw.githubusercontent.com/weeeeee8/globe--revamp-/main/source.lua"), "Globe")()')
-                                    end
-                                    TeleportService:TeleportToPlaceInstance(game.PlaceId, id, Players.LocalPlayer)
-                                    local onTeleportFailed; onTeleportFailed = Players.LocalPlayer.OnTeleport:Connect(function(state)
-                                        if state == Enum.TeleportState.Failed then
-                                            onTeleportFailed:Disconnect()
-                                            onTeleportFailed = nil
-                                            generic.NotifyUser('Failed to teleport, retrying...', 2)
-                                            attempts += 1
-                                            tryTeleport()
-                                        end
-                                    end)
-                                end
-                                tryTeleport()
-
-                                event.Event:Wait()
+                pcall(function()
+                    local scanned = 0
+                    local attempts = 0
+                    local start = tick()
+                    while true do
+                        if foundLastCacheTime then
+                            if tonumber(startHour) ~= tonumber(foundLastCacheTime) then
+                                pcall(delfile, SERVER_TIME_CACHE_FILENAME)
+                                table.clear(jobIds)
                             end
                         end
-                        scanned+=1
-                        generic.NotifyUser('Scanned ' .. scanned .. "/" .. totalServers, 1)
-                        
-                        task.wait(1)
+
+                        local now = tick()
+                        if now - start > SERVER_HOP_TIMEOUT then
+                            generic.NotifyUser('Serverhopping timeout! Please try again!', 2)
+                            break
+                        end
+
+                        local serverlist
+                        if lastServerCursor then
+                            serverlist = HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. game.PlaceId .. '/servers/Public?sortOrder=Asc&limit=100&cursor=' .. lastServerCursor))
+                        else
+                            serverlist = HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. game.PlaceId .. '/servers/Public?sortOrder=Asc&limit=100'))
+                        end
+
+                        if serverlist.nextPageCursor and serverlist.nextPageCursor ~= "null" and serverlist.nextPageCursor ~= nil then
+                            lastServerCursor = serverlist.nextPageCursor
+                        end
+
+                        local totalServers = generic.LenDictionary(serverlist.data)
+                        generic.NotifyUser('Scanning a total of ' .. totalServers .. ' servers...', 1)
+                        for _, serverdata in pairs(serverlist.data) do
+                            local id = serverdata.id
+                            if tonumber(serverdata.maxPlayers) > tonumber(serverdata.playing) and tonumber(serverdata.playing) > desiredServerSize then
+                                if not isCurrentIdExisting(id) then
+                                    generic.NotifyUser('Found a server with an id of "' .. id .. '"!', 1)
+                                    setclipboard(id)
+
+                                    table.insert(jobIds, id)
+                                    local event = Instance.new("BindableEvent")
+                                    
+                                    writefile(SERVERS_CACHE_FILENAME, HttpService:JSONEncode(jobIds))
+
+                                    local function tryTeleport()
+                                        if attempts > MAX_JOIN_ATTEMPTS then
+                                            generic.NotifyUser('Unable to teleport!', 3)
+                                            pcall(delfile, SERVERS_CACHE_FILENAME)
+                                            event:Fire()
+                                            writefile(SERVERS_CACHE_FILENAME, HttpService:JSONEncode({}))
+                                            return
+                                        end
+
+                                        if shouldAutoExecute then
+                                            queue_on_teleport('loadstring(game:HttpGet("https://raw.githubusercontent.com/weeeeee8/globe--revamp-/main/source.lua"), "Globe")()')
+                                        end
+                                        TeleportService:TeleportToPlaceInstance(game.PlaceId, id, Players.LocalPlayer)
+                                        local onTeleportFailed; onTeleportFailed = Players.LocalPlayer.OnTeleport:Connect(function(state)
+                                            if state == Enum.TeleportState.Failed then
+                                                onTeleportFailed:Disconnect()
+                                                onTeleportFailed = nil
+                                                generic.NotifyUser('Failed to teleport, retrying...', 2)
+                                                attempts += 1
+                                                tryTeleport()
+                                            end
+                                        end)
+                                    end
+                                    tryTeleport()
+
+                                    event.Event:Wait()
+                                end
+                            end
+                            scanned+=1
+                            generic.NotifyUser('Scanned ' .. scanned .. "/" .. totalServers, 1)
+                            
+                            task.wait(1)
+                        end
                     end
-                end
+                end)
 
                 getgenv().DisableAllInteractions = false
             end,
