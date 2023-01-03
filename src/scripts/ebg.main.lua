@@ -314,7 +314,6 @@ return function(Window)
                             end
     
                             if rootPart then
-                                task.wait(1)
                                 local finalPosition = Vector3.zero
                                 if teleportOption == "void" then
                                     finalPosition = voidPosition
