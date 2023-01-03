@@ -24,7 +24,7 @@ return function(Window)
     end
     
     local playerNameFill = generic.NewAutofill("Name Fill", getPlayerFromInput)
-    local domagic, docmagic, clientdata, combat, reservekey, sendloadout = generic.FindInstancesInReplicatedStorage('DoMagic', 'DoClientMagic', 'ClientData', 'KeyReserve', 'Combat')
+    local domagic, docmagic, clientdata, combat, reservekey = generic.FindInstancesInReplicatedStorage('DoMagic', 'DoClientMagic', 'ClientData', 'Combat', 'KeyReserve')
 
     local playerMouse = Players.LocalPlayer:GetMouse()
 
@@ -362,7 +362,7 @@ return function(Window)
                                         return
                                     end
                                     rootPart.CFrame = CFrame.new(finalPosition)
-                                    task.wait(0.1)
+                                    task.wait(0.2)
                                     reservekey:FireServer(Enum.KeyCode.Y)
                                 end
                             end
