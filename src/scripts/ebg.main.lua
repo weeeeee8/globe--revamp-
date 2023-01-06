@@ -397,7 +397,9 @@ return function(Window)
 
     local utilityTab = Window:CreateTab("Utility - Elemental Battlegrounds") do
         local function buildTechDiscSection()
+            local ClientEffectsFolder = workspace:WaitForChild('.Ignore'):WaitForChild('.LocalEffects')
             local connectionsHolder = generic.NewConnectionsHolder()
+            local removeDisks = false
 
             utilityTab:CreateSection('Disable Techlag (Technology Light Disk Bug) State')
             utilityTab:CreateToggle{
@@ -406,22 +408,41 @@ return function(Window)
                 Callback = function(toggled)
                     if toggled then
                         local PlayerScripts = Players.LocalPlayer:WaitForChild("PlayerScripts")
-                        local ClientEffectsFolder = workspace:WaitForChild('.Ignore'):WaitForChild('.LocalEffects')
                         connectionsHolder:Insert(PlayerScripts.ChildAdded:Connect(function(c)
                             if c.Name == "DiscScript" then
                                 task.delay(1, c.Destroy, c)
                             end
                         end))
-                        connectionsHolder:Insert(ClientEffectsFolder.ChildAdded:Connect(function(c)
-                            if c.Name == "LightDisc" or c.Name == "DeadlyDisc" then
-                                task.delay(1, c.Destroy, c)
-                            end
-                        end))
+                        removeDisks = true
                     else
+                        removeDisks = false
                         connectionsHolder:DisconnectAll()
                     end
                 end
             }
+
+            local function turnOnCanQuery(obj)
+                if obj:IsA("BasePart") then
+                    obj.CanQuery = true
+                    for _, v in ipairs(obj:GetChildren()) do
+                        turnOnCanQuery(v)
+                    end
+                end
+                if obj:IsA("Model") then
+                    for _, v in ipairs(obj:GetChildren()) do
+                        turnOnCanQuery(v)
+                    end
+                end
+            end
+
+            Globe.Maid:GiveTask(ClientEffectsFolder.ChildAdded:Connect(function(c)
+                if removeDisks then
+                    if c.Name == "LightDisc" or c.Name == "DeadlyDisc" then
+                        task.delay(1, c.Destroy, c)
+                    end
+                end
+                turnOnCanQuery(c)
+            end))
 
             Globe.Maid:GiveTask(function()
                 connectionsHolder:Destroy()
