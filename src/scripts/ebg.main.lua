@@ -91,7 +91,8 @@ return function(Window)
             'Murky Missiles',
             'Skeleton Grab',
             'Sewer Burst',
-            'Asteroid Belt'
+            'Asteroid Belt',
+            'Rocks Avalanche'
         ):override(function() return false end):get()
 
         local function processArgs(realArgs, SpellName)
@@ -114,7 +115,7 @@ return function(Window)
                 fakeArgs[3].Origin = if isMouseHitOverriden or playerMouse.Target then playerMouse.Hit.Position + Vector3.new(0, 7, 0) else realArgs[3].Origin
             elseif SpellName == "Orbital Strike" then
                 fakeArgs[3] = if isMouseHitOverriden or playerMouse.Target then CFrame.lookAt(playerMouse.Hit.Position, playerMouse.Hit.Position - Vector3.new(0, 20, 0)) else realArgs[3]
-            elseif SpellName == "Orbs of Enlightenment" then
+            elseif SpellName == "Orbs of Enlightenment" or SpellName == "'Rocks Avalanche" then
                 local c = {}
                 for i = 1, #realArgs[3].Coordinates do
                     c[i] = if isMouseHitOverriden or playerMouse.Target then CFrame.new(playerMouse.Hit.Position + Vector3.new(0, 2, 0)) else CFrame.identity
