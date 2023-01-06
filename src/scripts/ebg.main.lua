@@ -580,6 +580,12 @@ return function(Window)
                 foundProfile.position = foundProfile.root.Position
                 foundProfile.velocity = foundProfile.root.AssemblyLinearVelocity
 
+                local isAboveGroundInClient = false--if the player is above ground like fireball riding
+                local _params = RaycastParams.new()
+                _params.FilterDescendantsInstances = {workspace['.Ignore']['.LocalEffects']}
+                _params.FilterType = Enum.RaycastFilterType.Whitelist
+                isAboveGroundInClient = workspace:Raycast(foundProfile.root.Position, Vector3.new(0, -5, 0), _params) ~= nil
+
                 local params = RaycastParams.new()
                 params.FilterDescendantsInstances = {foundProfile.head.Parent}
                 params.FilterType = Enum.RaycastFilterType.Blacklist
@@ -587,7 +593,7 @@ return function(Window)
                 local normalizedVelocity = foundProfile.velocity - foundProfile.lastVelocity
                 for i = 1, #self, 1 do
                     local point = self[i]
-                    if foundProfile.root:FindFirstChildOfClass("BodyPosition") or foundProfile.head:FindFirstChildOfClass("BodyPosition") or foundProfile.hum.PlatformStanding == true then
+                    if foundProfile.root:FindFirstChildOfClass("BodyPosition") or foundProfile.head:FindFirstChildOfClass("BodyPosition") or foundProfile.hum.PlatformStanding == true or isAboveGroundInClient then
                         point.position = point.position:Lerp(foundProfile.root.Position, self.pointsSmoothingSpeed)
                     else
                         point.position = point.position:Lerp(self:getPositionFromInterval(foundProfile.position, foundProfile.velocity, if point.locked then 0 else ((math.min(foundProfile.hum.WalkSpeed / 16, 1)) * (i / #self)) + if self.accountsDistance then (foundProfile.root.Position - generic.GetPlayerBodyPart("HumanoidRootPart").Position).Magnitude * 0.05 * i * deltaTime else 0, normalizedVelocity / deltaTime), self.pointsSmoothingSpeed)
